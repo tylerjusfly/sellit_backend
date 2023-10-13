@@ -1,5 +1,3 @@
-import { dataSource } from '../database/dataSource';
-import { User } from '../database/entites/user.entity';
 import { TUserType } from '../interfaces/user';
 import * as jwt from 'jsonwebtoken';
 

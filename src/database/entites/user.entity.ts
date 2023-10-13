@@ -1,10 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { CustomBaseEntity } from '../custom-base.entity';
 
-@Entity()
-export class User {
-	@PrimaryGeneratedColumn()
-	id!: number;
-
+@Entity({ name: 'users' })
+export class User extends CustomBaseEntity {
 	@Column({ type: 'varchar', unique: true, nullable: false })
 	username!: string;
 
