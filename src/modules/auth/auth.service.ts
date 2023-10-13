@@ -1,25 +1,73 @@
 import { Request, Response } from 'express';
-import { TLogin } from '../../interfaces/auth';
+import { TCreate, TLogin } from '../../interfaces/auth';
+import { validationResult } from 'express-validator';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
+import { dataSource } from '../../database/dataSource';
+import { User } from '../../database/entites/user.entity';
+import { isValidPassword } from '../../utils/password-helper';
+import { pbkdf2Sync, randomBytes } from 'crypto';
+import { getToken } from '../../utils/token-helper';
 
-export async function loginUser(req: Request, res: Response) {
+export const loginUser = async (req: Request, res: Response) => {
 	try {
 		const { username, password }: TLogin = req.body;
 
-		if (!username || username?.length < 5 || !password || password?.length < 5) {
-			return handleBadRequest(res, 400, 'password verification failed');
+		const errors = validationResult(req);
+
+		if (!errors.isEmpty()) {
+			const errorMessages = errors.array().map((err) => err.msg);
+
+			const errorMessageString = errorMessages.join(' | ');
+
+			return handleBadRequest(res, 400, errorMessageString);
 		}
 
-		// const user = await User.findOne({ where: { username } });
-		// if (!user) return handleBadRequest(res, 400, "invalid credentials");
+		const IsUser = await dataSource.getRepository(User).findOne({
+			where: {
+				username,
+			},
+		});
 
-		// let rs = await isValidPassword(user, password);
-		// if (rs.success) {
-		//   const token = await getToken(rs?.data?.id);
-		//   return handleSuccess(res, token, rs?.message, 200, null);
-		// }
-		return handleSuccess(res, 2, 'success', 200, undefined);
+		if (!IsUser) {
+			return handleBadRequest(res, 400, 'Invalid user credentials');
+		}
+
+		let rs = await isValidPassword(IsUser, password);
+
+		if (!rs.success) {
+			return handleBadRequest(res, 400, 'Invalid user credentials');
+		}
+
+		const token = await getToken(IsUser);
+
+		return handleSuccess(res, token, 'success', 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
-}
+};
+
+export const create = async (req: Request, res: Response) => {
+	try {
+		const { username, fullname, email, password }: TCreate = req.body;
+
+		if (!username || !fullname || !email || !password) {
+			handleBadRequest(res, 400, 'all fields are required');
+		}
+
+		const salt = randomBytes(30).toString('hex');
+		const hashedPass = pbkdf2Sync(password, salt, 1000, 64, `sha512`).toString(`hex`);
+
+		const createdUser = dataSource.getRepository(User).create({
+			username,
+			password: hashedPass,
+			fullname,
+			email,
+			salt,
+		});
+		const results = await dataSource.getRepository(User).save(createdUser);
+
+		return handleSuccess(res, results, 'created user', 201, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};

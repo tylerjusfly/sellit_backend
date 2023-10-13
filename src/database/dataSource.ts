@@ -12,7 +12,7 @@ export const dataSource = new DataSource({
 	database: process.env.DATABASE_NAME || 'shopcrm',
 	entities: ['**/*.entity.ts'],
 	logging: DATABASE_ENABLE_LOGGING,
-	synchronize: DATABASE_ENABLE_SYNC,
+	synchronize: true,
 });
 
 const DATABASE_RETRY_COUNT = process.env.DATABASE_CONNECT_RETRY_COUNT

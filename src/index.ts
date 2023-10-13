@@ -16,6 +16,8 @@ initialiseDataSource().then((isInitialised: boolean) => {
 	}
 });
 
+app.use(express.json());
+
 app.use(
 	cors({
 		origin: '*',
@@ -29,12 +31,7 @@ app.use('/', apiRouter);
 app.use(genericErrorHandler);
 
 app.get('/', async (req: Request, res: Response) => {
-	const createdUser = dataSource.getRepository(User).create({
-		username: 'dickson',
-		password: 'ladygaga',
-	});
-	const results = await dataSource.getRepository(User).save(createdUser);
-	return res.send(results);
+	return res.send('Hello Express typescript');
 });
 
 function genericErrorHandler(err: any, req: Request, res: Response, next: NextFunction) {
