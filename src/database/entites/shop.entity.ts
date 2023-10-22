@@ -6,6 +6,9 @@ export class Shop extends CustomBaseEntity {
 	@Column({ type: 'varchar', unique: true, nullable: false })
 	name!: string;
 
+	@Column({ type: 'varchar', unique: true, nullable: false })
+	slug!: string;
+
 	@Column({ type: 'varchar', default: 'USD' })
 	currency_type!: string;
 
