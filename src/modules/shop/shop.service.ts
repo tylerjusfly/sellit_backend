@@ -3,6 +3,7 @@ import { handleBadRequest, handleError, handleSuccess } from '../../constants/re
 import { convertToSlug } from '../../utils/convertToSlug';
 import { dataSource } from '../../database/dataSource';
 import { Shop } from '../../database/entites/shop.entity';
+import { IPaginate } from '../../interfaces/pagination';
 
 export const createShop = async (req: Request, res: Response) => {
 	try {
@@ -58,15 +59,33 @@ export const deleteShop = async (req: Request, res: Response) => {
 
 export const getAllShops = async (req: Request, res: Response) => {
 	try {
-		const allShops = await dataSource.getRepository(Shop).findAndCount();
+		const { page, limit } = req.query;
 
-		return handleSuccess(
-			res,
-			{ data: allShops[0], count: allShops[1] },
-			`allShops[1]`,
-			200,
-			undefined
-		);
+		const page_limit = limit ? Number(limit) : 10;
+
+		// let query: any = [];
+
+		const offset = page ? (Number(page) - 1) * page_limit : 0;
+
+		const allShops = await dataSource.getRepository(Shop).findAndCount({
+			skip: offset,
+			take: page_limit,
+			order: {
+				name: 'ASC',
+				id: 'DESC',
+			},
+		});
+
+		const totalPages = Math.ceil(allShops[1] / page_limit);
+
+		const paging: IPaginate = {
+			totalItems: allShops[1],
+			currentPage: page ? Number(page) : 1,
+			totalpages: totalPages,
+			itemsPerPage: page_limit,
+		};
+
+		return handleSuccess(res, { data: allShops[0] }, `allShops[1]`, 200, paging);
 	} catch (error) {
 		handleError(res, error);
 	}
