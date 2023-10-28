@@ -4,6 +4,7 @@ import { LogHelper } from './utils/LogHelper';
 import cors from 'cors';
 import { User } from './database/entites/user.entity';
 import { apiRouter } from './modules/router';
+import { requsetLogger } from './middlewares/requestlogger';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -26,6 +27,7 @@ app.use(
 	})
 );
 
+app.use(requsetLogger);
 app.use('/', apiRouter);
 
 app.use(genericErrorHandler);

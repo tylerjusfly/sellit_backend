@@ -4,6 +4,7 @@ import { convertToSlug } from '../../utils/convertToSlug';
 import { dataSource } from '../../database/dataSource';
 import { Shop } from '../../database/entites/shop.entity';
 import { IPaginate } from '../../interfaces/pagination';
+import { User } from '../../database/entites/user.entity';
 
 export const createShop = async (req: Request, res: Response) => {
 	try {
@@ -86,6 +87,34 @@ export const getAllShops = async (req: Request, res: Response) => {
 		};
 
 		return handleSuccess(res, { data: allShops[0] }, `allShops[1]`, 200, paging);
+	} catch (error) {
+		handleError(res, error);
+	}
+};
+
+export const authenticateShop = async (req: Request, res: Response) => {
+	try {
+		const { shopId, userId }: { shopId?: number; userId?: number } = req.query;
+
+		if (!shopId || !userId) {
+			return handleBadRequest(res, 400, 'shop|user id is required');
+		}
+
+		const isUser = await dataSource.getRepository(User).findOne({
+			where: { id: userId },
+		});
+
+		if (!isUser) return handleBadRequest(res, 404, 'user not found');
+
+		const isShop = await dataSource.getRepository(Shop).findOne({
+			where: { id: shopId },
+		});
+
+		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
+
+		// If shop and user id exist authenticate shop
+
+		return handleSuccess(res, { shop: null, token: null }, 'shop auth', 200, undefined);
 	} catch (error) {
 		handleError(res, error);
 	}

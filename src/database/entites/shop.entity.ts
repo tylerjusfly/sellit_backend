@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { CustomBaseEntity } from '../custom-base.entity';
 
 @Entity({ name: 'shops' })
