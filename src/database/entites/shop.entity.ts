@@ -1,5 +1,6 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { CustomBaseEntity } from '../custom-base.entity';
+import { User } from './user.entity';
 
 @Entity({ name: 'shops' })
 export class Shop extends CustomBaseEntity {
@@ -26,4 +27,11 @@ export class Shop extends CustomBaseEntity {
 
 	@Column({ type: 'varchar', nullable: true })
 	custom_domain!: string;
+
+	@ManyToOne(() => User, { eager: true })
+	@JoinColumn({ name: 'shop_id' })
+	shop_owner!: User;
+
+	// @ManyToOne(() => User, (user) => user.id)
+	// shop_owner!: User;
 }

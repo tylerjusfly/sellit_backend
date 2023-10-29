@@ -5,8 +5,10 @@ import { dataSource } from '../../database/dataSource';
 import { Shop } from '../../database/entites/shop.entity';
 import { IPaginate } from '../../interfaces/pagination';
 import { User } from '../../database/entites/user.entity';
+import { CustomRequest } from '../../middlewares/verifyauth';
+import { ITokenPayload } from '../../utils/token-helper';
 
-export const createShop = async (req: Request, res: Response) => {
+export const createShop = async (req: CustomRequest, res: Response) => {
 	try {
 		const { shopname }: { shopname: string } = req.body;
 		if (!shopname) {
@@ -14,6 +16,18 @@ export const createShop = async (req: Request, res: Response) => {
 		}
 
 		const slugged = convertToSlug(shopname);
+
+		const userReq = req.user as ITokenPayload;
+
+		const isShopOwner = await dataSource.getRepository(User).findOne({
+			where: {
+				id: userReq.id,
+			},
+		});
+
+		if (!isShopOwner) {
+			return handleBadRequest(res, 404, 'shop owner not found');
+		}
 
 		const IsShop = await dataSource.getRepository(Shop).findOne({
 			where: {
@@ -26,6 +40,7 @@ export const createShop = async (req: Request, res: Response) => {
 		const createShop = dataSource.getRepository(Shop).create({
 			name: shopname,
 			slug: slugged,
+			shop_owner: isShopOwner,
 		});
 
 		const result = await dataSource.getRepository(Shop).save(createShop);
@@ -92,16 +107,18 @@ export const getAllShops = async (req: Request, res: Response) => {
 	}
 };
 
-export const authenticateShop = async (req: Request, res: Response) => {
+export const authenticateShop = async (req: CustomRequest, res: Response) => {
 	try {
-		const { shopId, userId }: { shopId?: number; userId?: number } = req.query;
+		const { shopId }: { shopId?: number; userId?: number } = req.query;
 
-		if (!shopId || !userId) {
+		if (!shopId) {
 			return handleBadRequest(res, 400, 'shop|user id is required');
 		}
 
+		const userReq = req.user as ITokenPayload;
+
 		const isUser = await dataSource.getRepository(User).findOne({
-			where: { id: userId },
+			where: { id: userReq.id },
 		});
 
 		if (!isUser) return handleBadRequest(res, 404, 'user not found');
@@ -114,7 +131,7 @@ export const authenticateShop = async (req: Request, res: Response) => {
 
 		// If shop and user id exist authenticate shop
 
-		return handleSuccess(res, { shop: null, token: null }, 'shop auth', 200, undefined);
+		return handleSuccess(res, { shop: isShop, token: isUser }, 'shop auth', 200, undefined);
 	} catch (error) {
 		handleError(res, error);
 	}

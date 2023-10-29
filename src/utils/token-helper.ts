@@ -1,3 +1,4 @@
+import { TShopType } from '../interfaces/shop';
 import { TUserType } from '../interfaces/user';
 import * as jwt from 'jsonwebtoken';
 
@@ -27,4 +28,8 @@ export const getToken = async (user: TUserType) => {
 		token,
 		payload,
 	};
+};
+
+export const getShopPayload = (shop: TShopType): null => {
+	return null;
 };
