@@ -6,7 +6,7 @@ import { Shop } from '../../database/entites/shop.entity';
 import { IPaginate } from '../../interfaces/pagination';
 import { User } from '../../database/entites/user.entity';
 import { CustomRequest } from '../../middlewares/verifyauth';
-import { ITokenPayload } from '../../utils/token-helper';
+import { ITokenPayload, getShopPayload } from '../../utils/token-helper';
 
 export const createShop = async (req: CustomRequest, res: Response) => {
 	try {
@@ -109,10 +109,10 @@ export const getAllShops = async (req: Request, res: Response) => {
 
 export const authenticateShop = async (req: CustomRequest, res: Response) => {
 	try {
-		const { shopId }: { shopId?: number; userId?: number } = req.query;
+		const { shopid }: { shopid?: number } = req.query;
 
-		if (!shopId) {
-			return handleBadRequest(res, 400, 'shop|user id is required');
+		if (!shopid) {
+			return handleBadRequest(res, 400, 'shop id is required');
 		}
 
 		const userReq = req.user as ITokenPayload;
@@ -123,15 +123,20 @@ export const authenticateShop = async (req: CustomRequest, res: Response) => {
 
 		if (!isUser) return handleBadRequest(res, 404, 'user not found');
 
-		const isShop = await dataSource.getRepository(Shop).findOne({
-			where: { id: shopId },
-		});
+		const isShop = await dataSource
+			.getRepository(Shop)
+			.createQueryBuilder('shop')
+			.leftJoinAndSelect('shop.shop_owner', 'user')
+			.where('shop.id = :id', { id: shopid })
+			.andWhere('shop.shop_owner = :user', { user: isUser.id })
+			.getOne();
 
 		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
 
 		// If shop and user id exist authenticate shop
+		const shoptoken = getShopPayload(isShop);
 
-		return handleSuccess(res, { shop: isShop, token: isUser }, 'shop auth', 200, undefined);
+		return handleSuccess(res, { shop: isShop, token: shoptoken }, 'shop auth', 200, undefined);
 	} catch (error) {
 		handleError(res, error);
 	}

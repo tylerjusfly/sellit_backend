@@ -30,6 +30,17 @@ export const getToken = async (user: TUserType) => {
 	};
 };
 
-export const getShopPayload = (shop: TShopType): null => {
-	return null;
+export const getShopPayload = (shop: TShopType) => {
+	const payload = {
+		name: shop.name,
+		slug: shop.slug,
+		credit: shop.shop_credit,
+	};
+
+	const token = jwt.sign(payload, secret, {
+		expiresIn: '24h',
+	});
+	return {
+		token,
+	};
 };

@@ -28,10 +28,10 @@ export class Shop extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: true })
 	custom_domain!: string;
 
-	@ManyToOne(() => User, { eager: true })
-	@JoinColumn({ name: 'shop_id' })
+	@ManyToOne(() => User)
+	@JoinColumn({ name: 'shop_owner' })
 	shop_owner!: User;
 
-	// @ManyToOne(() => User, (user) => user.id)
+	// @ManyToOne(() => User, (user) => user.id, { eager: true })
 	// shop_owner!: User;
 }
