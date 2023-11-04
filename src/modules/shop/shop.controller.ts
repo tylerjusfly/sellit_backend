@@ -8,6 +8,6 @@ const shopRouter = Router();
 shopRouter.get('/', verifyToken, getAllShops);
 shopRouter.post('/', verifyToken, createShop);
 shopRouter.post('/auth-shop', verifyToken, authenticateShop);
-shopRouter.delete('/', deleteShop);
+shopRouter.delete('/', verifyToken, deleteShop);
 
 export const ShopController = { router: shopRouter };
