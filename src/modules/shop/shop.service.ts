@@ -7,6 +7,7 @@ import { IPaginate } from '../../interfaces/pagination';
 import { User } from '../../database/entites/user.entity';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { ITokenPayload, getShopPayload } from '../../utils/token-helper';
+import { FindManyOptions, FindOptionsWhere } from 'typeorm';
 
 export const createShop = async (req: CustomRequest, res: Response) => {
 	try {
@@ -73,35 +74,46 @@ export const deleteShop = async (req: Request, res: Response) => {
 	}
 };
 
-export const getAllShops = async (req: Request, res: Response) => {
+export const getAllShops = async (req: CustomRequest, res: Response) => {
 	try {
 		const { page, limit } = req.query;
 
 		const page_limit = limit ? Number(limit) : 10;
 
-		// let query: any = [];
-
 		const offset = page ? (Number(page) - 1) * page_limit : 0;
 
-		const allShops = await dataSource.getRepository(Shop).findAndCount({
-			skip: offset,
-			take: page_limit,
-			order: {
-				name: 'ASC',
-				id: 'DESC',
-			},
+		const userReq = req.user as ITokenPayload;
+
+		const isUser = await dataSource.getRepository(User).findOne({
+			where: { id: userReq.id },
 		});
 
-		const totalPages = Math.ceil(allShops[1] / page_limit);
+		if (!isUser) return handleBadRequest(res, 404, 'user not found');
+
+		const query = dataSource
+			.getRepository(Shop)
+			.createQueryBuilder('q')
+			.leftJoinAndSelect('q.shop_owner', 'user')
+			.where('q.shop_owner = :user', { user: isUser.id });
+
+		const AllShops = await query
+			.offset(offset)
+			.limit(page_limit)
+			.orderBy('q.created_at', 'DESC')
+			.getMany();
+
+		const Shopcount = await query.getCount();
+
+		const totalPages = Math.ceil(Shopcount / page_limit);
 
 		const paging: IPaginate = {
-			totalItems: allShops[1],
+			totalItems: Shopcount,
 			currentPage: page ? Number(page) : 1,
 			totalpages: totalPages,
 			itemsPerPage: page_limit,
 		};
 
-		return handleSuccess(res, { data: allShops[0] }, `allShops[1]`, 200, paging);
+		return handleSuccess(res, AllShops, `allshops`, 200, paging);
 	} catch (error) {
 		handleError(res, error);
 	}
