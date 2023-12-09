@@ -22,6 +22,9 @@ export class Shop extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: true })
 	discord_link!: string;
 
+	@Column({ type: 'varchar', nullable: true })
+	seller_btc!: string;
+
 	@Column({ type: 'integer', nullable: false, default: 0 })
 	shop_credit!: number;
 

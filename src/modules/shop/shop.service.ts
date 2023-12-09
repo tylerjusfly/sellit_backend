@@ -153,3 +153,4 @@ export const authenticateShop = async (req: CustomRequest, res: Response) => {
 		handleError(res, error);
 	}
 };
+
