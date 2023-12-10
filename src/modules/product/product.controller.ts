@@ -1,9 +1,11 @@
 import { Router } from 'express';
-import { CreateProduct } from './product.service';
+import { CreateProduct, editProduct, getSpecificProduct } from './product.service';
 import { verifyToken } from '../../middlewares/verifyauth';
 
 const productRouter = Router();
 
-productRouter.post('/', verifyToken, CreateProduct);
+productRouter.post('/', CreateProduct);
+productRouter.patch('/', verifyToken, editProduct);
+productRouter.get('/one', verifyToken, getSpecificProduct);
 
 export const ProductController = { router: productRouter };
