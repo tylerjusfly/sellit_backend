@@ -5,3 +5,5 @@ export const GenerateProductId = () => {
 		return v.toString(16);
 	});
 };
+
+
