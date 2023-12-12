@@ -9,3 +9,5 @@ export type IEditProduct = {
 	webhookUrl?: string;
 	unlisted?: '1' | '0';
 };
+
+export type IgetAllProduct = { shopid?: number; page?: number; limit?: number; unlisted?: string };
