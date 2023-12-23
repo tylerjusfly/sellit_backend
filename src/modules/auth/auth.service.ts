@@ -6,7 +6,8 @@ import { dataSource } from '../../database/dataSource';
 import { User } from '../../database/entites/user.entity';
 import { isValidPassword } from '../../utils/password-helper';
 import { pbkdf2Sync, randomBytes } from 'crypto';
-import { getToken } from '../../utils/token-helper';
+import { ITokenPayload, getToken } from '../../utils/token-helper';
+import { CustomRequest } from '../../middlewares/verifyauth';
 
 export const loginUser = async (req: Request, res: Response) => {
 	try {
@@ -69,5 +70,27 @@ export const create = async (req: Request, res: Response) => {
 		return handleSuccess(res, results, 'created user', 201, undefined);
 	} catch (error) {
 		return handleError(res, error);
+	}
+};
+
+export const getMyProfile = async (req: CustomRequest, res: Response) => {
+	try {
+		const userReq = req.user as ITokenPayload;
+
+		const isUser = await dataSource.getRepository(User).findOne({
+			where: { id: userReq.id },
+		});
+
+		if (!isUser) return handleBadRequest(res, 404, 'user not found');
+
+		const formattedUserData = {
+			id: isUser.id,
+			username: isUser.username,
+			user_type: isUser.user_type,
+		};
+
+		return handleSuccess(res, { token: '', payload: formattedUserData }, 'user', 200, undefined);
+	} catch (error) {
+		handleError(res, error);
 	}
 };
