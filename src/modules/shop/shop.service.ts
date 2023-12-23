@@ -7,7 +7,13 @@ import { IPaginate } from '../../interfaces/pagination';
 import { User } from '../../database/entites/user.entity';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { ITokenPayload, getShopPayload } from '../../utils/token-helper';
-import { FindManyOptions, FindOptionsWhere } from 'typeorm';
+import { Brackets, FindManyOptions, FindOptionsWhere } from 'typeorm';
+
+type getQueryType = {
+	page?: string;
+	limit?: string;
+	search?: string;
+};
 
 export const createShop = async (req: CustomRequest, res: Response) => {
 	try {
@@ -76,7 +82,7 @@ export const deleteShop = async (req: Request, res: Response) => {
 
 export const getAllShops = async (req: CustomRequest, res: Response) => {
 	try {
-		const { page, limit } = req.query;
+		const { page, limit, search }: getQueryType = req.query;
 
 		const page_limit = limit ? Number(limit) : 10;
 
@@ -95,6 +101,14 @@ export const getAllShops = async (req: CustomRequest, res: Response) => {
 			.createQueryBuilder('q')
 			.leftJoinAndSelect('q.shop_owner', 'user')
 			.where('q.shop_owner = :user', { user: isUser.id });
+
+		if (search && search !== '') {
+			query.andWhere(
+				new Brackets((qb) => {
+					qb.where('LOWER(q.name) Like :name', { name: `%${search.toLowerCase()}%` });
+				})
+			);
+		}
 
 		const AllShops = await query
 			.offset(offset)
