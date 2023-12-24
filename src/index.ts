@@ -5,6 +5,8 @@ import cors from 'cors';
 import { User } from './database/entites/user.entity';
 import { apiRouter } from './modules/router';
 import { requsetLogger } from './middlewares/requestlogger';
+import { cacheRedisClient } from './database/redis/redis-client';
+import { rateLimiter } from './middlewares/rate-limiter';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -17,6 +19,15 @@ initialiseDataSource().then((isInitialised: boolean) => {
 	}
 });
 
+cacheRedisClient
+	.connect()
+	.then(() => {
+		LogHelper.debug('Connected to redis');
+	})
+	.catch((e) => {
+		LogHelper.error(`Could not connect to redis`, e);
+	});
+
 app.use(express.json());
 
 app.use(
@@ -28,6 +39,7 @@ app.use(
 );
 
 app.use(requsetLogger);
+// app.use(rateLimiter);
 app.use('/', apiRouter);
 
 app.use(genericErrorHandler);
