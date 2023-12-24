@@ -7,7 +7,7 @@ import { IPaginate } from '../../interfaces/pagination';
 import { User } from '../../database/entites/user.entity';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { ITokenPayload, getShopPayload } from '../../utils/token-helper';
-import { Brackets, FindManyOptions, FindOptionsWhere } from 'typeorm';
+import { Brackets } from 'typeorm';
 
 type getQueryType = {
 	page?: string;
