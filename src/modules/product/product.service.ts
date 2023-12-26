@@ -151,13 +151,15 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 			.createQueryBuilder('q')
 			.leftJoinAndSelect('q.coupon_id', 'coupon');
 
-		if (unlisted === '1') {
-			query.where('q.unlisted = :value', { value: true });
-		}
+			query.where('q.shop_id = :val', { val: shopid });
 
-		if (unlisted === '0') {
-			query.where('q.unlisted = :value', { value: false });
-		}
+			if (unlisted === '1') {
+				query.andWhere('q.unlisted = :value', { value: true });
+			}
+
+			if (unlisted === '0') {
+				query.andWhere('q.unlisted = :value', { value: false });
+			}
 
 		const AllProducts = await query
 			.offset(offset)
