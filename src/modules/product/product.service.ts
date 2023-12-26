@@ -39,7 +39,7 @@ export const CreateProduct = async (req: Request, res: Response) => {
 
 		return handleSuccess(res, result, 'created product', 201, undefined);
 	} catch (error) {
-		handleError(res, error);
+		return handleError(res, error);
 	}
 };
 
@@ -120,7 +120,7 @@ export const getSpecificProduct = async (req: Request, res: Response) => {
 			return handleSuccess(res, foundProduct, 'found', 200, undefined);
 		}
 	} catch (error) {
-		handleError(res, error);
+		return handleError(res, error);
 	}
 };
 
@@ -200,6 +200,6 @@ export const deleteProduct = async (req: Request, res: Response) => {
 
 		return handleSuccess(res, null, 'shop dropped', 200, undefined);
 	} catch (error) {
-		handleError(res, error);
+		return handleError(res, error);
 	}
 };

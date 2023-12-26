@@ -49,7 +49,7 @@ export const createCoupon = async (req: Request, res: Response) => {
 
 		return handleSuccess(res, result, 'created coupon', 201, undefined);
 	} catch (error) {
-		handleError(res, error);
+		return handleError(res, error);
 	}
 };
 
@@ -80,7 +80,7 @@ export const checkCouponCode = async (req: Request, res: Response) => {
 		// else coupon is valid
 		return res.status(200).json({ status: true });
 	} catch (error) {
-		handleError(res, error);
+		return handleError(res, error);
 	}
 };
 
@@ -117,7 +117,7 @@ export const fetchCoupons = async (req: Request, res: Response) => {
 
 		return handleSuccess(res, Coupons, `coupons`, 200, paging);
 	} catch (error) {
-		handleError(res, error);
+		return handleError(res, error);
 	}
 };
 
@@ -139,6 +139,6 @@ export const deleteCoupon = async (req: Request, res: Response) => {
 
 		return handleSuccess(res, null, 'coupon dropped', 200, undefined);
 	} catch (error) {
-		handleError(res, error);
+		return handleError(res, error);
 	}
 };

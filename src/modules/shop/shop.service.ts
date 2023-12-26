@@ -6,7 +6,7 @@ import { Shop } from '../../database/entites/shop.entity';
 import { IPaginate } from '../../interfaces/pagination';
 import { User } from '../../database/entites/user.entity';
 import { CustomRequest } from '../../middlewares/verifyauth';
-import { ITokenPayload, getShopPayload } from '../../utils/token-helper';
+import { ITokenPayload } from '../../utils/token-helper';
 import { Brackets } from 'typeorm';
 
 type getQueryType = {
@@ -54,7 +54,7 @@ export const createShop = async (req: CustomRequest, res: Response) => {
 
 		return handleSuccess(res, result, 'created shop', 201, undefined);
 	} catch (error) {
-		handleError(res, error);
+		return handleError(res, error);
 	}
 };
 
@@ -76,7 +76,7 @@ export const deleteShop = async (req: Request, res: Response) => {
 
 		return handleSuccess(res, null, 'shop dropped', 200, undefined);
 	} catch (error) {
-		handleError(res, error);
+		return handleError(res, error);
 	}
 };
 
@@ -129,7 +129,7 @@ export const getAllShops = async (req: CustomRequest, res: Response) => {
 
 		return handleSuccess(res, AllShops, `allshops`, 200, paging);
 	} catch (error) {
-		handleError(res, error);
+		return handleError(res, error);
 	}
 };
 
@@ -160,11 +160,11 @@ export const authenticateShop = async (req: CustomRequest, res: Response) => {
 		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
 
 		// If shop and user id exist authenticate shop
-		const shoptoken = getShopPayload(isShop);
+		// const shoptoken = getShopPayload(isShop);
 
-		return handleSuccess(res, { shop: isShop, token: shoptoken }, 'shop auth', 200, undefined);
+		return handleSuccess(res, isShop, 'shop auth', 200, undefined);
 	} catch (error) {
-		handleError(res, error);
+		return handleError(res, error);
 	}
 };
 
