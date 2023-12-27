@@ -45,7 +45,7 @@ export const CreateProduct = async (req: Request, res: Response) => {
 
 export const editProduct = async (req: CustomRequest, res: Response) => {
 	try {
-		const { id, stripeEnabled, unlisted, ...restData }: IEditProduct = req.body;
+		const { id, unlisted, ...restData }: IEditProduct = req.body;
 
 		const productObj = await Product.findOne({
 			where: {
@@ -57,20 +57,22 @@ export const editProduct = async (req: CustomRequest, res: Response) => {
 			return handleBadRequest(res, 404, 'product does not exist');
 		}
 
+		Object.assign(productObj, restData);
+
 		// Start update
 		if (unlisted) {
 			productObj.unlisted = unlisted === '1' ? true : false;
 		}
-		if (restData.productPrice) {
-			productObj.amount = restData.productPrice;
+		if (restData.amount) {
+			productObj.amount = restData.amount;
 		}
 
 		if (restData.description && restData.description !== '') {
 			productObj.description = restData.description;
 		}
-		if (restData.productImage && restData.productImage !== '') {
-			productObj.image_src = restData.productImage;
-		}
+		// if (restData.productImage && restData.productImage !== '') {
+		// 	productObj.image_src = restData.productImage;
+		// }
 
 		const user = req.user as ITokenPayload;
 
