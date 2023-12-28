@@ -137,16 +137,16 @@ export const deleteCoupon = async (req: Request, res: Response) => {
 		const { uuid }: { uuid?: number } = req.query;
 
 		if (!uuid) {
-			return handleBadRequest(res, 400, 'shop id is required');
+			return handleBadRequest(res, 400, 'coupon id is required');
 		}
 
-		const isShop = await dataSource.getRepository(Coupon).findOne({
+		const isCoupon = await dataSource.getRepository(Coupon).findOne({
 			where: { id: uuid },
 		});
 
-		if (!isShop) return handleBadRequest(res, 400, 'cannot delete unexisting coupon');
+		if (!isCoupon) return handleBadRequest(res, 400, 'cannot delete unexisting coupon');
 
-		await isShop.softRemove();
+		await isCoupon.softRemove();
 
 		return handleSuccess(res, null, 'coupon dropped', 200, undefined);
 	} catch (error) {
