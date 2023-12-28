@@ -19,9 +19,16 @@ const isCouponCodeUnique = async (shopId: string, couponCode: string): Promise<b
 
 export const createCoupon = async (req: Request, res: Response) => {
 	try {
-		const { shopid, coupon_code, discount }: ICoupon = req.body;
-		if (!shopid || !coupon_code || !discount) {
+		const { shopid, coupon_code }: ICoupon = req.body;
+
+		let { discount } = req.body;
+
+		if (!shopid || !coupon_code) {
 			return handleBadRequest(res, 400, 'all fields are required');
+		}
+
+		if (!discount) {
+			discount = 0;
 		}
 
 		const isShop = await dataSource
@@ -87,6 +94,10 @@ export const checkCouponCode = async (req: Request, res: Response) => {
 export const fetchCoupons = async (req: Request, res: Response) => {
 	try {
 		const { shop_id, page, limit }: { shop_id?: string; page?: number; limit?: number } = req.query;
+
+		if (!shop_id) {
+			return handleBadRequest(res, 400, 'shop is required');
+		}
 
 		const page_limit = limit ? Number(limit) : 10;
 

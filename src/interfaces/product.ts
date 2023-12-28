@@ -19,4 +19,10 @@ export type IEditProduct = {
 	productImage?: string;
 };
 
-export type IgetAllProduct = { shopid?: number; page?: number; limit?: number; unlisted?: string };
+export type IgetAllProduct = {
+	shopid?: number;
+	page?: number;
+	limit?: number;
+	unlisted?: string;
+	search?: string;
+};

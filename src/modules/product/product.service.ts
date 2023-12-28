@@ -8,6 +8,7 @@ import { IEditProduct, IgetAllProduct } from '../../interfaces/product';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { ITokenPayload } from '../../utils/token-helper';
 import { IPaginate } from '../../interfaces/pagination';
+import { Brackets } from 'typeorm';
 
 export const CreateProduct = async (req: Request, res: Response) => {
 	try {
@@ -128,7 +129,7 @@ export const getSpecificProduct = async (req: Request, res: Response) => {
 
 export const getAllProductByShop = async (req: Request, res: Response) => {
 	try {
-		const { shopid, page, limit, unlisted }: IgetAllProduct = req.query;
+		const { shopid, page, limit, unlisted, search }: IgetAllProduct = req.query;
 
 		if (!shopid) {
 			return handleBadRequest(res, 400, 'shop id is required');
@@ -153,15 +154,23 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 			.createQueryBuilder('q')
 			.leftJoinAndSelect('q.coupon_id', 'coupon');
 
-			query.where('q.shop_id = :val', { val: shopid });
+		query.where('q.shop_id = :val', { val: shopid });
 
-			if (unlisted === '1') {
-				query.andWhere('q.unlisted = :value', { value: true });
-			}
+		if (unlisted === '1') {
+			query.andWhere('q.unlisted = :value', { value: true });
+		}
 
-			if (unlisted === '0') {
-				query.andWhere('q.unlisted = :value', { value: false });
-			}
+		if (unlisted === '0') {
+			query.andWhere('q.unlisted = :value', { value: false });
+		}
+
+		if (search && search !== '') {
+			query.andWhere(
+				new Brackets((qb) => {
+					qb.where('LOWER(q.name) Like :name', { name: `%${search.toLowerCase()}%` });
+				})
+			);
+		}
 
 		const AllProducts = await query
 			.offset(offset)
@@ -194,7 +203,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'product id is required');
 		}
 
-		const isProduct = await dataSource.getRepository(Shop).findOne({
+		const isProduct = await dataSource.getRepository(Product).findOne({
 			where: { id: uuid },
 		});
 
