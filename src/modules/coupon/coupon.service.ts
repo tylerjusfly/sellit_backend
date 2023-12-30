@@ -5,6 +5,8 @@ import { Coupon } from '../../database/entites/coupon.entity';
 import { dataSource } from '../../database/dataSource';
 import { Shop } from '../../database/entites/shop.entity';
 import { IPaginate } from '../../interfaces/pagination';
+import { CustomRequest } from '../../middlewares/verifyauth';
+import { ITokenPayload } from '../../utils/token-helper';
 
 const isCouponCodeUnique = async (shopId: string, couponCode: string): Promise<boolean> => {
 	const existingCoupon = await dataSource
@@ -149,6 +151,66 @@ export const deleteCoupon = async (req: Request, res: Response) => {
 		await isCoupon.softRemove();
 
 		return handleSuccess(res, null, 'coupon dropped', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+export const fetchSingleCoupon = async (req: Request, res: Response) => {
+	try {
+		const { shop_id, code }: { shop_id?: string; code?: string } = req.query;
+
+		if (!shop_id || !code) {
+			return handleBadRequest(res, 400, 'shop/code is required');
+		}
+
+		const foundCoupon = await Coupon.findOne({
+			where: {
+				coupon_code: code,
+				shop_id: shop_id,
+			},
+		});
+
+		if (!foundCoupon) {
+			return handleBadRequest(res, 404, 'coupon not found');
+		}
+
+		return handleSuccess(res, foundCoupon, `coupons`, 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+export const editCoupon = async (req: CustomRequest, res: Response) => {
+	try {
+		const { id }: { id?: number } = req.query;
+
+		const { discount, max_use } = req.body;
+
+		console.log(req.body, 'bd');
+
+		// Find coupon
+		const foundCoupon = await Coupon.findOneBy({ id });
+
+		if (!foundCoupon) {
+			return handleBadRequest(res, 404, 'coupon not found');
+		}
+
+		if (discount && discount !== '') {
+			foundCoupon.discount = discount;
+		}
+
+		if (max_use && max_use !== '') {
+			foundCoupon.max_use = max_use;
+		}
+
+		const user = req.user as ITokenPayload;
+
+		foundCoupon.lastChanged_by = user.username;
+
+		await foundCoupon.save();
+
+		return handleSuccess(res, foundCoupon, 'updated coupon', 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
