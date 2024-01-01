@@ -149,10 +149,8 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 		if (!foundShop) return handleBadRequest(res, 404, 'shop not found');
 
 		// fetch all shop product
-		const query = dataSource
-			.getRepository(Product)
-			.createQueryBuilder('q')
-			.leftJoinAndSelect('q.coupon_id', 'coupon');
+		const query = dataSource.getRepository(Product).createQueryBuilder('q');
+		// .leftJoinAndSelect('q.coupon_id', 'coupon');
 
 		query.where('q.shop_id = :val', { val: shopid });
 

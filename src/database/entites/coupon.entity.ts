@@ -17,4 +17,7 @@ export class Coupon extends CustomBaseEntity {
 
 	@Column({ type: 'integer', default: 0 })
 	total_usage!: number;
+
+	@Column({ type: 'simple-array', nullable: true })
+	items!: string[];
 }

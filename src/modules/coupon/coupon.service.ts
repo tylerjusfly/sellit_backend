@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
-import { ICoupon } from '../../interfaces/coupon';
+import { ICoupon, IeditCoupon } from '../../interfaces/coupon';
 import { Coupon } from '../../database/entites/coupon.entity';
 import { dataSource } from '../../database/dataSource';
 import { Shop } from '../../database/entites/shop.entity';
@@ -185,9 +185,7 @@ export const editCoupon = async (req: CustomRequest, res: Response) => {
 	try {
 		const { id }: { id?: number } = req.query;
 
-		const { discount, max_use } = req.body;
-
-		console.log(req.body, 'bd');
+		const { discount, max_use, items }: IeditCoupon = req.body;
 
 		// Find coupon
 		const foundCoupon = await Coupon.findOneBy({ id });
@@ -197,11 +195,15 @@ export const editCoupon = async (req: CustomRequest, res: Response) => {
 		}
 
 		if (discount && discount !== '') {
-			foundCoupon.discount = discount;
+			foundCoupon.discount = +discount;
 		}
 
 		if (max_use && max_use !== '') {
-			foundCoupon.max_use = max_use;
+			foundCoupon.max_use = +max_use;
+		}
+
+		if (items) {
+			foundCoupon.items = items;
 		}
 
 		const user = req.user as ITokenPayload;
@@ -215,3 +217,4 @@ export const editCoupon = async (req: CustomRequest, res: Response) => {
 		return handleError(res, error);
 	}
 };
+

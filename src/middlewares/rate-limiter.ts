@@ -41,7 +41,7 @@ export const rateLimiter = async (req: CustomRequest, res: Response, next: NextF
 	if (Number(result['count']) >= NUMBER_OF_ALLOWED_REQUEST) {
 		return res.status(429).json({
 			success: false,
-			message: 'user request is limited',
+			message: "Relax, that's too many request in 60 secs",
 		});
 	} else {
 		await cacheRedisClient.hSet(id.toString(), {

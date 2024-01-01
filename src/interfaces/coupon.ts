@@ -3,3 +3,9 @@ export interface ICoupon {
 	coupon_code: string;
 	discount: number;
 }
+
+export interface IeditCoupon {
+	discount: string;
+	max_use: string;
+	items: string[];
+}
