@@ -99,3 +99,26 @@ export const fetchCategories = async (req: Request, res: Response) => {
 		return handleError(res, error);
 	}
 };
+
+
+export const deleteCategories = async (req: Request, res: Response) => {
+	try {
+		const { uuid }: { uuid?: number } = req.query;
+
+		if (!uuid) {
+			return handleBadRequest(res, 400, 'category id is required');
+		}
+
+		const isCategory = await dataSource.getRepository(Categories).findOne({
+			where: { id: uuid },
+		});
+
+		if (!isCategory) return handleBadRequest(res, 400, 'cannot delete unexisting category');
+
+		await isCategory.softRemove();
+
+		return handleSuccess(res, null, 'category dropped', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
