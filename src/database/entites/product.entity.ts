@@ -15,7 +15,7 @@ export class Product extends CustomBaseEntity {
 	@JoinColumn({ name: 'shop_id' })
 	shop_id!: Shop;
 
-	@Column({ type: 'varchar', nullable: true })
+	@Column({ type: 'varchar', nullable: true, default: '/images/products/attachment.png' })
 	image_src!: string;
 
 	@Column({ type: 'text', nullable: true })
