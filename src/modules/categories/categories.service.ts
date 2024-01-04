@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
-import { ICategories } from '../../interfaces/categories';
+import { ICategories, IgetAllCat } from '../../interfaces/categories';
 import { dataSource } from '../../database/dataSource';
 import { Categories } from '../../database/entites/categories.entity';
 import { Shop } from '../../database/entites/shop.entity';
 import { GenerateCategoryid } from '../../utils/generateIds';
 import { IPaginate } from '../../interfaces/pagination';
+import { ILike } from 'typeorm';
 
 const isCategoryUnique = async (shopId: number, name: string): Promise<boolean> => {
 	const existingCategory = await dataSource
@@ -61,7 +62,7 @@ export const CreateCategories = async (req: Request, res: Response) => {
 
 export const fetchCategories = async (req: Request, res: Response) => {
 	try {
-		const { shop_id, page, limit }: { shop_id?: number; page?: number; limit?: number } = req.query;
+		const { shop_id, page, limit, value }: IgetAllCat = req.query;
 
 		if (!shop_id) {
 			return handleBadRequest(res, 400, 'shop is required');
@@ -82,6 +83,7 @@ export const fetchCategories = async (req: Request, res: Response) => {
 		const [Category, total] = await Categories.findAndCount({
 			where: {
 				shop_id,
+				category_name: ILike(`%${value}%`),
 			},
 			skip: offset,
 			take: page_limit,
