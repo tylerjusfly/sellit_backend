@@ -3,6 +3,7 @@ import {
 	CreateProduct,
 	deleteProduct,
 	editProduct,
+	fetchProductCategory,
 	getAllProductByShop,
 	getAllProductByShopname,
 	getSpecificProduct,
@@ -18,5 +19,8 @@ productRouter.post('/', verifyToken, CreateProduct);
 productRouter.patch('/', verifyToken, editProduct);
 productRouter.get('/one', verifyToken, rateLimiter, getSpecificProduct);
 productRouter.delete('/', verifyToken, deleteProduct);
+
+// Public routes
+productRouter.get('/categories', fetchProductCategory);
 
 export const ProductController = { router: productRouter };

@@ -5,6 +5,7 @@ import {
 	deleteCategories,
 	editCategories,
 	fetchCategories,
+	fetchCategoriesByShopName,
 	fetchSingleCategory,
 } from './categories.service';
 
@@ -15,5 +16,8 @@ categoriesRouter.get('/', verifyToken, fetchCategories);
 categoriesRouter.patch('/', verifyToken, editCategories);
 categoriesRouter.get('/one', verifyToken, fetchSingleCategory);
 categoriesRouter.delete('/', verifyToken, deleteCategories);
+
+// Public
+categoriesRouter.get('/shop', fetchCategoriesByShopName);
 
 export const CategoriesController = { router: categoriesRouter };

@@ -53,8 +53,4 @@ export class Product extends CustomBaseEntity {
 
 	@Column({ type: 'varchar', nullable: true })
 	callback_url!: string;
-
-	// @ManyToOne(() => Coupon)
-	// @JoinColumn({ name: 'coupon_id' })
-	// coupon_id!: Coupon;
 }

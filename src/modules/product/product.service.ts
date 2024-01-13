@@ -9,6 +9,7 @@ import { CustomRequest } from '../../middlewares/verifyauth';
 import { ITokenPayload } from '../../utils/token-helper';
 import { IPaginate } from '../../interfaces/pagination';
 import { Brackets } from 'typeorm';
+import { Categories } from '../../database/entites/categories.entity';
 
 export const CreateProduct = async (req: Request, res: Response) => {
 	try {
@@ -222,7 +223,7 @@ export const getAllProductByShopname = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'shop id/name is required');
 		}
 
-		const page_limit = 10;
+		const page_limit = 20;
 
 		const offset = page ? (Number(page) - 1) * page_limit : 0;
 
@@ -277,6 +278,56 @@ export const getAllProductByShopname = async (req: Request, res: Response) => {
 			200,
 			paging
 		);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+export const fetchProductCategory = async (req: Request, res: Response) => {
+	try {
+		const { uuid }: { uuid?: number } = req.query;
+
+		if (!uuid) {
+			return handleBadRequest(res, 400, 'uuid is required');
+		}
+
+		const foundCategory = await Categories.findOne({
+			where: {
+				id: uuid,
+			},
+		});
+
+		if (!foundCategory) {
+			return handleBadRequest(res, 404, 'category not found');
+		}
+
+		// fetch product if product in category
+
+		const selectedProducts = await dataSource
+			.getRepository(Product)
+			.createQueryBuilder('product')
+			.select([
+				'product.id',
+				'product.name',
+				'product.unique_id',
+				'product.shop_id',
+				'product.image_src',
+				'product.unlisted',
+				'product.paypal',
+				'product.stripe',
+				'product.crypto',
+				'product.cashapp',
+				'product.product_type',
+				'product.amount',
+				'product.service_info',
+				'product.description',
+				'product.webhook_url',
+				'product.callback_url',
+			])
+			.whereInIds(foundCategory.products || [])
+			.getMany();
+
+		return handleSuccess(res, selectedProducts, `category`, 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}

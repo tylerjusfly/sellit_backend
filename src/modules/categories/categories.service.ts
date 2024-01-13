@@ -190,3 +190,36 @@ export const editCategories = async (req: CustomRequest, res: Response) => {
 		return handleError(res, error);
 	}
 };
+
+
+
+export const fetchCategoriesByShopName = async (req: Request, res: Response) => {
+	try {
+		const { name }: { name?: string } = req.query;
+
+		if (!name) {
+			return handleBadRequest(res, 400, 'shop name is required');
+		}
+
+		const isShop = await dataSource
+			.getRepository(Shop)
+			.createQueryBuilder('shop')
+			.where('shop.name = :name', { name })
+			.getOne();
+
+		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
+
+		const AllCategories = await Categories.find({
+			where: {
+				shop_id: isShop.id,
+			},
+			order: {
+				created_at: 'DESC',
+			},
+		});
+
+		return handleSuccess(res, AllCategories, `categories`, 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};

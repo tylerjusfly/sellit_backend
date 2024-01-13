@@ -168,3 +168,26 @@ export const authenticateShop = async (req: CustomRequest, res: Response) => {
 	}
 };
 
+
+export const authenticateShopByname = async (req: Request, res: Response) => {
+	try {
+		const { shopname }: { shopname?: string } = req.query;
+
+		if (!shopname) {
+			return handleBadRequest(res, 400, 'shop name is required');
+		}
+
+		const isShop = await dataSource
+			.getRepository(Shop)
+			.createQueryBuilder('shop')
+			.leftJoinAndSelect('shop.shop_owner', 'user')
+			.where('shop.name = :name', { name: shopname })
+			.getOne();
+
+		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
+
+		return handleSuccess(res, isShop, 'shop auth', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
