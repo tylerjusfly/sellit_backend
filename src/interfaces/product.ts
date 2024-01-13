@@ -26,3 +26,12 @@ export type IgetAllProduct = {
 	unlisted?: string;
 	search?: string;
 };
+
+
+export type IStoreProduct = {
+	shopname?: string;
+	search?: string;
+	category?: number;
+	page?: number;
+};
+

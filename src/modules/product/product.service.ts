@@ -4,7 +4,7 @@ import { GenerateProductId } from '../../utils/generateIds';
 import { dataSource } from '../../database/dataSource';
 import { Shop } from '../../database/entites/shop.entity';
 import { Product } from '../../database/entites/product.entity';
-import { IEditProduct, IgetAllProduct } from '../../interfaces/product';
+import { IEditProduct, IStoreProduct, IgetAllProduct } from '../../interfaces/product';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { ITokenPayload } from '../../utils/token-helper';
 import { IPaginate } from '../../interfaces/pagination';
@@ -132,7 +132,7 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 		const { shopid, page, limit, unlisted, search }: IgetAllProduct = req.query;
 
 		if (!shopid) {
-			return handleBadRequest(res, 400, 'shop id is required');
+			return handleBadRequest(res, 400, 'shop id/name is required');
 		}
 
 		const page_limit = limit ? Number(limit) : 10;
@@ -150,7 +150,6 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 
 		// fetch all shop product
 		const query = dataSource.getRepository(Product).createQueryBuilder('q');
-		// .leftJoinAndSelect('q.coupon_id', 'coupon');
 
 		query.where('q.shop_id = :val', { val: shopid });
 
@@ -210,6 +209,74 @@ export const deleteProduct = async (req: Request, res: Response) => {
 		await isProduct.softRemove();
 
 		return handleSuccess(res, null, 'shop dropped', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+export const getAllProductByShopname = async (req: Request, res: Response) => {
+	try {
+		const { shopname, search, page, category }: IStoreProduct = req.query;
+
+		if (!shopname) {
+			return handleBadRequest(res, 400, 'shop id/name is required');
+		}
+
+		const page_limit = 10;
+
+		const offset = page ? (Number(page) - 1) * page_limit : 0;
+
+		// Find shop
+		const foundShop = await Shop.findOne({
+			where: {
+				name: shopname,
+			},
+		});
+
+		if (!foundShop) return handleBadRequest(res, 404, 'shop not found');
+
+		// fetch all shop product
+		const query = dataSource.getRepository(Product).createQueryBuilder('q');
+
+		query.where('q.shop_id = :val', { val: foundShop.id });
+
+		query.andWhere('q.unlisted = :value', { value: false });
+
+		if (search && search !== '') {
+			query.andWhere(
+				new Brackets((qb) => {
+					qb.where('LOWER(q.name) Like :name', { name: `%${search.toLowerCase()}%` });
+				})
+			);
+		}
+
+		const AllProducts = await query
+			.offset(offset)
+			.limit(page_limit)
+			.orderBy('q.created_at', 'DESC')
+			.getMany();
+
+		const Productcount = await query.getCount();
+
+		const totalPages = Math.ceil(Productcount / page_limit);
+
+		const paging: IPaginate = {
+			totalItems: Productcount,
+			currentPage: page ? Number(page) : 1,
+			totalpages: totalPages,
+			itemsPerPage: page_limit,
+		};
+
+		return handleSuccess(
+			res,
+			{
+				shop: foundShop,
+				products: AllProducts,
+			},
+			`All Products`,
+			200,
+			paging
+		);
 	} catch (error) {
 		return handleError(res, error);
 	}

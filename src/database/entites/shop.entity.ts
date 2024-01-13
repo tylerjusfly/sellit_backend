@@ -16,7 +16,7 @@ export class Shop extends CustomBaseEntity {
 	@Column({ type: 'boolean', default: true })
 	display_image!: boolean;
 
-	@Column({ type: 'varchar', default: '/Image/view.png' })
+	@Column({ type: 'varchar', default: '/images/avatars/no-image.png' })
 	image_src!: string;
 
 	@Column({ type: 'varchar', nullable: true })
@@ -34,7 +34,4 @@ export class Shop extends CustomBaseEntity {
 	@ManyToOne(() => User)
 	@JoinColumn({ name: 'shop_owner' })
 	shop_owner!: User;
-
-	// @ManyToOne(() => User, (user) => user.id, { eager: true })
-	// shop_owner!: User;
 }
