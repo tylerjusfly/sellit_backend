@@ -52,7 +52,7 @@ export const create = async (req: Request, res: Response) => {
 		const { username, fullname, email, password }: TCreate = req.body;
 
 		if (!username || !fullname || !email || !password) {
-			handleBadRequest(res, 400, 'all fields are required');
+			return handleBadRequest(res, 400, 'all fields are required');
 		}
 
 		const salt = randomBytes(30).toString('hex');
@@ -91,6 +91,6 @@ export const getMyProfile = async (req: CustomRequest, res: Response) => {
 
 		return handleSuccess(res, { token: '', payload: formattedUserData }, 'user', 200, undefined);
 	} catch (error) {
-		handleError(res, error);
+		return handleError(res, error);
 	}
 };

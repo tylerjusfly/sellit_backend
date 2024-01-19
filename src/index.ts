@@ -51,7 +51,7 @@ app.get('/', async (req: Request, res: Response) => {
 function genericErrorHandler(err: any, req: Request, res: Response, next: NextFunction) {
 	console.error('An unexpected error occurred', err);
 	res.status(404).json({ success: false, message: 'Internal Sever Error' });
-	return next();
+	// return next();
 }
 
 app.listen(port, () => {

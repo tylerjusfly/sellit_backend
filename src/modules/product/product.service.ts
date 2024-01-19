@@ -325,6 +325,7 @@ export const fetchProductCategory = async (req: Request, res: Response) => {
 				'product.callback_url',
 			])
 			.whereInIds(foundCategory.products || [])
+			.andWhere('product.unlisted= :value', { value: false })
 			.getMany();
 
 		return handleSuccess(res, selectedProducts, `category`, 200, undefined);

@@ -21,7 +21,7 @@ export class Product extends CustomBaseEntity {
 	@Column({ type: 'text', nullable: true })
 	items!: string;
 
-	@Column({ type: 'boolean', default: true })
+	@Column({ type: 'boolean', default: false })
 	unlisted!: boolean;
 
 	@Column({ type: 'boolean', default: true })
