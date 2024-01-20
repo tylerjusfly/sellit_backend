@@ -177,11 +177,13 @@ export const authenticateShopByname = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'shop name is required');
 		}
 
+		const slugged = convertToSlug(shopname);
+
 		const isShop = await dataSource
 			.getRepository(Shop)
 			.createQueryBuilder('shop')
-			.leftJoinAndSelect('shop.shop_owner', 'user')
-			.where('shop.name = :name', { name: shopname })
+			// .leftJoinAndSelect('shop.shop_owner', 'user')
+			.where('shop.slug = :name', { name: slugged })
 			.getOne();
 
 		if (!isShop) return handleBadRequest(res, 404, 'shop not found');

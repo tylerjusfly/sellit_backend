@@ -10,6 +10,7 @@ import { ITokenPayload } from '../../utils/token-helper';
 import { IPaginate } from '../../interfaces/pagination';
 import { Brackets } from 'typeorm';
 import { Categories } from '../../database/entites/categories.entity';
+import { convertToSlug } from '../../utils/convertToSlug';
 
 export const CreateProduct = async (req: Request, res: Response) => {
 	try {
@@ -150,7 +151,10 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 		if (!foundShop) return handleBadRequest(res, 404, 'shop not found');
 
 		// fetch all shop product
-		const query = dataSource.getRepository(Product).createQueryBuilder('q');
+		const query = dataSource
+			.getRepository(Product)
+			.createQueryBuilder('q')
+			.select(['q.id', 'q.name', 'q.unique_id', 'q.product_type', 'q.amount', 'q.stock']);
 
 		query.where('q.shop_id = :val', { val: shopid });
 
@@ -227,17 +231,36 @@ export const getAllProductByShopname = async (req: Request, res: Response) => {
 
 		const offset = page ? (Number(page) - 1) * page_limit : 0;
 
+		const slugged = convertToSlug(shopname);
+
 		// Find shop
 		const foundShop = await Shop.findOne({
 			where: {
-				name: shopname,
+				slug: slugged,
 			},
 		});
 
 		if (!foundShop) return handleBadRequest(res, 404, 'shop not found');
 
 		// fetch all shop product
-		const query = dataSource.getRepository(Product).createQueryBuilder('q');
+		const query = dataSource.getRepository(Product).createQueryBuilder('q').select([
+			'q.id',
+			'q.name',
+			'q.unique_id',
+			'q.image_src',
+			'q.stock',
+			// 'q.unlisted',
+			'q.paypal',
+			'q.stripe',
+			'q.crypto',
+			'q.cashapp',
+			// 'q.product_type',
+			'q.amount',
+			// 'q.service_info',
+			'q.description',
+			// 'q.webhook_url',
+			'q.callback_url',
+		]);
 
 		query.where('q.shop_id = :val', { val: foundShop.id });
 
@@ -310,19 +333,19 @@ export const fetchProductCategory = async (req: Request, res: Response) => {
 				'product.id',
 				'product.name',
 				'product.unique_id',
-				'product.shop_id',
+				'product.stock',
 				'product.image_src',
 				'product.unlisted',
 				'product.paypal',
 				'product.stripe',
 				'product.crypto',
 				'product.cashapp',
-				'product.product_type',
+				// 'product.product_type',
 				'product.amount',
-				'product.service_info',
+				// 'product.service_info',
 				'product.description',
-				'product.webhook_url',
-				'product.callback_url',
+				// 'product.webhook_url',
+				// 'product.callback_url',
 			])
 			.whereInIds(foundCategory.products || [])
 			.andWhere('product.unlisted= :value', { value: false })

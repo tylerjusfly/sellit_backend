@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { CustomBaseEntity } from '../custom-base.entity';
 import { Shop } from './shop.entity';
 import { Coupon } from './coupon.entity';
@@ -20,6 +20,9 @@ export class Product extends CustomBaseEntity {
 
 	@Column({ type: 'text', nullable: true })
 	items!: string;
+
+	@Column({ type: 'integer', default: 0 })
+	stock!: number;
 
 	@Column({ type: 'boolean', default: false })
 	unlisted!: boolean;
@@ -53,4 +56,13 @@ export class Product extends CustomBaseEntity {
 
 	@Column({ type: 'varchar', nullable: true })
 	callback_url!: string;
+
+	@BeforeInsert()
+	@BeforeUpdate()
+	updateStockFromItems() {
+		if (this.items) {
+			const itemsArray = this.items.split(',').map((item) => item.trim());
+			this.stock = itemsArray.length;
+		}
+	}
 }

@@ -9,6 +9,7 @@ import { IPaginate } from '../../interfaces/pagination';
 import { ILike } from 'typeorm';
 import { ITokenPayload } from '../../utils/token-helper';
 import { CustomRequest } from '../../middlewares/verifyauth';
+import { convertToSlug } from '../../utils/convertToSlug';
 
 const isCategoryUnique = async (shopId: number, name: string): Promise<boolean> => {
 	const existingCategory = await dataSource
@@ -191,8 +192,6 @@ export const editCategories = async (req: CustomRequest, res: Response) => {
 	}
 };
 
-
-
 export const fetchCategoriesByShopName = async (req: Request, res: Response) => {
 	try {
 		const { name }: { name?: string } = req.query;
@@ -201,10 +200,12 @@ export const fetchCategoriesByShopName = async (req: Request, res: Response) => 
 			return handleBadRequest(res, 400, 'shop name is required');
 		}
 
+		const slugged = convertToSlug(name);
+
 		const isShop = await dataSource
 			.getRepository(Shop)
 			.createQueryBuilder('shop')
-			.where('shop.name = :name', { name })
+			.where('shop.slug = :name', { name: slugged })
 			.getOne();
 
 		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
