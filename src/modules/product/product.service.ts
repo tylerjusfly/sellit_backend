@@ -356,3 +356,48 @@ export const fetchProductCategory = async (req: Request, res: Response) => {
 		return handleError(res, error);
 	}
 };
+
+
+
+export const getOneProduct = async (req: Request, res: Response) => {
+	try {
+		const { uniqueId }: { uniqueId?: string } = req.query;
+
+		if (!uniqueId) {
+			return handleBadRequest(res, 400, 'unique id / id is required');
+		}
+
+		const foundProduct = await dataSource
+			.getRepository(Product)
+			.createQueryBuilder('product')
+			.select([
+				'product.id',
+				'product.name',
+				'product.unique_id',
+				'product.stock',
+				// 'product.image_src',
+				// 'product.unlisted',
+				'product.paypal',
+				'product.stripe',
+				'product.crypto',
+				'product.cashapp',
+				// 'product.product_type',
+				'product.amount',
+				// 'product.service_info',
+				'product.description',
+				// 'product.webhook_url',
+				// 'product.callback_url',
+			])
+			.where('product.unique_id = :val', { val: uniqueId })
+			.andWhere('product.unlisted= :value', { value: false })
+			.getOne();
+
+		if (!foundProduct) {
+			return handleBadRequest(res, 404, 'product does not exist');
+		}
+
+		return handleSuccess(res, foundProduct, 'found', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};

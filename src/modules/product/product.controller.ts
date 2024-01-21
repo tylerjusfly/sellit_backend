@@ -6,6 +6,7 @@ import {
 	fetchProductCategory,
 	getAllProductByShop,
 	getAllProductByShopname,
+	getOneProduct,
 	getSpecificProduct,
 } from './product.service';
 import { verifyToken } from '../../middlewares/verifyauth';
@@ -22,5 +23,6 @@ productRouter.delete('/', verifyToken, deleteProduct);
 
 // Public routes
 productRouter.get('/categories', fetchProductCategory);
+productRouter.get('/cart-product', getOneProduct);
 
 export const ProductController = { router: productRouter };
