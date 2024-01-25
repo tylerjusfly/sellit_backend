@@ -20,7 +20,7 @@ export class Orders extends CustomBaseEntity {
 	product_name!: string;
 
 	@Column({ type: 'varchar', nullable: false })
-	qty!: string;
+	qty!: number;
 
 	@Column({ type: 'float4', default: 0 })
 	total_amount!: number;
@@ -29,7 +29,16 @@ export class Orders extends CustomBaseEntity {
 	order_status!: string;
 
 	@Column({ type: 'varchar', nullable: false })
+	order_from!: string;
+
+	@Column({ type: 'varchar', nullable: false })
 	shop_slug!: string;
+
+	@Column({ type: 'varchar', nullable: false })
+	payment_gateway!: string;
+
+	@Column({ type: 'varchar', nullable: false, default: 0 })
+	platform_fee!: string;
 
 	@ManyToOne(() => Shop, { nullable: false })
 	@JoinColumn({ name: 'shop_id' })

@@ -14,3 +14,10 @@ export const GenerateCategoryid = () => {
 		return v.toString(16);
 	});
 };
+
+export const uniqueID = (length: number) => {
+	var result = '';
+	var chars = '0123456789----';
+	for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+	return result;
+};
