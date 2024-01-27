@@ -2,12 +2,14 @@ import { Response, Request } from 'express';
 // import fetch from 'node:http'
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
 import { ICreateCoinbase } from '../../interfaces/payment.interface';
+import { dataSource } from '../../database/dataSource';
+import { Orders } from '../../database/entites/orders.entity';
 
 export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 	try {
-		const { shop, orderid }: ICreateCoinbase = req.body;
+		const { orderid }: ICreateCoinbase = req.body;
 
-		if (!shop || !orderid) {
+		if (!orderid) {
 			return handleBadRequest(res, 400, 'all field is required');
 		}
 
@@ -17,14 +19,21 @@ export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 		const url = 'https://api.commerce.coinbase.com/charges';
 
 		// Fetch shop
-		// const shopCoinbase_key = "SELECT coinbaseKey FROM shops WHERE name = ?";
-		const shopCoinbase_key = '';
+		const isOrder = await dataSource.getRepository(Orders).findOne({
+			where: {
+				orderid: orderid,
+			},
+			loadEagerRelations: true,
+		});
 
-		// fetch orderId
-		const isOrder = {
-			totalAmount: 2000,
-			product_name: '',
-		};
+		if (!isOrder) {
+			return handleBadRequest(res, 400, 'order does not exist');
+		}
+
+		const shop = isOrder.shop_id;
+		console.log(shop, 'shopp');
+
+		const shopCoinbase_key = shop.stripe_key;
 
 		const options = {
 			method: 'POST',
@@ -35,16 +44,14 @@ export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				local_price: { amount: isOrder.totalAmount, currency: 'USD' },
+				local_price: { amount: isOrder.total_amount, currency: 'USD' },
 				name: isOrder.product_name,
 				pricing_type: 'fixed_price',
-				redirect_url: `${origin}/api/v1/coinbase/success/${orderid}/${shop}`,
-				cancel_url: `http://localhost:3000/store/${shop}`,
-				description: `payment for ${isOrder.product_name} to ${shop} `,
+				redirect_url: `${origin}/api/v1/coinbase/success/${orderid}/${shop.name}`,
+				cancel_url: `http://localhost:3000/store/${shop.name}`,
+				description: `payment for ${isOrder.product_name} to ${shop.name} `,
 			}),
 		};
-
-		// return handleSuccess(res, options, '', 201, undefined);
 
 		// Send request
 		fetch(url, options)
@@ -56,7 +63,8 @@ export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 				} else {
 					res.json({
 						success: true,
-						url: jsondata.data?.hosted_url,
+						// url: jsondata.data?.hosted_url,
+						url: 'https://en.wikipedia.org/wiki/Evangeline_(song)',
 					});
 				}
 			})

@@ -5,6 +5,7 @@ import { ProductController } from './product/product.controller';
 import { CouponController } from './coupon/coupon.controller';
 import { CategoriesController } from './categories/categories.controller';
 import { CoinbaseController } from './coinbase/coinbase.controller';
+import { OrderController } from './order/order.controller';
 
 const router = Router();
 
@@ -14,6 +15,7 @@ router.use('/product', ProductController.router);
 router.use('/coupon', CouponController.router);
 router.use('/categories', CategoriesController.router);
 router.use('/coinbase', CoinbaseController.router);
+router.use('/order', OrderController.router);
 // router.use('/queue', QueueRouter.router);
 
 export const apiRouter = router;

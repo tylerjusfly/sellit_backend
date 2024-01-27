@@ -40,7 +40,7 @@ export class Orders extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: false, default: 0 })
 	platform_fee!: string;
 
-	@ManyToOne(() => Shop, { nullable: false })
+	@ManyToOne(() => Shop, { nullable: false, eager: true })
 	@JoinColumn({ name: 'shop_id' })
 	shop_id!: Shop;
 }

@@ -23,6 +23,9 @@ export class Shop extends CustomBaseEntity {
 	discord_link!: string;
 
 	@Column({ type: 'varchar', nullable: true })
+	stripe_key!: string;
+
+	@Column({ type: 'varchar', nullable: true })
 	seller_btc!: string;
 
 	@Column({ type: 'integer', nullable: false, default: 0 })
@@ -31,7 +34,7 @@ export class Shop extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: true })
 	custom_domain!: string;
 
-	@ManyToOne(() => User)
+	@ManyToOne(() => User, { eager: true })
 	@JoinColumn({ name: 'shop_owner' })
 	shop_owner!: User;
 }

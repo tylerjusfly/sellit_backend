@@ -7,24 +7,14 @@ import { Product } from '../../database/entites/product.entity';
 import { Shop } from '../../database/entites/shop.entity';
 import { uniqueID } from '../../utils/generateIds';
 import { Orders } from '../../database/entites/orders.entity';
+import { convertToSlug } from '../../utils/convertToSlug';
 
 export const createOrder = async (req: CustomRequest, res: Response) => {
 	try {
-		const { productid, qty, shop_slug, payment_gateway, order_from }: ICreateOrder = req.body;
+		const { productid, qty, payment_gateway, order_from }: ICreateOrder = req.body;
 
-		if (!productid || !qty || !shop_slug || !payment_gateway || !order_from) {
+		if (!productid || !qty || !payment_gateway || !order_from) {
 			return handleBadRequest(res, 400, 'all field is required');
-		}
-
-		// find shop
-		const isShop = await dataSource.getRepository(Shop).findOne({
-			where: {
-				slug: shop_slug,
-			},
-		});
-
-		if (!isShop) {
-			return handleBadRequest(res, 400, 'shop does not exist');
 		}
 
 		// Find Product
@@ -36,6 +26,18 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 
 		if (!isProduct) {
 			return handleBadRequest(res, 400, 'product does not exist');
+		}
+
+		// find shop
+		const isShop = await dataSource.getRepository(Shop).findOne({
+			where: {
+				slug: isProduct.shop_id.slug,
+			},
+			loadEagerRelations: true,
+		});
+
+		if (!isShop) {
+			return handleBadRequest(res, 400, 'shop does not exist');
 		}
 
 		// Create unique order id and calculate total amount
@@ -67,6 +69,7 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 			shop_id: isShop,
 			shop_slug: isShop.slug,
 			payment_gateway,
+			order_from: order_from,
 			total_amount: qty * isProduct.amount,
 		});
 
