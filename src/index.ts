@@ -19,14 +19,14 @@ initialiseDataSource().then((isInitialised: boolean) => {
 	}
 });
 
-cacheRedisClient
-	.connect()
-	.then(() => {
-		LogHelper.debug('Connected to redis');
-	})
-	.catch((e) => {
-		LogHelper.error(`Could not connect to redis`, e);
-	});
+// cacheRedisClient
+// 	.connect()
+// 	.then(() => {
+// 		LogHelper.debug('Connected to redis');
+// 	})
+// 	.catch((e) => {
+// 		LogHelper.error(`Could not connect to redis`, e);
+// 	});
 
 app.use(express.json());
 
