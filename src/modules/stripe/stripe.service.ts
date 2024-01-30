@@ -4,6 +4,7 @@ import Stripe from 'stripe';
 import { dataSource } from '../../database/dataSource';
 import { Orders } from '../../database/entites/orders.entity';
 import { ENV } from '../../constants/env-variables';
+import { ORDER_STATUS } from '../../constants/result';
 const stripe = new Stripe(ENV.STRIPE_SECRET_KEY || '');
 
 export const stripeChargeForVendors = async (req: Request, res: Response) => {
@@ -59,5 +60,30 @@ export const stripeChargeForVendors = async (req: Request, res: Response) => {
 export const stripeSuccess = async (req: Request, res: Response) => {
 	const { orderid, shop }: { orderid?: string; shop?: string } = req.params;
 
-	return handleSuccess(res, { orderid, shop }, '', 200, undefined);
+	try {
+		if (!orderid || !shop) {
+			return res.redirect(`${ENV.FRONTEND_URL}`);
+		}
+
+		const isOrder = await dataSource.getRepository(Orders).findOne({
+			where: {
+				orderid,
+			},
+			loadEagerRelations: true,
+		});
+
+		if (!isOrder) {
+			return res.redirect(`${ENV.FRONTEND_URL}/${shop}`);
+		}
+
+		/**Change order */
+
+		isOrder.order_status = ORDER_STATUS.PAID;
+
+		isOrder.save();
+
+		return res.redirect(`${ENV.FRONTEND_URL}/${shop}/${orderid}`);
+	} catch (error) {
+		return res.redirect(`${ENV.FRONTEND_URL}/${shop}`);
+	}
 };

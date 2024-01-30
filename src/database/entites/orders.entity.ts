@@ -1,12 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { CustomBaseEntity } from '../custom-base.entity';
 import { Shop } from './shop.entity';
-
-const ORDER_STATUS = {
-	PENDING: 'pending',
-	PAID: 'paid',
-	UNPAID: 'unpaid',
-};
+import { ORDER_STATUS } from '../../constants/result';
 
 @Entity({ name: 'orders' })
 export class Orders extends CustomBaseEntity {

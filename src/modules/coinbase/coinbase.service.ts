@@ -4,6 +4,7 @@ import { ICreateCoinbase } from '../../interfaces/payment.interface';
 import { dataSource } from '../../database/dataSource';
 import { Orders } from '../../database/entites/orders.entity';
 import { ENV } from '../../constants/env-variables';
+import { ORDER_STATUS } from '../../constants/result';
 
 export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 	try {
@@ -33,12 +34,15 @@ export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 		const shop = isOrder.shop_id;
 
 		// const shopCoinbase_key = shop.stripe_key;
+		if (!ENV.COINBASE_KEY) {
+			return handleBadRequest(res, 400, 'Payment with coinbase is not alllowed yet');
+		}
 
 		const options = {
 			method: 'POST',
 			headers: {
 				Accept: 'application/json',
-				'X-CC-Api-Key': ENV.COINBASE_KEY || '',
+				'X-CC-Api-Key': ENV.COINBASE_KEY,
 				'X-CC-Api-Version': ' 2018-03-22',
 				'Content-Type': 'application/json',
 			},
@@ -81,8 +85,29 @@ export const coinbaseSuccess = async (req: Request, res: Response) => {
 	try {
 		const { orderid, shop }: { orderid?: string; shop?: string } = req.params;
 
-		return handleSuccess(res, { orderid, shop }, '', 200, undefined);
+		if (!orderid || !shop) {
+			return res.redirect(`${ENV.FRONTEND_URL}`);
+		}
+
+		const isOrder = await dataSource.getRepository(Orders).findOne({
+			where: {
+				orderid,
+			},
+			loadEagerRelations: true,
+		});
+
+		if (!isOrder) {
+			return res.redirect(`${ENV.FRONTEND_URL}/${shop}`);
+		}
+
+		/**Change order */
+
+		isOrder.order_status = ORDER_STATUS.PAID;
+
+		isOrder.save();
+
+		return res.redirect(`${ENV.FRONTEND_URL}/${shop}/${orderid}`);
 	} catch (error) {
-		return handleError(res, error);
+		return res.redirect(`${ENV.FRONTEND_URL}`);
 	}
 };
