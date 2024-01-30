@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+require('dotenv').config();
 
 const DATABASE_ENABLE_LOGGING = process.env.DATABASE_ENABLE_LOGGING === 'true';
 const DATABASE_ENABLE_SYNC = process.env.DATABASE_ENABLE_SYNC === 'true';
@@ -12,7 +13,7 @@ export const dataSource = new DataSource({
 	database: process.env.DATABASE_NAME || 'shopcrm',
 	entities: ['**/*.entity.ts'],
 	logging: DATABASE_ENABLE_LOGGING,
-	synchronize: true,
+	synchronize: DATABASE_ENABLE_SYNC,
 });
 
 const DATABASE_RETRY_COUNT = process.env.DATABASE_CONNECT_RETRY_COUNT
