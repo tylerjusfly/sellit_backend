@@ -28,6 +28,10 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 			return handleBadRequest(res, 400, 'product does not exist');
 		}
 
+		if (isProduct.amount <= 0) {
+			return handleBadRequest(res, 400, 'product amount cannot be zero');
+		}
+
 		// find shop
 		const isShop = await dataSource.getRepository(Shop).findOne({
 			where: {

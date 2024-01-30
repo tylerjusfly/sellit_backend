@@ -30,14 +30,3 @@ export const LogHelper = {
 	error: logger('error', 'ERROR'),
 };
 
-
-// Stripe 
-
-// pk_test_51L1gTuGsubZ6UQ3nKrIH1ZidUkur1ZL3KidOQYaShfH8GqUFiwoDexZ0EM1G8JjUHUFXsc1zoMySFGse8VYzOcC600dDYXENqF
-// sk_test_51L1gTuGsubZ6UQ3naPc2DRjLAVxg0VJ7gtLjyGYjRR4UUBGIh2Cmhk0M4w6qFvrIKzzqQbz9cczbSx6KW7KxsvGV009GrC711d
-
-
-
-// Coin base
-
-// b691117b-1124-4771-a173-0f343cee4f66
