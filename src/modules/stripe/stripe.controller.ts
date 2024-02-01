@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { stripeChargeForVendors, stripeSuccess } from './stripe.service';
+import { cashappChargeForVendors, stripeChargeForVendors, stripeSuccess } from './stripe.service';
 
 const stripebaseRouter = Router();
 
@@ -7,6 +7,7 @@ const stripebaseRouter = Router();
 
 // Public routes
 stripebaseRouter.post('/vendor/payment', stripeChargeForVendors);
+stripebaseRouter.post('/cashapp/vendor/payment', cashappChargeForVendors);
 stripebaseRouter.get('/successful/:orderid/:shop', stripeSuccess);
 // productRouter.get('/cart-product', getOneProduct);
 

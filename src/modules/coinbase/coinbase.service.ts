@@ -106,7 +106,7 @@ export const coinbaseSuccess = async (req: Request, res: Response) => {
 
 		isOrder.save();
 
-		return res.redirect(`${ENV.FRONTEND_URL}/${shop}/${orderid}`);
+		return res.redirect(`${ENV.FRONTEND_URL}/${shop}/order/${orderid}`);
 	} catch (error) {
 		return res.redirect(`${ENV.FRONTEND_URL}`);
 	}

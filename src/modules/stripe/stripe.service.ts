@@ -46,6 +46,61 @@ export const stripeChargeForVendors = async (req: Request, res: Response) => {
 					quantity: 1,
 				},
 			],
+			payment_method_types: ['card'],
+			mode: 'payment',
+			metadata: {
+				userEmail: isOrder.order_from,
+			},
+			success_url: `${origin}/stripe/successful/${isOrder.orderid}/${isOrder.shop_slug}`,
+			cancel_url: `${ENV.FRONTEND_URL}/store/${isOrder.shop_slug}`,
+		});
+
+		res.json({ success: true, url: session.url });
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+export const cashappChargeForVendors = async (req: Request, res: Response) => {
+	try {
+		const { orderid }: { orderid: string } = req.body;
+
+		if (!orderid) {
+			return handleBadRequest(res, 400, 'orderid is required');
+		}
+
+		const origin = `${req.secure ? 'https://' : 'http://'}${req.headers.host}`;
+
+		// First check for orderid
+		const isOrder = await dataSource.getRepository(Orders).findOne({
+			where: {
+				orderid: orderid,
+			},
+			loadEagerRelations: true,
+		});
+
+		if (!isOrder) {
+			return handleBadRequest(res, 400, 'order does not exist');
+		}
+
+		if (!stripe) {
+			return handleBadRequest(res, 400, 'unable to create stripe payment');
+		}
+
+		const session = await stripe.checkout.sessions.create({
+			line_items: [
+				{
+					price_data: {
+						currency: 'usd',
+						product_data: {
+							name: `${isOrder?.product_name || 'unknown product from shop'}`,
+						},
+						unit_amount: isOrder.total_amount * 100,
+					},
+					quantity: 1,
+				},
+			],
+			payment_method_types: ['cashapp'],
 			mode: 'payment',
 			success_url: `${origin}/stripe/successful/${isOrder.orderid}/${isOrder.shop_slug}`,
 			cancel_url: `${ENV.FRONTEND_URL}/store/${isOrder.shop_slug}`,
@@ -56,6 +111,8 @@ export const stripeChargeForVendors = async (req: Request, res: Response) => {
 		return handleError(res, error);
 	}
 };
+
+// "affirm", "alipay", "card", "cashapp", "klarna", "link", "wechat_pay"],
 
 export const stripeSuccess = async (req: Request, res: Response) => {
 	const { orderid, shop }: { orderid?: string; shop?: string } = req.params;
@@ -82,7 +139,7 @@ export const stripeSuccess = async (req: Request, res: Response) => {
 
 		isOrder.save();
 
-		return res.redirect(`${ENV.FRONTEND_URL}/${shop}/${orderid}`);
+		return res.redirect(`${ENV.FRONTEND_URL}/${shop}/order/${orderid}`);
 	} catch (error) {
 		return res.redirect(`${ENV.FRONTEND_URL}/${shop}`);
 	}
