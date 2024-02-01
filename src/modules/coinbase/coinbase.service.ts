@@ -82,9 +82,8 @@ export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 };
 
 export const coinbaseSuccess = async (req: Request, res: Response) => {
+	const { orderid, shop }: { orderid?: string; shop?: string } = req.params;
 	try {
-		const { orderid, shop }: { orderid?: string; shop?: string } = req.params;
-
 		if (!orderid || !shop) {
 			return res.redirect(`${ENV.FRONTEND_URL}`);
 		}
@@ -97,7 +96,7 @@ export const coinbaseSuccess = async (req: Request, res: Response) => {
 		});
 
 		if (!isOrder) {
-			return res.redirect(`${ENV.FRONTEND_URL}/${shop}`);
+			return res.redirect(`${ENV.FRONTEND_URL}/store/${shop}`);
 		}
 
 		/**Change order */
@@ -106,8 +105,8 @@ export const coinbaseSuccess = async (req: Request, res: Response) => {
 
 		isOrder.save();
 
-		return res.redirect(`${ENV.FRONTEND_URL}/${shop}/order/${orderid}`);
+		return res.redirect(`${ENV.FRONTEND_URL}/store/${shop}/order/${orderid}`);
 	} catch (error) {
-		return res.redirect(`${ENV.FRONTEND_URL}`);
+		return res.redirect(`${ENV.FRONTEND_URL}/store/${shop}`);
 	}
 };

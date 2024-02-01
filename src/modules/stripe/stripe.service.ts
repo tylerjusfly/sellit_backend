@@ -34,6 +34,7 @@ export const stripeChargeForVendors = async (req: Request, res: Response) => {
 		}
 
 		const session = await stripe.checkout.sessions.create({
+			customer_email: isOrder.order_from,
 			line_items: [
 				{
 					price_data: {
@@ -130,7 +131,7 @@ export const stripeSuccess = async (req: Request, res: Response) => {
 		});
 
 		if (!isOrder) {
-			return res.redirect(`${ENV.FRONTEND_URL}/${shop}`);
+			return res.redirect(`${ENV.FRONTEND_URL}/store/${shop}`);
 		}
 
 		/**Change order */
@@ -139,8 +140,8 @@ export const stripeSuccess = async (req: Request, res: Response) => {
 
 		isOrder.save();
 
-		return res.redirect(`${ENV.FRONTEND_URL}/${shop}/order/${orderid}`);
+		return res.redirect(`${ENV.FRONTEND_URL}/store/${shop}/order/${orderid}`);
 	} catch (error) {
-		return res.redirect(`${ENV.FRONTEND_URL}/${shop}`);
+		return res.redirect(`${ENV.FRONTEND_URL}/store/${shop}`);
 	}
 };
