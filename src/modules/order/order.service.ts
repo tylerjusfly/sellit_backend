@@ -1,13 +1,14 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
-import { ICreateOrder } from '../../interfaces/orders';
+import { ICreateOrder, TallOrders } from '../../interfaces/orders';
 import { dataSource } from '../../database/dataSource';
 import { Product } from '../../database/entites/product.entity';
 import { Shop } from '../../database/entites/shop.entity';
 import { uniqueID } from '../../utils/generateIds';
 import { Orders } from '../../database/entites/orders.entity';
 import { convertToSlug } from '../../utils/convertToSlug';
+import { IPaginate } from '../../interfaces/pagination';
 
 export const createOrder = async (req: CustomRequest, res: Response) => {
 	try {
@@ -85,8 +86,7 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 	}
 };
 
-
-export const getOrderById = async (req: CustomRequest, res: Response) => {
+export const getOrderById = async (req: Request, res: Response) => {
 	try {
 		const { orderid }: { orderid?: string } = req.query;
 
@@ -106,6 +106,68 @@ export const getOrderById = async (req: CustomRequest, res: Response) => {
 		}
 
 		return handleSuccess(res, OrderData, '', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+export const getAllOrder = async (req: CustomRequest, res: Response) => {
+	try {
+		const { shopid, page, limit }: TallOrders = req.query;
+
+		if (!shopid) {
+			return handleBadRequest(res, 400, 'shopid is required');
+		}
+
+		const page_limit = limit ? Number(limit) : 10;
+
+		const offset = page ? (Number(page) - 1) * page_limit : 0;
+
+		// find shop
+		const isShop = await dataSource.getRepository(Shop).findOne({
+			where: {
+				id: shopid,
+			},
+		});
+
+		if (!isShop) {
+			return handleBadRequest(res, 400, 'shop does not exist');
+		}
+
+		// fetch all shop product
+		const query = dataSource
+			.getRepository(Orders)
+			.createQueryBuilder('q')
+			.select([
+				'q.id',
+				'q.orderid',
+				'q.productid',
+				'q.product_name',
+				'q.total_amount',
+				'q.created_at',
+				'q.order_status',
+			]);
+
+		query.where('q.shop_id = :val', { val: shopid });
+
+		const allOrders = await query
+			.offset(offset)
+			.limit(page_limit)
+			.orderBy('q.created_at', 'DESC')
+			.getMany();
+
+		const orderCount = await query.getCount();
+
+		const totalPages = Math.ceil(orderCount / page_limit);
+
+		const paging: IPaginate = {
+			totalItems: orderCount,
+			currentPage: page ? Number(page) : 1,
+			totalpages: totalPages,
+			itemsPerPage: page_limit,
+		};
+
+		return handleSuccess(res, allOrders, '', 200, paging);
 	} catch (error) {
 		return handleError(res, error);
 	}

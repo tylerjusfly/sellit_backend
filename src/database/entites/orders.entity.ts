@@ -20,7 +20,7 @@ export class Orders extends CustomBaseEntity {
 	@Column({ type: 'float4', default: 0 })
 	total_amount!: number;
 
-	@Column({ type: 'varchar', default: ORDER_STATUS.PENDING })
+	@Column({ type: 'varchar', default: ORDER_STATUS.UNPAID })
 	order_status!: string;
 
 	@Column({ type: 'varchar', nullable: false })

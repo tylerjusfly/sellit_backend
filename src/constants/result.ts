@@ -6,7 +6,6 @@ export enum Result {
 
 
 export const ORDER_STATUS = {
-	PENDING: 'pending',
 	PAID: 'paid',
 	UNPAID: 'unpaid',
 };
