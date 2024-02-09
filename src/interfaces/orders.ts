@@ -6,4 +6,11 @@ export type ICreateOrder = {
 	order_from: string;
 };
 
-export type TallOrders = { shopid?: number; page?: number; limit?: number };
+export type TallOrders = {
+	shopid?: number;
+	page?: number;
+	limit?: number;
+	status?: string;
+	startDate?: string;
+	endDate?: string;
+};

@@ -8,7 +8,9 @@ import { Shop } from '../../database/entites/shop.entity';
 import { uniqueID } from '../../utils/generateIds';
 import { Orders } from '../../database/entites/orders.entity';
 import { convertToSlug } from '../../utils/convertToSlug';
+import moment from 'moment';
 import { IPaginate } from '../../interfaces/pagination';
+import { LogHelper } from '../../utils/LogHelper';
 
 export const createOrder = async (req: CustomRequest, res: Response) => {
 	try {
@@ -113,7 +115,7 @@ export const getOrderById = async (req: Request, res: Response) => {
 
 export const getAllOrder = async (req: CustomRequest, res: Response) => {
 	try {
-		const { shopid, page, limit }: TallOrders = req.query;
+		const { shopid, page, limit, status, startDate, endDate }: TallOrders = req.query;
 
 		if (!shopid) {
 			return handleBadRequest(res, 400, 'shopid is required');
@@ -141,14 +143,27 @@ export const getAllOrder = async (req: CustomRequest, res: Response) => {
 			.select([
 				'q.id',
 				'q.orderid',
-				'q.productid',
 				'q.product_name',
 				'q.total_amount',
 				'q.created_at',
 				'q.order_status',
+				'q.payment_gateway',
 			]);
 
-		query.where('q.shop_id = :val', { val: shopid });
+		query.where('q.shop_id = :shopval', { shopval: shopid });
+
+		if (status && status !== '') {
+			query.andWhere('q.order_status = :status', { status });
+		}
+
+		if (startDate && startDate !== '') {
+			const start = moment(startDate).toISOString();
+			query.andWhere(`q.created_at >= '${start}'`);
+		}
+		if (endDate && endDate !== '') {
+			const end = moment(endDate).toISOString();
+			query.andWhere(`q.created_at <= '${end}'`);
+		}
 
 		const allOrders = await query
 			.offset(offset)
