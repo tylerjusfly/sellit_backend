@@ -11,6 +11,7 @@ import { convertToSlug } from '../../utils/convertToSlug';
 import moment from 'moment';
 import { IPaginate } from '../../interfaces/pagination';
 import { LogHelper } from '../../utils/LogHelper';
+import { ORDER_STATUS } from '../../constants/result';
 
 export const createOrder = async (req: CustomRequest, res: Response) => {
 	try {
@@ -183,6 +184,34 @@ export const getAllOrder = async (req: CustomRequest, res: Response) => {
 		};
 
 		return handleSuccess(res, allOrders, '', 200, paging);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+export const approveOrder = async (req: CustomRequest, res: Response) => {
+	try {
+		const { orderid }: { orderid?: string } = req.query;
+
+		if (!orderid) {
+			return handleBadRequest(res, 400, 'orderid is required');
+		}
+
+		const OrderData = await dataSource.getRepository(Orders).findOne({
+			where: {
+				orderid,
+			},
+		});
+
+		if (!OrderData) {
+			return handleBadRequest(res, 400, 'order cannot be found');
+		}
+
+		OrderData.order_status = ORDER_STATUS.PAID;
+
+		OrderData.save();
+
+		return handleSuccess(res, OrderData, '', 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
