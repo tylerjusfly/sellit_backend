@@ -32,6 +32,9 @@ export class Orders extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: false })
 	payment_gateway!: string;
 
+	@Column({ type: 'text', nullable: true })
+	items!: string;
+
 	@Column({ type: 'varchar', nullable: false, default: 0 })
 	platform_fee!: string;
 

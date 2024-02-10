@@ -12,6 +12,9 @@ import moment from 'moment';
 import { IPaginate } from '../../interfaces/pagination';
 import { LogHelper } from '../../utils/LogHelper';
 import { ORDER_STATUS } from '../../constants/result';
+import { manipulateOrderItem } from '../../utils/order-helpers';
+import { transporter } from '../../utils/nodemailer';
+import { sendOrderMail } from '../../utils/sendordermail';
 
 export const createOrder = async (req: CustomRequest, res: Response) => {
 	try {
@@ -65,6 +68,16 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
             <p> <h3> Your credits on ${isShop.name} is Running low, Please Recharge </h3></p>
             </div>`,
 			};
+
+			transporter.sendMail(creditsMail, function (error, info) {
+				if (error) {
+					// Log error for unsent mail
+					LogHelper.error(error);
+				} else {
+					// Mail sent successfully
+					LogHelper.info('Email sent: ' + info.response);
+				}
+			});
 		}
 
 		// Create order
@@ -201,17 +214,23 @@ export const approveOrder = async (req: CustomRequest, res: Response) => {
 			where: {
 				orderid,
 			},
+			loadEagerRelations: false,
 		});
 
 		if (!OrderData) {
 			return handleBadRequest(res, 400, 'order cannot be found');
 		}
 
-		OrderData.order_status = ORDER_STATUS.PAID;
+		const manipulate_result = await manipulateOrderItem(OrderData.id, OrderData.productid);
 
-		OrderData.save();
+		if (!manipulate_result) {
+			return handleBadRequest(res, 400, 'failed to approve order');
+		}
 
-		return handleSuccess(res, OrderData, '', 200, undefined);
+		// Send email to user about order
+		await sendOrderMail(OrderData.id);
+
+		return handleSuccess(res, '', '', 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
@@ -244,3 +263,8 @@ export const disapproveOrder = async (req: CustomRequest, res: Response) => {
 		return handleError(res, error);
 	}
 };
+
+
+
+
+
