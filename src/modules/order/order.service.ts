@@ -216,3 +216,31 @@ export const approveOrder = async (req: CustomRequest, res: Response) => {
 		return handleError(res, error);
 	}
 };
+
+export const disapproveOrder = async (req: CustomRequest, res: Response) => {
+	try {
+		const { orderid }: { orderid?: string } = req.query;
+
+		if (!orderid) {
+			return handleBadRequest(res, 400, 'orderid is required');
+		}
+
+		const OrderData = await dataSource.getRepository(Orders).findOne({
+			where: {
+				orderid,
+			},
+		});
+
+		if (!OrderData) {
+			return handleBadRequest(res, 400, 'order cannot be found');
+		}
+
+		OrderData.order_status = ORDER_STATUS.UNPAID;
+
+		OrderData.save();
+
+		return handleSuccess(res, OrderData, '', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
