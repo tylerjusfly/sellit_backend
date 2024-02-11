@@ -1,6 +1,6 @@
 import { dataSource } from '../database/dataSource';
 import { Orders } from '../database/entites/orders.entity';
-import { LogHelper } from './LogHelper';
+import { LogHelper } from '../utils/LogHelper';
 import { transporter } from './nodemailer';
 
 export const sendOrderMail = async (orderid: number) => {
@@ -14,16 +14,18 @@ export const sendOrderMail = async (orderid: number) => {
 		return;
 	}
 
-	const html = `Hey ${orderData.order_from} this is your product ${orderData.items}`;
-
-	const creditsMail = {
-		from: 'admin.AnyBuy',
-		to: orderData.order_from,
+	let mailOptions = {
+		from: 'tabbnabbers@gmail.com', // TODO: email sender
+		to: orderData.order_from, // TODO: email receiver
 		subject: 'Order Success',
-		html: html,
+		text: 'Wooohooo it works!!',
+		template: 'orderitems',
+		context: {
+			name: 'Accime Esterling',
+		}, // send extra values to template
 	};
 
-	transporter.sendMail(creditsMail, function (error, info) {
+	transporter.sendMail(mailOptions, function (error, info) {
 		if (error) {
 			// Log error for unsent mail
 			console.log(error);

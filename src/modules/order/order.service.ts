@@ -13,8 +13,8 @@ import { IPaginate } from '../../interfaces/pagination';
 import { LogHelper } from '../../utils/LogHelper';
 import { ORDER_STATUS } from '../../constants/result';
 import { manipulateOrderItem } from '../../utils/order-helpers';
-import { transporter } from '../../utils/nodemailer';
-import { sendOrderMail } from '../../utils/sendordermail';
+import { transporter } from '../../mail-providers/nodemailer';
+import { sendOrderMail } from '../../mail-providers/sendordermail';
 
 export const createOrder = async (req: CustomRequest, res: Response) => {
 	try {
