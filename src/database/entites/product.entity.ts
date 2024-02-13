@@ -19,7 +19,7 @@ export class Product extends CustomBaseEntity {
 	image_src!: string;
 
 	@Column({ type: 'text', nullable: true })
-	items!: string;
+	items!: string | null;
 
 	@Column({ type: 'integer', default: 0 })
 	stock!: number;

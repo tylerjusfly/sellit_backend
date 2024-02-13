@@ -40,11 +40,11 @@ export const manipulateOrderItem = async (orderid: number, productid: string) =>
 
 	// if items is already in an order , do not add
 	if (orderData.items === null) {
-		if (prodsData.items.split(',').length) {
+		if (prodsData.items?.split(',').length) {
 			const orderItems = removeId(prodsData.items, orderData.qty);
 			LogHelper.debug(orderItems);
-			prodsData.items = orderItems.newStock;
-			orderData.items = orderItems.productBought;
+			prodsData.items = orderItems.newStock ? orderItems.newStock : null;
+			orderData.items = orderItems.productBought ? orderItems.productBought : null;
 			orderData.order_status = ORDER_STATUS.PAID;
 
 			await prodsData.save();
