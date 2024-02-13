@@ -7,6 +7,7 @@ import { apiRouter } from './modules/router';
 import { requsetLogger } from './middlewares/requestlogger';
 import { cacheRedisClient } from './database/redis/redis-client';
 import { rateLimiter } from './middlewares/rate-limiter';
+import { join } from 'path';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -39,6 +40,12 @@ app.use(
 );
 
 app.use(requsetLogger);
+app.use(express.static(join(__dirname, '../public')));
+
+// app.engine('handlebars', engine({ extname: '.hbs' }));
+// app.set('view engine', 'handlebars');
+// app.set('views', join(__dirname, '../views'));
+
 // app.use(rateLimiter);
 app.use('/', apiRouter);
 

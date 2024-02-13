@@ -2,7 +2,6 @@ import nodemailer from 'nodemailer';
 import hbs from 'nodemailer-express-handlebars';
 import { ENV } from '../constants/env-variables';
 import { join } from 'path';
-import { ExpressHandlebars } from 'express-handlebars';
 
 export const transporter = nodemailer.createTransport({
 	service: 'gmail',
@@ -25,13 +24,13 @@ transporter.verify(function (error, success) {
 const options = {
 	viewEngine: {
 		extname: '.hbs',
-		defaultLayout: 'orderitems',
-		layoutsDir: join(__dirname, 'htmltemplates'),
-		//   partialsDir: `${viewsPath}/partials/`,
-		//   helpers: handlebarsHelpers,
+		defaultLayout: '',
+		layoutsDir: join(__dirname, './htmltemplates'),
 	},
-	viewPath: join(__dirname, 'htmltemplates'),
+	viewPath: join(__dirname, './htmltemplates'),
 	extName: '.hbs',
 };
 
 transporter.use('compile', hbs(options));
+
+

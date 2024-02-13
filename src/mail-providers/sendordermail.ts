@@ -1,7 +1,9 @@
+import { join } from 'path';
 import { dataSource } from '../database/dataSource';
 import { Orders } from '../database/entites/orders.entity';
 import { LogHelper } from '../utils/LogHelper';
 import { transporter } from './nodemailer';
+import fs from 'fs';
 
 export const sendOrderMail = async (orderid: number) => {
 	const orderData = await dataSource.getRepository(Orders).findOne({
@@ -18,11 +20,21 @@ export const sendOrderMail = async (orderid: number) => {
 		from: 'tabbnabbers@gmail.com', // TODO: email sender
 		to: orderData.order_from, // TODO: email receiver
 		subject: 'Order Success',
-		text: 'Wooohooo it works!!',
+		text: 'Sucessful Order !!',
 		template: 'orderitems',
 		context: {
-			name: 'Accime Esterling',
-		}, // send extra values to template
+			orderid: orderData.orderid,
+			name: orderData.order_from,
+			status: orderData.order_status,
+			total: orderData.total_amount,
+		},
+		attachments: [
+			{
+				filename: `${orderData.product_name}-items.bin`,
+				content: `${orderData.items}`,
+				contentType: 'text/plain',
+			},
+		],
 	};
 
 	transporter.sendMail(mailOptions, function (error, info) {
