@@ -5,9 +5,11 @@ import { Product } from '../database/entites/product.entity';
 import { LogHelper } from './LogHelper';
 
 function removeId(stockId: string, quantity: number) {
-	// if (stockId) {
-	// }
-	let allstockArray = stockId.split(',');
+	let allstockArray: string[] = [];
+
+	if (stockId) {
+		allstockArray = stockId.split(',');
+	}
 
 	const productBought = allstockArray.splice(0, quantity).join(',');
 	const newStock = allstockArray.join(',');
