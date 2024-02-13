@@ -7,7 +7,7 @@ import { LogHelper } from './LogHelper';
 function removeId(stockId: string, quantity: number) {
 	let allstockArray: string[] = [];
 
-	if (stockId) {
+	if (stockId !== null) {
 		allstockArray = stockId.split(',');
 	}
 
