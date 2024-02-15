@@ -56,13 +56,4 @@ export class Product extends CustomBaseEntity {
 
 	@Column({ type: 'varchar', nullable: true })
 	callback_url!: string;
-
-	@BeforeInsert()
-	@BeforeUpdate()
-	updateStockFromItems() {
-		if (this.items) {
-			const itemsArray = this.items.split(',').map((item) => item.trim());
-			this.stock = itemsArray.length;
-		}
-	}
 }

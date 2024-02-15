@@ -5,6 +5,8 @@ import { dataSource } from '../../database/dataSource';
 import { Orders } from '../../database/entites/orders.entity';
 import { ENV } from '../../constants/env-variables';
 import { ORDER_STATUS } from '../../constants/result';
+import { manipulateOrderItem } from '../../utils/order-helpers';
+import { sendOrderMail } from '../../mail-providers/sendordermail';
 const stripe = new Stripe(ENV.STRIPE_SECRET_KEY || '');
 
 export const stripeChargeForVendors = async (req: Request, res: Response) => {
@@ -136,9 +138,14 @@ export const stripeSuccess = async (req: Request, res: Response) => {
 
 		/**Change order */
 
-		isOrder.order_status = ORDER_STATUS.PAID;
+		const manipulate_result = await manipulateOrderItem(isOrder.id, isOrder.productid);
 
-		isOrder.save();
+		// if (!manipulate_result) {
+		// 	return handleBadRequest(res, 400, 'failed to approve order');
+		// }
+
+		// Send email to user about order
+		await sendOrderMail(isOrder.id);
 
 		return res.redirect(`${ENV.FRONTEND_URL}/store/${shop}/order/${orderid}`);
 	} catch (error) {

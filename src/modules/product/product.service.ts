@@ -48,7 +48,7 @@ export const CreateProduct = async (req: Request, res: Response) => {
 
 export const editProduct = async (req: CustomRequest, res: Response) => {
 	try {
-		const { id, unlisted, ...restData }: IEditProduct = req.body;
+		const { id, unlisted, items, ...restData }: IEditProduct = req.body;
 
 		const productObj = await Product.findOne({
 			where: {
@@ -66,6 +66,17 @@ export const editProduct = async (req: CustomRequest, res: Response) => {
 		if (unlisted) {
 			productObj.unlisted = unlisted === '1' ? true : false;
 		}
+
+		productObj.items = items || null;
+
+		if (items && items !== '') {
+			const itemsArray = items?.split(',').map((item) => item.trim());
+			productObj.stock = itemsArray.length;
+		} else {
+			productObj.stock = 0;
+		}
+		
+
 		if (restData.amount) {
 			productObj.amount = restData.amount;
 		}

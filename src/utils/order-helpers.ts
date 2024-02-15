@@ -47,6 +47,14 @@ export const manipulateOrderItem = async (orderid: number, productid: string) =>
 			orderData.items = orderItems.productBought ? orderItems.productBought : null;
 			orderData.order_status = ORDER_STATUS.PAID;
 
+			// Keep track of product stock
+			if (orderItems.newStock && orderItems.newStock !== '') {
+				const itemsArray = orderItems.newStock?.split(',').map((item) => item.trim());
+				prodsData.stock = itemsArray.length;
+			} else {
+				prodsData.stock = 0;
+			}
+
 			await prodsData.save();
 			await orderData.save();
 		}
