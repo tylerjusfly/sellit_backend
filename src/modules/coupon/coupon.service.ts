@@ -82,7 +82,7 @@ export const checkCouponCode = async (req: Request, res: Response) => {
 			return res.status(200).json({ status: false });
 		}
 
-		if (couponCode.max_use === couponCode.total_usage) {
+		if (couponCode.max_use >= couponCode.total_usage) {
 			return res.status(200).json({ status: false });
 		}
 
@@ -218,3 +218,38 @@ export const editCoupon = async (req: CustomRequest, res: Response) => {
 	}
 };
 
+export const couponApplyToProduct = async (req: Request, res: Response) => {
+	try {
+		const { shopid, code, productid }: { shopid?: string; code?: string; productid?: string } =
+			req.query;
+
+		if (!code || !shopid || !productid) {
+			return handleBadRequest(res, 400, 'coupon code /shop id is required');
+		}
+
+		// find if code exist
+		const couponCode = await Coupon.findOne({
+			where: {
+				shop_id: shopid,
+				coupon_code: code,
+			},
+		});
+
+		if (!couponCode) {
+			return res.status(200).json({ status: false });
+		}
+
+		if (couponCode.max_use >= couponCode.total_usage) {
+			return res.status(200).json({ status: false });
+		}
+
+		if (!couponCode.items.includes(productid)) {
+			return res.status(200).json({ status: false });
+		}
+
+		// else coupon is valid
+		return res.status(200).json({ status: true });
+	} catch (error) {
+		return handleError(res, error);
+	}
+};

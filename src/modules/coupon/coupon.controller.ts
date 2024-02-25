@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { verifyToken } from '../../middlewares/verifyauth';
 import {
 	checkCouponCode,
+	couponApplyToProduct,
 	createCoupon,
 	deleteCoupon,
 	editCoupon,
@@ -14,10 +15,13 @@ import {
 const couponRouter = Router();
 
 couponRouter.post('/', verifyToken, createCoupon);
-couponRouter.get('/check', checkCouponCode);
 couponRouter.get('/', verifyToken, fetchCoupons);
-couponRouter.patch('/', verifyToken,  editCoupon);
-couponRouter.get('/one', verifyToken,  fetchSingleCoupon);
+couponRouter.patch('/', verifyToken, editCoupon);
+couponRouter.get('/one', verifyToken, fetchSingleCoupon);
 couponRouter.delete('/', verifyToken, deleteCoupon);
+
+/**Public API */
+couponRouter.post('/apply', couponApplyToProduct);
+couponRouter.get('/check', checkCouponCode);
 
 export const CouponController = { router: couponRouter };
