@@ -89,7 +89,7 @@ export const checkCouponCode = async (req: Request, res: Response) => {
 		
 
 		// else coupon is valid
-		return res.status(200).json({ status: true });
+		return res.status(200).json({ status: true, discount: couponCode.discount });
 	} catch (error) {
 		return handleError(res, error);
 	}

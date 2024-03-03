@@ -98,10 +98,12 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 				// do something
 				const new_amount = qty * isProduct.amount;
 
-				var discountRate = (couponCode.discount / 100).toFixed(2); //discount rate
+				let discountRate = (couponCode.discount / 100).toFixed(2); //discount rate
 				const discountedPrice = new_amount - new_amount * parseFloat(discountRate);
 
 				totalOrderAmount = discountedPrice;
+				couponCode.total_usage = couponCode.total_usage + 1
+				couponCode.save()
 			}
 		}
 
