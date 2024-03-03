@@ -15,10 +15,11 @@ import { ORDER_STATUS } from '../../constants/result';
 import { manipulateOrderItem } from '../../utils/order-helpers';
 import { transporter } from '../../mail-providers/nodemailer';
 import { sendOrderMail } from '../../mail-providers/sendordermail';
+import { Coupon } from '../../database/entites/coupon.entity';
 
 export const createOrder = async (req: CustomRequest, res: Response) => {
 	try {
-		const { productid, qty, payment_gateway, order_from }: ICreateOrder = req.body;
+		const { productid, qty, payment_gateway, order_from, coupon }: ICreateOrder = req.body;
 
 		if (!productid || !qty || !payment_gateway || !order_from) {
 			return handleBadRequest(res, 400, 'all field is required');
@@ -82,6 +83,28 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 
 		// Create order
 
+		let totalOrderAmount = qty * isProduct.amount;
+
+		if (coupon && coupon !== '') {
+			// find coupon
+			const couponCode = await Coupon.findOne({
+				where: {
+					shop_id: `${isShop.id}`,
+					coupon_code: coupon,
+				},
+			});
+
+			if (couponCode && couponCode.max_use > couponCode.total_usage) {
+				// do something
+				const new_amount = qty * isProduct.amount;
+
+				var discountRate = (couponCode.discount / 100).toFixed(2); //discount rate
+				const discountedPrice = new_amount - new_amount * parseFloat(discountRate);
+
+				totalOrderAmount = discountedPrice;
+			}
+		}
+
 		const createOrders = dataSource.getRepository(Orders).create({
 			orderid: orderId,
 			productid: productid,
@@ -91,7 +114,7 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 			shop_slug: isShop.slug,
 			payment_gateway,
 			order_from: order_from,
-			total_amount: qty * isProduct.amount,
+			total_amount: totalOrderAmount,
 		});
 
 		const result = await dataSource.getRepository(Orders).save(createOrders);
@@ -263,8 +286,3 @@ export const disapproveOrder = async (req: CustomRequest, res: Response) => {
 		return handleError(res, error);
 	}
 };
-
-
-
-
-

@@ -82,9 +82,11 @@ export const checkCouponCode = async (req: Request, res: Response) => {
 			return res.status(200).json({ status: false });
 		}
 
-		if (couponCode.max_use >= couponCode.total_usage) {
+		
+		if (couponCode.max_use <= couponCode.total_usage) {
 			return res.status(200).json({ status: false });
 		}
+		
 
 		// else coupon is valid
 		return res.status(200).json({ status: true });

@@ -4,6 +4,7 @@ export type ICreateOrder = {
 	payment_gateway: string;
 	platform_fee: string;
 	order_from: string;
+	coupon?:string
 };
 
 export type TallOrders = {
