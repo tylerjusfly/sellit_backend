@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { TCreate, TLogin } from '../../interfaces/auth';
+import { TAdminLogin, TCreate, TLogin } from '../../interfaces/auth';
 import { validationResult } from 'express-validator';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
 import { dataSource } from '../../database/dataSource';
@@ -8,6 +8,8 @@ import { isValidPassword } from '../../utils/password-helper';
 import { pbkdf2Sync, randomBytes } from 'crypto';
 import { ITokenPayload, getToken } from '../../utils/token-helper';
 import { CustomRequest } from '../../middlewares/verifyauth';
+import { adminKey, uniqueID } from '../../utils/generateIds';
+import { Admins } from '../../database/entites/admins.entity';
 
 export const loginUser = async (req: Request, res: Response) => {
 	try {
@@ -90,6 +92,36 @@ export const getMyProfile = async (req: CustomRequest, res: Response) => {
 		};
 
 		return handleSuccess(res, { token: '', payload: formattedUserData }, 'user', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+export const loginAdmin = async (req: Request, res: Response) => {
+	try {
+		const { email, password }: TAdminLogin = req.body;
+
+		if (!email || !password) {
+			return handleBadRequest(res, 400, 'email/password is required');
+		}
+
+		// Does admin exist
+		const IsAdmin = await dataSource.getRepository(Admins).findOne({
+			where: {
+				email,
+			},
+		});
+
+		if (!IsAdmin) {
+			return handleBadRequest(res, 400, 'Invalid credentials');
+		}
+
+		let privatekey = adminKey(5);
+		let adminID = uniqueID(8);
+
+
+
+		return handleSuccess(res, { token: '' }, 'user', 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}

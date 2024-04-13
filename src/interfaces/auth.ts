@@ -12,3 +12,8 @@ export type TCreate = {
 	telephone?: string;
 	display_picture?: string;
 };
+
+export type TAdminLogin = {
+	email: string;
+	password: string;
+};
