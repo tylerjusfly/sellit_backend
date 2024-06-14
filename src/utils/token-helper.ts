@@ -5,6 +5,7 @@ import * as jwt from 'jsonwebtoken';
 export interface ITokenPayload {
 	username: string;
 	user_type: string;
+	verified: boolean;
 	id: number;
 }
 
@@ -15,6 +16,7 @@ export const getPayload = (user: TUserType): ITokenPayload => {
 		username: user.username,
 		user_type: user.user_type,
 		id: user.id,
+		verified: user.active,
 	};
 	return payload;
 };
