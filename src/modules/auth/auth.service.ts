@@ -53,8 +53,18 @@ export const create = async (req: Request, res: Response) => {
 	try {
 		const { username, fullname, email, password }: TCreate = req.body;
 
-		if (!username || !fullname || !email || !password) {
+		if (!fullname || !email || !password) {
 			return handleBadRequest(res, 400, 'all fields are required');
+		}
+
+		const IsEmail = await dataSource.getRepository(User).findOne({
+			where: {
+				email,
+			},
+		});
+
+		if (IsEmail) {
+			return handleBadRequest(res, 400, 'email already exists');
 		}
 
 		const salt = randomBytes(30).toString('hex');
@@ -68,6 +78,8 @@ export const create = async (req: Request, res: Response) => {
 			salt,
 		});
 		const results = await dataSource.getRepository(User).save(createdUser);
+
+		/**SEND VERIFICATION EMAIL */
 
 		return handleSuccess(res, results, 'created user', 201, undefined);
 	} catch (error) {
