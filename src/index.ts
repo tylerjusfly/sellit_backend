@@ -49,18 +49,20 @@ app.use(express.static(join(__dirname, '../public')));
 // app.use(rateLimiter);
 app.use('/', apiRouter);
 
-app.use(genericErrorHandler);
 
 app.get('/', async (req: Request, res: Response) => {
-	return res.send('Hello Express typescript');
+	return res.send('Hello test folder');
 });
 
-function genericErrorHandler(err: any, req: Request, res: Response, next: NextFunction) {
-	console.error('An unexpected error occurred', err);
+function genericErrorHandler(req: Request, res: Response) {
 	res.status(404).json({ success: false, message: 'Internal Sever Error' });
-	// return next();
 }
+
+// app.use('*', genericErrorHandler);
 
 app.listen(port, () => {
 	LogHelper.info(`Server running at http://localhost:${port}`);
 });
+
+//The 404 Route (ALWAYS Keep this as the last route)
+app.all('*', genericErrorHandler);

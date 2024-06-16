@@ -5,6 +5,7 @@ import * as jwt from 'jsonwebtoken';
 export interface ITokenPayload {
 	username: string;
 	user_type: string;
+	email: string;
 	verified: boolean;
 	id: number;
 }
@@ -17,15 +18,24 @@ export const getPayload = (user: TUserType): ITokenPayload => {
 		user_type: user.user_type,
 		id: user.id,
 		verified: user.active,
+		email: user.email,
 	};
 	return payload;
 };
 
 export const getToken = async (user: TUserType) => {
 	const payload: ITokenPayload = getPayload(user);
-	const token = jwt.sign(payload, secret, {
-		expiresIn: 300000,
-	});
+	const token = jwt.sign(
+		{
+			username: user.username,
+			user_type: user.user_type,
+			id: user.id,
+		},
+		secret,
+		{
+			expiresIn: 300000,
+		}
+	);
 	return {
 		token,
 		payload,

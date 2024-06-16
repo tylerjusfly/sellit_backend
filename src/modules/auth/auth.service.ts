@@ -101,6 +101,8 @@ export const getMyProfile = async (req: CustomRequest, res: Response) => {
 			id: isUser.id,
 			username: isUser.username,
 			user_type: isUser.user_type,
+			verified: isUser.active,
+			email: isUser.email,
 		};
 
 		return handleSuccess(res, { token: '', payload: formattedUserData }, 'user', 200, undefined);
