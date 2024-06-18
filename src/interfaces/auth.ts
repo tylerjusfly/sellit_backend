@@ -17,3 +17,7 @@ export type TAdminLogin = {
 	email: string;
 	password: string;
 };
+export type TUserVerify = {
+	email: string;
+	code: string;
+};

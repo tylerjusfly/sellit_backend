@@ -25,7 +25,7 @@ export class User extends CustomBaseEntity {
 	active!: boolean;
 
 	@Column({ type: 'varchar', nullable: true })
-	token!: string;
+	token!: string | null;
 
 	@Column({ type: 'varchar', nullable: true })
 	discord_link!: string;

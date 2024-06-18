@@ -1,4 +1,5 @@
 import { body } from 'express-validator';
+import Joi from 'joi';
 
 export const loginValidationRules = [
 	body('username').notEmpty().withMessage('username is required'),
@@ -7,3 +8,8 @@ export const loginValidationRules = [
 	body('username').isLength({ min: 4 }).withMessage('Username should be at least 4 chars'),
 	// body('completed').isBoolean().withMessage('Completed must be a boolean'),
 ];
+
+export const verifyAccountSchema = Joi.object({
+	email: Joi.string().required(),
+	code: Joi.string().required(),
+}).unknown();

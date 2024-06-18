@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { TAdminLogin, TCreate, TLogin } from '../../interfaces/auth';
+import { TAdminLogin, TCreate, TLogin, TUserVerify } from '../../interfaces/auth';
 import { validationResult } from 'express-validator';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
 import { dataSource } from '../../database/dataSource';
 import { User } from '../../database/entites/user.entity';
 import { isValidPassword } from '../../utils/password-helper';
 import { pbkdf2Sync, randomBytes } from 'crypto';
-import { ITokenPayload, getToken } from '../../utils/token-helper';
+import { ITokenPayload, getPayload, getToken } from '../../utils/token-helper';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { adminKey, uniqueID } from '../../utils/generateIds';
 import { Admins } from '../../database/entites/admins.entity';
@@ -133,9 +133,37 @@ export const loginAdmin = async (req: Request, res: Response) => {
 		let privatekey = adminKey(5);
 		let adminID = uniqueID(8);
 
-
-
 		return handleSuccess(res, { token: '' }, 'user', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+export const verifyMail = async (req: Request, res: Response) => {
+	try {
+		const { email, code }: TUserVerify = req.body;
+
+		const userWithEmail = await dataSource.getRepository(User).findOne({
+			where: {
+				email,
+			},
+		});
+
+		if (!userWithEmail) {
+			return handleBadRequest(res, 400, 'verification failed');
+		}
+
+		if (userWithEmail.token !== code) {
+			return handleBadRequest(res, 400, 'verification failed');
+		}
+
+		userWithEmail.token = null;
+
+		await userWithEmail.save();
+
+		const payload = getPayload(userWithEmail);
+
+		return handleSuccess(res, { token: '', payload }, 'user', 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
