@@ -70,10 +70,13 @@ export const create = async (req: Request, res: Response) => {
 		const salt = randomBytes(30).toString('hex');
 		const hashedPass = pbkdf2Sync(password, salt, 1000, 64, `sha512`).toString(`hex`);
 
+		const verificationToken = adminKey(6);
+
 		const createdUser = dataSource.getRepository(User).create({
 			username,
 			password: hashedPass,
 			fullname,
+			token: verificationToken,
 			email,
 			salt,
 		});
@@ -158,12 +161,45 @@ export const verifyMail = async (req: Request, res: Response) => {
 		}
 
 		userWithEmail.token = null;
+		userWithEmail.active = true;
 
 		await userWithEmail.save();
 
 		const payload = getPayload(userWithEmail);
 
 		return handleSuccess(res, { token: '', payload }, 'user', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+export const resendVerificationCode = async (req: Request, res: Response) => {
+	try {
+		const email = req.body.email;
+
+		if (!email) {
+			return handleBadRequest(res, 400, 'email is required');
+		}
+
+		const userWithEmail = await dataSource.getRepository(User).findOne({
+			where: {
+				email,
+			},
+		});
+
+		if (!userWithEmail) {
+			return handleSuccess(res, {}, 'user', 200, undefined);
+		}
+
+		const verificationToken = adminKey(6);
+
+		console.log(verificationToken, 'verificationToken')
+
+		userWithEmail.token = verificationToken;
+
+		await userWithEmail.save();
+
+		return handleSuccess(res, {}, 'user', 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
