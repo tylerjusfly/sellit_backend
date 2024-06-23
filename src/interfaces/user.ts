@@ -11,4 +11,5 @@ export type TUserType = {
 	password: string;
 	salt: string;
 	user_type: string;
+	permissions: string;
 };

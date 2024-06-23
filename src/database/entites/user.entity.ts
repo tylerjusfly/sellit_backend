@@ -35,4 +35,7 @@ export class User extends CustomBaseEntity {
 
 	@Column({ nullable: false })
 	salt!: string;
+
+	@Column({ type: 'simple-array', nullable: false, default: ['product:read'] })
+	permissions!: string;
 }

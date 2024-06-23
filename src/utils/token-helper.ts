@@ -19,6 +19,7 @@ export const getPayload = (user: TUserType): ITokenPayload => {
 		id: user.id,
 		verified: user.active,
 		email: user.email,
+		permissions: JSON.parse(user.permissions) || [],
 	};
 	return payload;
 };

@@ -10,14 +10,14 @@ import {
 	getSpecificProduct,
 } from './product.service';
 import { verifyToken } from '../../middlewares/verifyauth';
-
+import { authorize } from '../../middlewares/confirm-permission';
 
 const productRouter = Router();
 
 productRouter.get('/', verifyToken, getAllProductByShop);
 productRouter.get('/store', getAllProductByShopname);
 productRouter.post('/', verifyToken, CreateProduct);
-productRouter.patch('/', verifyToken, editProduct);
+productRouter.patch('/', verifyToken, authorize(['product:read']), editProduct);
 productRouter.get('/one', verifyToken, getSpecificProduct);
 productRouter.delete('/', verifyToken, deleteProduct);
 
