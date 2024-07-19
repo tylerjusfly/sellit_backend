@@ -288,3 +288,33 @@ export const disapproveOrder = async (req: CustomRequest, res: Response) => {
 		return handleError(res, error);
 	}
 };
+
+export const getPopularPayment = async (req: CustomRequest, res: Response) => {
+	try {
+		const shopid = req.query.shopid as any;
+		// find shop
+		const isShop = await dataSource.getRepository(Shop).findOne({
+			where: {
+				id: shopid,
+			},
+			// loadEagerRelations: true,
+		});
+
+		if (!isShop) {
+			return handleBadRequest(res, 400, 'shop does not exist');
+		}
+
+		// fetch orders by shop
+		const ordersGroupedByPaymentGateway = await Orders.createQueryBuilder('order')
+			.select('order.payment_gateway', 'payment_gateway')
+			.where('order.shop_id = :shopId', { shopId: shopid })
+			.addSelect('COUNT(order.id)', 'order_count')
+			.groupBy('order.payment_gateway')
+			.orderBy('order_count', 'DESC')
+			.getRawMany();
+
+		return handleSuccess(res, ordersGroupedByPaymentGateway, '', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};

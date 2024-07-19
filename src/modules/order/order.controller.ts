@@ -7,7 +7,11 @@ import {
 	disapproveOrder,
 	getAllOrder,
 	getOrderById,
+	getPopularPayment,
 } from './order.service';
+
+import { paymentOrderSchema } from './order.validation';
+import { validateQueryRequest } from '../../middlewares/validate-body';
 
 const orderRouter = Router();
 
@@ -16,6 +20,12 @@ orderRouter.get('/one', getOrderById);
 orderRouter.get('/shop-orders', verifyToken, getAllOrder);
 orderRouter.post('/shop-orders/approve', verifyToken, approveOrder);
 orderRouter.post('/shop-orders/disapprove', verifyToken, disapproveOrder);
+orderRouter.get(
+	'/popular-payments',
+	// verifyToken,
+	validateQueryRequest(paymentOrderSchema),
+	getPopularPayment
+);
 
 
 export const OrderController = { router: orderRouter };

@@ -9,7 +9,8 @@ import {
 import { loginValidationRules, verifyAccountSchema } from './auth.validations';
 import { verifyToken } from '../../middlewares/verifyauth';
 import { checkUsernameIsAvailable } from '../../middlewares/check-username-availability';
-import validateRequest from '../../middlewares/validate-body';
+import { validateRequest } from '../../middlewares/validate-body';
+
 
 const authRouter = Router();
 

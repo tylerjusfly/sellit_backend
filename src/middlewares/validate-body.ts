@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { handleBadRequest } from '../constants/response-handler';
 
-const validateRequest = (schema: any) => {
+export const validateRequest = (schema: any) => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		const { error, value } = schema.validate(req.body);
 		if (error) {
@@ -12,4 +12,13 @@ const validateRequest = (schema: any) => {
 	};
 };
 
-export default validateRequest;
+export const validateQueryRequest = (schema: any) => {
+	return (req: Request, res: Response, next: NextFunction) => {
+		const { error, value } = schema.validate(req.query);
+		if (error) {
+			return handleBadRequest(res, 400, error.details[0].message);
+		}
+
+		next();
+	};
+};
