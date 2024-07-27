@@ -7,7 +7,6 @@ import { Product } from '../../database/entites/product.entity';
 import { Shop } from '../../database/entites/shop.entity';
 import { uniqueID } from '../../utils/generateIds';
 import { Orders } from '../../database/entites/orders.entity';
-import { convertToSlug } from '../../utils/convertToSlug';
 import moment from 'moment';
 import { IPaginate } from '../../interfaces/pagination';
 import { LogHelper } from '../../utils/LogHelper';
@@ -102,8 +101,8 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 				const discountedPrice = new_amount - new_amount * parseFloat(discountRate);
 
 				totalOrderAmount = discountedPrice;
-				couponCode.total_usage = couponCode.total_usage + 1
-				couponCode.save()
+				couponCode.total_usage = couponCode.total_usage + 1;
+				couponCode.save();
 			}
 		}
 
@@ -309,6 +308,7 @@ export const getPopularPayment = async (req: CustomRequest, res: Response) => {
 			.select('order.payment_gateway', 'payment_gateway')
 			.where('order.shop_id = :shopId', { shopId: shopid })
 			.addSelect('COUNT(order.id)', 'order_count')
+			.addSelect('SUM(order.total_amount)', 'overall')
 			.groupBy('order.payment_gateway')
 			.orderBy('order_count', 'DESC')
 			.getRawMany();
