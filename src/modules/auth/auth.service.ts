@@ -100,15 +100,7 @@ export const getMyProfile = async (req: CustomRequest, res: Response) => {
 
 		if (!isUser) return handleBadRequest(res, 404, 'user not found');
 
-		const formattedUserData = {
-			id: isUser.id,
-			username: isUser.username,
-			user_type: isUser.user_type,
-			verified: isUser.active,
-			email: isUser.email,
-		};
-
-		return handleSuccess(res, { token: '', payload: formattedUserData }, 'user', 200, undefined);
+		return handleSuccess(res, { token: '', payload: getPayload(isUser) }, 'user', 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}

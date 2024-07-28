@@ -11,13 +11,20 @@ import {
 } from './product.service';
 import { verifyToken } from '../../middlewares/verifyauth';
 import { authorize } from '../../middlewares/confirm-permission';
+import { checkPaymentTypeVlidity } from '../../middlewares/check-payment-type-validity';
 
 const productRouter = Router();
 
 productRouter.get('/', verifyToken, getAllProductByShop);
 productRouter.get('/store', getAllProductByShopname);
 productRouter.post('/', verifyToken, CreateProduct);
-productRouter.patch('/', verifyToken, authorize(['product:read']), editProduct);
+productRouter.patch(
+	'/',
+	verifyToken,
+	authorize(['product:read']),
+	checkPaymentTypeVlidity,
+	editProduct
+);
 productRouter.get('/one', verifyToken, getSpecificProduct);
 productRouter.delete('/', verifyToken, deleteProduct);
 
