@@ -22,12 +22,6 @@ export class Shop extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: true })
 	discord_link!: string;
 
-	@Column({ type: 'varchar', nullable: true })
-	stripe_key!: string;
-
-	@Column({ type: 'varchar', nullable: true })
-	seller_btc!: string;
-
 	@Column({ type: 'integer', nullable: false, default: 0 })
 	shop_credit!: number;
 
@@ -37,4 +31,12 @@ export class Shop extends CustomBaseEntity {
 	@ManyToOne(() => User, { eager: true })
 	@JoinColumn({ name: 'shop_owner' })
 	shop_owner!: User;
+
+	// ALL PAYMENT ROW GOES UNDER HERE
+
+	@Column({ type: 'varchar', nullable: true })
+	stripe_key!: string | null;
+
+	@Column({ type: 'varchar', nullable: true })
+	coin_base_key!: string | null;
 }

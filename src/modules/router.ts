@@ -7,6 +7,7 @@ import { CategoriesController } from './categories/categories.controller';
 import { CoinbaseController } from './coinbase/coinbase.controller';
 import { OrderController } from './order/order.controller';
 import { StripeController } from './stripe/stripe.controller';
+import { paymentSettingsController } from './payment-settings/payment.controller';
 
 const router = Router();
 
@@ -18,6 +19,7 @@ router.use('/categories', CategoriesController.router);
 router.use('/coinbase', CoinbaseController.router);
 router.use('/order', OrderController.router);
 router.use('/stripe', StripeController.router);
+router.use('/payment-settings', paymentSettingsController.router);
 // router.use('/queue', QueueRouter.router);
 
 export const apiRouter = router;
