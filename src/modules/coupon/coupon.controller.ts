@@ -10,13 +10,14 @@ import {
 	fetchCoupons,
 	fetchSingleCoupon,
 } from './coupon.service';
+import { authorize } from '../../middlewares/confirm-permission';
 // import { rateLimiter } from '../../middlewares/rate-limiter';
 
 const couponRouter = Router();
 
-couponRouter.post('/', verifyToken, createCoupon);
+couponRouter.post('/', verifyToken, authorize(['coupon:create']), createCoupon);
 couponRouter.get('/', verifyToken, fetchCoupons);
-couponRouter.patch('/', verifyToken, editCoupon);
+couponRouter.patch('/', verifyToken, authorize(['coupon:create']), editCoupon);
 couponRouter.get('/one', verifyToken, fetchSingleCoupon);
 couponRouter.delete('/', verifyToken, deleteCoupon);
 

@@ -3,6 +3,7 @@ import { verifyToken } from '../../middlewares/verifyauth';
 import { connectPayment, disconnectPayment, fetchShopPayments } from './payment.service';
 import { paymentOrderSchema } from '../order/order.validation';
 import { validateQueryRequest, validateRequest } from '../../middlewares/validate-body';
+import { authorize } from '../../middlewares/confirm-permission';
 
 const paymentSettingsRouter = Router();
 
@@ -15,6 +16,7 @@ paymentSettingsRouter.get(
 paymentSettingsRouter.post(
 	'/disconnect',
 	verifyToken,
+	authorize(['payment:create']),
 	validateQueryRequest(paymentOrderSchema),
 	disconnectPayment
 );
@@ -22,11 +24,9 @@ paymentSettingsRouter.post(
 paymentSettingsRouter.post(
 	'/connect',
 	verifyToken,
+	authorize(['payment:create']),
 	validateRequest(paymentOrderSchema),
 	connectPayment
 );
-
-// Public routes
-// coinbaseRouter.post('/vendor/payment', coinBaseChargeForVendors);
 
 export const paymentSettingsController = { router: paymentSettingsRouter };
