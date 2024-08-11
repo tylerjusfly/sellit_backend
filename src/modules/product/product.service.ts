@@ -232,13 +232,13 @@ export const deleteProduct = async (req: Request, res: Response) => {
 
 export const getAllProductByShopname = async (req: Request, res: Response) => {
 	try {
-		const { shopname, search, page, category }: IStoreProduct = req.query;
+		const { shopname, search, page, category, limit }: IStoreProduct = req.query;
 
 		if (!shopname) {
 			return handleBadRequest(res, 400, 'shop id/name is required');
 		}
 
-		const page_limit = 20;
+		const page_limit = limit ? limit : 20;
 
 		const offset = page ? (Number(page) - 1) * page_limit : 0;
 
@@ -305,7 +305,7 @@ export const getAllProductByShopname = async (req: Request, res: Response) => {
 		return handleSuccess(
 			res,
 			{
-				shop: foundShop,
+				// shop: foundShop,
 				products: AllProducts,
 			},
 			`All Products`,

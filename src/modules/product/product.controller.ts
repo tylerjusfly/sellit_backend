@@ -16,7 +16,6 @@ import { checkPaymentTypeVlidity } from '../../middlewares/check-payment-type-va
 const productRouter = Router();
 
 productRouter.get('/', verifyToken, getAllProductByShop);
-productRouter.get('/store', getAllProductByShopname);
 productRouter.post('/', verifyToken, CreateProduct);
 productRouter.patch(
 	'/',
@@ -29,6 +28,7 @@ productRouter.get('/one', verifyToken, getSpecificProduct);
 productRouter.delete('/', verifyToken, deleteProduct);
 
 // Public routes
+productRouter.get('/store', getAllProductByShopname);
 productRouter.get('/categories', fetchProductCategory);
 productRouter.get('/cart-product', getOneProduct);
 

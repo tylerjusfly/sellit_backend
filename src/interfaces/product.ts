@@ -33,5 +33,6 @@ export type IStoreProduct = {
 	search?: string;
 	category?: number;
 	page?: number;
+	limit?: number;
 };
 
