@@ -39,6 +39,12 @@ export class Product extends CustomBaseEntity {
 	@Column({ type: 'boolean', default: true })
 	cashapp!: boolean;
 
+	@Column({ type: 'boolean', default: false })
+	warranty!: boolean;
+
+	@Column({ type: 'varchar', nullable: true })
+	warranty_msg!: string;
+
 	@Column({ type: 'varchar', nullable: false, default: 'Serial/Code' })
 	product_type!: string;
 
