@@ -168,6 +168,43 @@ export const authenticateShop = async (req: CustomRequest, res: Response) => {
 	}
 };
 
+export const shopEdit = async (req: CustomRequest, res: Response) => {
+	try {
+		const { shopid, shopname }: { shopid: number; shopname: string } = req.body;
+
+		const userReq = req.user as ITokenPayload;
+
+		const isUser = await dataSource.getRepository(User).findOne({
+			where: { id: userReq.id },
+		});
+
+		if (!isUser) return handleBadRequest(res, 404, 'user not found');
+
+		const isShop = await dataSource.getRepository(Shop).findOne({
+			where: { id: shopid },
+		});
+
+		if (!isShop) return handleBadRequest(res, 400, 'cannot find shop');
+
+		if (shopname && shopname !== '') {
+			isShop.name = shopname;
+		}
+
+		isShop.lastChanged_by = isUser.username;
+
+		await isShop.save();
+
+		const data = {
+			id: isShop.id,
+			name: isShop.name,
+		};
+
+		return handleSuccess(res, data, 'updated product', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
 
 export const authenticateShopByname = async (req: Request, res: Response) => {
 	try {
