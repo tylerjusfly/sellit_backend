@@ -1,9 +1,7 @@
-import { join } from 'path';
 import { dataSource } from '../database/dataSource';
 import { Orders } from '../database/entites/orders.entity';
 import { LogHelper } from '../utils/LogHelper';
 import { transporter } from './nodemailer';
-
 
 export const sendOrderMail = async (orderid: number) => {
 	const orderData = await dataSource.getRepository(Orders).findOne({
@@ -41,7 +39,6 @@ export const sendOrderMail = async (orderid: number) => {
 		if (error) {
 			// Log error for unsent mail
 			LogHelper.error(error);
-			
 		} else {
 			// Mail sent successfully
 			LogHelper.info('Email sent: ' + info.response);

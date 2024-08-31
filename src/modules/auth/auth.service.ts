@@ -10,6 +10,7 @@ import { ITokenPayload, getPayload, getToken } from '../../utils/token-helper';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { adminKey, uniqueID } from '../../utils/generateIds';
 import { Admins } from '../../database/entites/admins.entity';
+import { sendUserVerificationToken } from '../../mail-providers/sendtokenmail';
 
 export const loginUser = async (req: Request, res: Response) => {
 	try {
@@ -83,6 +84,7 @@ export const create = async (req: Request, res: Response) => {
 		const results = await dataSource.getRepository(User).save(createdUser);
 
 		/**SEND VERIFICATION EMAIL */
+		await sendUserVerificationToken(createdUser);
 
 		return handleSuccess(res, results, 'created user', 201, undefined);
 	} catch (error) {
@@ -157,9 +159,9 @@ export const verifyMail = async (req: Request, res: Response) => {
 
 		await userWithEmail.save();
 
-		const payload = getPayload(userWithEmail);
+		const payload = await getToken(userWithEmail);
 
-		return handleSuccess(res, { token: '', payload }, 'user', 200, undefined);
+		return handleSuccess(res, payload, 'user', 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
@@ -184,12 +186,12 @@ export const resendVerificationCode = async (req: Request, res: Response) => {
 		}
 
 		const verificationToken = adminKey(6);
-
-		console.log(verificationToken, 'verificationToken')
-
 		userWithEmail.token = verificationToken;
 
 		await userWithEmail.save();
+
+		/**SEND VERIFICATION EMAIL */
+		await sendUserVerificationToken(userWithEmail);
 
 		return handleSuccess(res, {}, 'user', 200, undefined);
 	} catch (error) {
