@@ -39,4 +39,11 @@ export class Shop extends CustomBaseEntity {
 
 	@Column({ type: 'varchar', nullable: true })
 	coin_base_key!: string | null;
+
+	// Store front vals
+	@Column({ type: 'varchar', default: '' })
+	store_text!: string;
+
+	@Column({ type: 'varchar', default: 'monospace' })
+	store_font!: string;
 }

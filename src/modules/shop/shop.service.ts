@@ -170,7 +170,12 @@ export const authenticateShop = async (req: CustomRequest, res: Response) => {
 
 export const shopEdit = async (req: CustomRequest, res: Response) => {
 	try {
-		const { shopid, shopname }: { shopid: number; shopname: string } = req.body;
+		const {
+			shopid,
+			shopname,
+			store_text,
+			store_font,
+		}: { shopid: number; shopname: string; store_text: string; store_font: string } = req.body;
 
 		const userReq = req.user as ITokenPayload;
 
@@ -190,6 +195,14 @@ export const shopEdit = async (req: CustomRequest, res: Response) => {
 			isShop.name = shopname;
 		}
 
+		if (store_text && store_text !== '') {
+			isShop.store_text = store_text;
+		}
+
+		if (store_font && store_font !== '') {
+			isShop.store_font = store_font;
+		}
+
 		isShop.lastChanged_by = isUser.username;
 
 		await isShop.save();
@@ -205,7 +218,6 @@ export const shopEdit = async (req: CustomRequest, res: Response) => {
 	}
 };
 
-
 export const authenticateShopByname = async (req: Request, res: Response) => {
 	try {
 		const { shopname }: { shopname?: string } = req.query;
@@ -219,6 +231,19 @@ export const authenticateShopByname = async (req: Request, res: Response) => {
 		const isShop = await dataSource
 			.getRepository(Shop)
 			.createQueryBuilder('shop')
+			.select([
+				'shop.id',
+				'shop.name',
+				'shop.slug',
+				'shop.display_image',
+				'shop.image_src',
+				'shop.shop_credit',
+				'shop.store_text',
+				'shop.store_font',
+				'shop.discord_link',
+				// 'shop.createdAt',
+				// 'shop.updatedAt', // Add other fields you want to include
+			])
 			// .leftJoinAndSelect('shop.shop_owner', 'user')
 			.where('shop.slug = :name', { name: slugged })
 			.getOne();
