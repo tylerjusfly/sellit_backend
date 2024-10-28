@@ -15,7 +15,7 @@ export const authorize = (requiredPermissions: string[]) => {
 				},
 			});
 
-			console.log(JSON.parse(userProfile?.permissions as string), 'userr');
+			// console.log(JSON.parse(userProfile?.permissions as string), 'userr');
 
 			let permissions: string[] = [];
 

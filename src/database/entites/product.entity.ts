@@ -57,6 +57,9 @@ export class Product extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: true })
 	description!: string;
 
+	@Column({ type: 'integer', default: 10 })
+	max_purchase!: number;
+
 	@Column({ type: 'varchar', nullable: true })
 	webhook_url!: string;
 
