@@ -381,12 +381,13 @@ export const getOneProduct = async (req: Request, res: Response) => {
 		const foundProduct = await dataSource
 			.getRepository(Product)
 			.createQueryBuilder('product')
+			.addSelect('product.shop_id')
 			.select([
 				'product.id',
 				'product.name',
 				'product.unique_id',
 				'product.stock',
-				// 'product.image_src',
+				'product.image_src',
 				'product.max_purchase',
 				'product.paypal',
 				'product.stripe',
@@ -401,7 +402,7 @@ export const getOneProduct = async (req: Request, res: Response) => {
 			])
 			.where('product.unique_id = :val', { val: uniqueId })
 			.andWhere('product.unlisted= :value', { value: false })
-			.getOne();
+			.getRawOne();
 
 		if (!foundProduct) {
 			return handleBadRequest(res, 404, 'product does not exist');

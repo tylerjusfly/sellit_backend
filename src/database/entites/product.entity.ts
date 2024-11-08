@@ -11,9 +11,12 @@ export class Product extends CustomBaseEntity {
 	@Column({ type: 'varchar', unique: true, nullable: false })
 	unique_id!: string;
 
-	@ManyToOne(() => Shop, { nullable: true, eager: true })
+	@ManyToOne(() => Shop, { nullable: false, eager: true })
 	@JoinColumn({ name: 'shop_id' })
 	shop_id!: Shop;
+
+	// @Column({ name: 'shop_id', nullable: false })
+	// shop_id!: Shop; // Assuming shop_id is a number type (adjust as needed)
 
 	@Column({ type: 'varchar', nullable: true, default: '/images/products/attachment.png' })
 	image_src!: string;
