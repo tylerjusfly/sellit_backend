@@ -10,8 +10,6 @@ services:
       POSTGRES_DB: shopcrm
     ports:
       - 5432:5432
-  #   expose:
-  #     - 5432
 
   app:
     container_name: store-backend
@@ -19,16 +17,17 @@ services:
     ports:
       - 8000:4000
     environment:
+      EMAIL_SECRET: "czmpfrduvibtunoc"
+      DATABASE_HOST: "dbsql"
+      DATABASE_USER: "postgres"
+      DATABASE_PASSWORD: "tylerjusfly1996"
+      DATABASE_NAME: shopcrm
+    depends_on:
+      - dbsql
     #   DATABASE_HOST: localhost
-      # DATABASE_USER: "postgres"
-      # DATABASE_PASSWORD: "tylerjusfly1996"
-      # DATABASE_NAME: shopcrm
     #   STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
     #   Client_URL: https://buy-tylerjusfly.vercel.app
     #   COINBASE_API_KEY: ${COINBASE_KEY}
-    # depends_on:
-    #         - dbsql
-    #  SQL_PORT: 3306
     #  PORT: 8081
     #  STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
     #  SERVICE_TAGS: prod
