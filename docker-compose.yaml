@@ -1,15 +1,15 @@
 version: '3'
 services:
-  dbsql:
-    container_name: postgres_container
-    image: postgres
-    # restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: tylerjusfly1996
-      POSTGRES_DB: shopcrm
-    ports:
-      - 5432:5432
+  # dbsql:
+  #   container_name: postgres_container
+  #   image: postgres
+  #   # restart: always
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: tylerjusfly1996
+  #     POSTGRES_DB: shopcrm
+  #   ports:
+  #     - 5432:5432
 
   app:
     container_name: store-backend
@@ -18,14 +18,18 @@ services:
       - 8000:4000
     environment:
       EMAIL_SECRET: "czmpfrduvibtunoc"
-      DATABASE_HOST: "dbsql"
-      DATABASE_USER: "postgres"
-      DATABASE_PASSWORD: "tylerjusfly1996"
-      DATABASE_NAME: shopcrm
+      DATABASE_HOST: "dpg-csp6ufd6l47c73a19s60-a"
+      DATABASE_USER: "root_user"
+      DATABASE_PASSWORD: "EeYWK8vg5asg2C8tT9YbCdZIfMZ8VKaC"
+      DATABASE_NAME: "shopcrm"
+      # DATABASE_HOST: "dbsql"
+      # DATABASE_USER: "postgres"
+      # DATABASE_PASSWORD: "tylerjusfly1996"
+      # DATABASE_NAME: shopcrm
     depends_on:
       - dbsql
     #   DATABASE_HOST: localhost
-    #   STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      # STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
     #   Client_URL: https://buy-tylerjusfly.vercel.app
     #   COINBASE_API_KEY: ${COINBASE_KEY}
     #  PORT: 8081
