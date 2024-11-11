@@ -1,13 +1,15 @@
 version: '3'
 services:
-  # dbsql:
-  #   image: postgres
-  #   environment:
-  #     POSTGRES_PASSWORD: tylerjusfly1996
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_DB: shopcrm
-  #   ports:
-  #     - 5432:5432
+  dbsql:
+    container_name: postgres_container
+    image: postgres
+    # restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: tylerjusfly1996
+      POSTGRES_DB: shopcrm
+    ports:
+      - 5432:5432
   #   expose:
   #     - 5432
 
@@ -16,11 +18,11 @@ services:
     image: store-backendv1
     ports:
       - 8000:4000
-    # environment:
+    environment:
     #   DATABASE_HOST: localhost
-    #   DATABASE_USER: "postgres"
-    #   DATABASE_PASSWORD: "tylerjusfly1996"
-    #   DATABASE_NAME: shopcrm
+      # DATABASE_USER: "postgres"
+      # DATABASE_PASSWORD: "tylerjusfly1996"
+      # DATABASE_NAME: shopcrm
     #   STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
     #   Client_URL: https://buy-tylerjusfly.vercel.app
     #   COINBASE_API_KEY: ${COINBASE_KEY}
