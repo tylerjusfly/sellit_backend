@@ -24,7 +24,7 @@ export const uniqueID = (length: number) => {
 
 export function adminKey(length: number) {
 	let result = "";
-	var chars = "0123456789ABCDEFGHIJKLMNPQRSTUVWXYZ";
+	var chars = '0123456789';
 	for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
 	return result;
   }

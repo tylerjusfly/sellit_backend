@@ -71,7 +71,7 @@ export const create = async (req: Request, res: Response) => {
 		const salt = randomBytes(30).toString('hex');
 		const hashedPass = pbkdf2Sync(password, salt, 1000, 64, `sha512`).toString(`hex`);
 
-		const verificationToken = adminKey(6);
+		const verificationToken = adminKey(4);
 
 		const createdUser = dataSource.getRepository(User).create({
 			username,
@@ -81,12 +81,13 @@ export const create = async (req: Request, res: Response) => {
 			email,
 			salt,
 		});
-		const results = await dataSource.getRepository(User).save(createdUser);
+
+		await dataSource.getRepository(User).save(createdUser);
 
 		/**SEND VERIFICATION EMAIL */
 		await sendUserVerificationToken(createdUser);
 
-		return handleSuccess(res, results, 'created user', 201, undefined);
+		return handleSuccess(res, {}, 'created user', 201, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
@@ -150,6 +151,10 @@ export const verifyMail = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'verification failed');
 		}
 
+		if (userWithEmail.active) {
+			return handleBadRequest(res, 400, 'Account is already verified');
+		}
+
 		if (userWithEmail.token !== code) {
 			return handleBadRequest(res, 400, 'verification failed');
 		}
@@ -159,9 +164,7 @@ export const verifyMail = async (req: Request, res: Response) => {
 
 		await userWithEmail.save();
 
-		const payload = await getToken(userWithEmail);
-
-		return handleSuccess(res, payload, 'user', 200, undefined);
+		return handleSuccess(res, {}, 'user', 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
@@ -185,7 +188,7 @@ export const resendVerificationCode = async (req: Request, res: Response) => {
 			return handleSuccess(res, {}, 'user', 200, undefined);
 		}
 
-		const verificationToken = adminKey(6);
+		const verificationToken = adminKey(4);
 		userWithEmail.token = verificationToken;
 
 		await userWithEmail.save();
