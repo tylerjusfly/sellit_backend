@@ -203,7 +203,7 @@ export const shopEdit = async (req: CustomRequest, res: Response) => {
 			isShop.store_font = store_font;
 		}
 
-		isShop.lastChanged_by = isUser.username;
+		isShop.lastChanged_by = isUser.storename;
 
 		await isShop.save();
 

@@ -1,11 +1,10 @@
 export type TLogin = {
-	username: string;
+	storename: string;
 	password: string;
 };
 
 export type TCreate = {
-	username: string;
-	fullname: string;
+	storename: string;
 	email: string;
 	password: string;
 	discord_link?: string;

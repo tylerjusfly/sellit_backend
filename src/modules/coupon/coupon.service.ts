@@ -188,7 +188,7 @@ export const editCoupon = async (req: CustomRequest, res: Response) => {
 
 		const user = req.user as ITokenPayload;
 
-		foundCoupon.lastChanged_by = user.username;
+		foundCoupon.lastChanged_by = user.storename;
 
 		await foundCoupon.save();
 

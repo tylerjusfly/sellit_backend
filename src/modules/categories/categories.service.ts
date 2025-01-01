@@ -182,7 +182,7 @@ export const editCategories = async (req: CustomRequest, res: Response) => {
 
 		const user = req.user as ITokenPayload;
 
-		foundCategory.lastChanged_by = user.username;
+		foundCategory.lastChanged_by = user.storename;
 
 		await foundCategory.save();
 

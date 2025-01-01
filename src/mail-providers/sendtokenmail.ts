@@ -12,7 +12,7 @@ export const sendUserVerificationToken = async (user: TUserType) => {
 		template: 'userverification',
 		context: {
 			email: user.email,
-			username: user.username,
+			storename: user.storename,
 			token: user.token,
 			companyname: company_name,
 		},

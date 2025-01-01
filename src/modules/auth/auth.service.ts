@@ -14,7 +14,7 @@ import { sendUserVerificationToken } from '../../mail-providers/sendtokenmail';
 
 export const loginUser = async (req: Request, res: Response) => {
 	try {
-		const { username, password }: TLogin = req.body;
+		const { storename, password }: TLogin = req.body;
 
 		const errors = validationResult(req);
 
@@ -28,7 +28,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
 		const IsUser = await dataSource.getRepository(User).findOne({
 			where: {
-				username,
+				storename,
 			},
 		});
 
@@ -52,9 +52,9 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
 	try {
-		const { username, fullname, email, password }: TCreate = req.body;
+		const { storename, email, password }: TCreate = req.body;
 
-		if (!fullname || !email || !password) {
+		if (!storename || !email || !password) {
 			return handleBadRequest(res, 400, 'all fields are required');
 		}
 
@@ -74,9 +74,8 @@ export const create = async (req: Request, res: Response) => {
 		const verificationToken = adminKey(4);
 
 		const createdUser = dataSource.getRepository(User).create({
-			username,
+			storename,
 			password: hashedPass,
-			fullname,
 			token: verificationToken,
 			email,
 			salt,

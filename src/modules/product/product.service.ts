@@ -90,7 +90,7 @@ export const editProduct = async (req: CustomRequest, res: Response) => {
 
 		const user = req.user as ITokenPayload;
 
-		productObj.lastChanged_by = user.username;
+		productObj.lastChanged_by = user.storename;
 
 		await productObj.save();
 

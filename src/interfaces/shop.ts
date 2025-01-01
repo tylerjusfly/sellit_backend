@@ -6,7 +6,7 @@ export type TShopType = {
 };
 
 export interface IShopPayload {
-	username: string;
+	storename: string;
 	user_type: string;
 	id: number;
 }

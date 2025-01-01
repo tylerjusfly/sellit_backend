@@ -4,10 +4,7 @@ import { CustomBaseEntity } from '../custom-base.entity';
 @Entity({ name: 'users' })
 export class User extends CustomBaseEntity {
 	@Column({ type: 'varchar', unique: true, nullable: false })
-	username!: string;
-
-	@Column({ type: 'varchar' })
-	fullname!: string;
+	storename!: string;
 
 	@Column({ type: 'varchar', default: 'shop_admin' })
 	user_type!: string;

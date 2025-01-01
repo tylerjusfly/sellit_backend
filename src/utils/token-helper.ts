@@ -3,7 +3,7 @@ import { TUserType } from '../interfaces/user';
 import * as jwt from 'jsonwebtoken';
 
 export interface ITokenPayload {
-	username: string;
+	storename: string;
 	user_type: string;
 	email: string;
 	verified: boolean;
@@ -14,7 +14,7 @@ const secret = 'scagamore';
 
 export const getPayload = (user: TUserType): ITokenPayload => {
 	const payload = {
-		username: user.username,
+		storename: user.storename,
 		user_type: user.user_type,
 		id: user.id,
 		verified: user.active,
@@ -28,7 +28,7 @@ export const getToken = async (user: TUserType) => {
 	const payload: ITokenPayload = getPayload(user);
 	const token = jwt.sign(
 		{
-			username: user.username,
+			storename: user.storename,
 			user_type: user.user_type,
 			id: user.id,
 		},

@@ -64,8 +64,8 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 				to: shopowner.email,
 				subject: 'Low credit',
 				html: `<div>
-            <p> Hello  ${shopowner.fullname} </p>
-            <p> <h3> Your credits on ${isShop.name} is Running low, Please Recharge </h3></p>
+            <p> Hello  ${shopowner.storename} </p>
+            <p> <h3> Your credits on is Running low, Please Recharge </h3></p>
             </div>`,
 			};
 

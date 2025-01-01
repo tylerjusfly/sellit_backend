@@ -1,7 +1,6 @@
 export type TUserType = {
 	id: number;
-	username: string;
-	fullname: string;
+	storename: string;
 	email: string;
 	telephone: string;
 	display_picture: string;
