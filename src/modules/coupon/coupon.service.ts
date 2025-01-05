@@ -163,7 +163,7 @@ export const fetchSingleCoupon = async (req: Request, res: Response) => {
 
 export const editCoupon = async (req: CustomRequest, res: Response) => {
 	try {
-		const { id }: { id?: number } = req.query;
+		const { id }: { id?: string } = req.query;
 
 		const { discount, max_use, items }: IeditCoupon = req.body;
 

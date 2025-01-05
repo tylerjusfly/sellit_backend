@@ -19,17 +19,17 @@ export const checkPaymentTypeVlidity = async (req: Request, res: Response, next:
 	}
 
 	// Check if payment in request is true and check the validity
-	if (crypto && !product_data.shop_id.coin_base_key) {
-		return handleBadRequest(res, 404, 'Gateway coinbase is not configured for shop');
-	}
+	// if (crypto && !product_data.shop_id.coin_base_key) {
+	// 	return handleBadRequest(res, 404, 'Gateway coinbase is not configured for shop');
+	// }
 
-	if (stripe && !product_data.shop_id.stripe_key) {
-		return handleBadRequest(res, 404, 'Gateway stripe is not configured for shop');
-	}
+	// if (stripe && !product_data.shop_id.stripe_key) {
+	// 	return handleBadRequest(res, 404, 'Gateway stripe is not configured for shop');
+	// }
 
-	if (cashapp && !product_data.shop_id.stripe_key) {
-		return handleBadRequest(res, 404, 'Gateway cashapp is not configured for shop');
-	}
+	// if (cashapp && !product_data.shop_id.stripe_key) {
+	// 	return handleBadRequest(res, 404, 'Gateway cashapp is not configured for shop');
+	// }
 
 	if (paypal) {
 		return handleBadRequest(res, 404, 'Gateway paypal is not configured for shop');

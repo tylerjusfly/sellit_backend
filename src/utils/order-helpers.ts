@@ -16,7 +16,7 @@ function removeId(stockId: string, quantity: number) {
 	return { productBought, newStock };
 }
 
-export const manipulateOrderItem = async (orderid: number, productid: string) => {
+export const manipulateOrderItem = async (orderid: string, productid: string) => {
 	// find order
 	const orderData = await dataSource.getRepository(Orders).findOne({
 		where: {
@@ -30,7 +30,7 @@ export const manipulateOrderItem = async (orderid: number, productid: string) =>
 
 	const prodsData = await dataSource.getRepository(Product).findOne({
 		where: {
-			unique_id: productid,
+			id: productid,
 		},
 	});
 

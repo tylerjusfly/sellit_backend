@@ -3,7 +3,7 @@ import { Orders } from '../database/entites/orders.entity';
 import { LogHelper } from '../utils/LogHelper';
 import { transporter } from './nodemailer';
 
-export const sendOrderMail = async (orderid: number) => {
+export const sendOrderMail = async (orderid: string) => {
 	const orderData = await dataSource.getRepository(Orders).findOne({
 		where: {
 			id: orderid,

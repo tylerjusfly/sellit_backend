@@ -1,18 +1,20 @@
-import { TShopType } from '../interfaces/shop';
-import { TUserType } from '../interfaces/user';
 import * as jwt from 'jsonwebtoken';
+import { User } from '../database/entites/user.entity';
 
 export interface ITokenPayload {
+	id: string;
 	storename: string;
 	user_type: string;
 	email: string;
 	verified: boolean;
-	id: number;
+	permissions: string[];
 }
 
-const secret = 'scagamore';
+export type cJwtPayload = Pick<ITokenPayload, 'storename' | 'user_type' | 'id'>;
 
-export const getPayload = (user: TUserType): ITokenPayload => {
+export const JWT_SECRET = 'scagamore';
+
+export const getPayload = (user: User): ITokenPayload => {
 	const payload = {
 		storename: user.storename,
 		user_type: user.user_type,
@@ -24,7 +26,7 @@ export const getPayload = (user: TUserType): ITokenPayload => {
 	return payload;
 };
 
-export const getToken = async (user: TUserType) => {
+export const getToken = async (user: User) => {
 	const payload: ITokenPayload = getPayload(user);
 	const token = jwt.sign(
 		{
@@ -32,28 +34,13 @@ export const getToken = async (user: TUserType) => {
 			user_type: user.user_type,
 			id: user.id,
 		},
-		secret,
+		JWT_SECRET,
 		{
-			expiresIn: 300000,
+			expiresIn: '24h',
 		}
 	);
 	return {
 		token,
 		payload,
-	};
-};
-
-export const getShopPayload = (shop: TShopType) => {
-	const payload = {
-		name: shop.name,
-		slug: shop.slug,
-		credit: shop.shop_credit,
-	};
-
-	const token = jwt.sign(payload, secret, {
-		expiresIn: '24h',
-	});
-	return {
-		token,
 	};
 };

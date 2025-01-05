@@ -8,8 +8,8 @@ import {
 } from 'typeorm';
 
 export abstract class CustomBaseEntity extends BaseEntity {
-	@PrimaryGeneratedColumn('increment')
-	id!: number;
+	@PrimaryGeneratedColumn('uuid')
+	id!: string;
 
 	@Column({ type: 'varchar', length: 300, nullable: true })
 	lastChanged_by!: string;

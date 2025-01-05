@@ -6,7 +6,7 @@ import { dataSource } from '../../database/dataSource';
 import { User } from '../../database/entites/user.entity';
 import { isValidPassword } from '../../utils/password-helper';
 import { pbkdf2Sync, randomBytes } from 'crypto';
-import { ITokenPayload, getPayload, getToken } from '../../utils/token-helper';
+import { ITokenPayload, cJwtPayload, getPayload, getToken } from '../../utils/token-helper';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { adminKey, uniqueID } from '../../utils/generateIds';
 import { Admins } from '../../database/entites/admins.entity';
@@ -94,7 +94,7 @@ export const create = async (req: Request, res: Response) => {
 
 export const getMyProfile = async (req: CustomRequest, res: Response) => {
 	try {
-		const userReq = req.user as ITokenPayload;
+		const userReq = req.user as cJwtPayload;
 
 		const isUser = await dataSource.getRepository(User).findOne({
 			where: { id: userReq.id },

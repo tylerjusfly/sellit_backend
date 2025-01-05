@@ -12,6 +12,9 @@ export class User extends CustomBaseEntity {
 	@Column({ type: 'varchar', unique: true, nullable: false })
 	email!: string;
 
+	@Column({ type: 'varchar', unique: false, nullable: true })
+	parent_store!: string;
+
 	@Column({ type: 'varchar', nullable: true })
 	telephone!: string;
 

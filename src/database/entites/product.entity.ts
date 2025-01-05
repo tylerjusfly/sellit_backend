@@ -2,21 +2,19 @@ import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne } fro
 import { CustomBaseEntity } from '../custom-base.entity';
 import { Shop } from './shop.entity';
 import { Coupon } from './coupon.entity';
+import { User } from './user.entity';
 
 @Entity({ name: 'products' })
 export class Product extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: false })
 	name!: string;
 
-	@Column({ type: 'varchar', unique: true, nullable: false })
-	unique_id!: string;
+	// @Column({ type: 'varchar', unique: true, nullable: false })
+	// unique_id!: string;
 
-	@ManyToOne(() => Shop, { nullable: false, eager: true })
+	@ManyToOne(() => User, { nullable: false, eager: true })
 	@JoinColumn({ name: 'shop_id' })
-	shop_id!: Shop;
-
-	// @Column({ name: 'shop_id', nullable: false })
-	// shop_id!: Shop; // Assuming shop_id is a number type (adjust as needed)
+	shop_id!: User;
 
 	@Column({ type: 'varchar', nullable: true, default: '/images/products/attachment.png' })
 	image_src!: string;

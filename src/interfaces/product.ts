@@ -1,5 +1,5 @@
 export type IEditProduct = {
-	id: number;
+	id: string;
 	name?: string;
 	amount?: number;
 	paypal: boolean;
@@ -20,7 +20,7 @@ export type IEditProduct = {
 };
 
 export type IgetAllProduct = {
-	shopid?: number;
+	shopid?: string;
 	page?: number;
 	limit?: number;
 	unlisted?: string;

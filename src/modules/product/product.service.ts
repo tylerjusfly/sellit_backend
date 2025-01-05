@@ -1,6 +1,5 @@
 import { Response, Request } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
-import { GenerateProductId } from '../../utils/generateIds';
 import { dataSource } from '../../database/dataSource';
 import { Shop } from '../../database/entites/shop.entity';
 import { Product } from '../../database/entites/product.entity';
@@ -11,6 +10,7 @@ import { IPaginate } from '../../interfaces/pagination';
 import { Brackets } from 'typeorm';
 import { Categories } from '../../database/entites/categories.entity';
 import { convertToSlug } from '../../utils/convertToSlug';
+import { User } from '../../database/entites/user.entity';
 
 export const CreateProduct = async (req: Request, res: Response) => {
 	try {
@@ -29,12 +29,12 @@ export const CreateProduct = async (req: Request, res: Response) => {
 		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
 
 		// Generate new unique product ID
-		const productID = GenerateProductId();
+		// const productID = GenerateProductId();
 
 		// Create Product
 		const createProductObj = dataSource.getRepository(Product).create({
 			shop_id: shopid,
-			unique_id: productID,
+			// unique_id: productID,
 			name: productname,
 		});
 
@@ -75,7 +75,6 @@ export const editProduct = async (req: CustomRequest, res: Response) => {
 		} else {
 			productObj.stock = 0;
 		}
-		
 
 		if (restData.amount) {
 			productObj.amount = restData.amount;
@@ -104,28 +103,14 @@ export const getSpecificProduct = async (req: Request, res: Response) => {
 	try {
 		const { uniqueId, id }: { uniqueId?: string; id?: string } = req.query;
 
-		if (!uniqueId && !id) {
+		if (!id) {
 			return handleBadRequest(res, 400, 'unique id / id is required');
-		}
-
-		if (uniqueId && uniqueId !== '') {
-			const foundProduct = await Product.findOne({
-				where: {
-					unique_id: uniqueId,
-				},
-			});
-
-			if (!foundProduct) {
-				return handleBadRequest(res, 404, 'product does not exist');
-			}
-
-			return handleSuccess(res, foundProduct, 'found', 200, undefined);
 		}
 
 		if (id && id !== '') {
 			const foundProduct = await Product.findOne({
 				where: {
-					id: parseInt(id),
+					id: id,
 				},
 			});
 
@@ -153,7 +138,7 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 		const offset = page ? (Number(page) - 1) * page_limit : 0;
 
 		// Find shop
-		const foundShop = await Shop.findOne({
+		const foundShop = await User.findOne({
 			where: {
 				id: shopid,
 			},
@@ -165,7 +150,7 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 		const query = dataSource
 			.getRepository(Product)
 			.createQueryBuilder('q')
-			.select(['q.id', 'q.name', 'q.unique_id', 'q.product_type', 'q.amount', 'q.stock']);
+			.select(['q.id', 'q.name', 'q.product_type', 'q.amount', 'q.stock']);
 
 		query.where('q.shop_id = :val', { val: shopid });
 
@@ -210,7 +195,7 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 
 export const deleteProduct = async (req: Request, res: Response) => {
 	try {
-		const { uuid }: { uuid?: number } = req.query;
+		const { uuid }: { uuid?: string } = req.query;
 
 		if (!uuid) {
 			return handleBadRequest(res, 400, 'product id is required');
@@ -319,7 +304,7 @@ export const getAllProductByShopname = async (req: Request, res: Response) => {
 
 export const fetchProductCategory = async (req: Request, res: Response) => {
 	try {
-		const { uuid }: { uuid?: number } = req.query;
+		const { uuid }: { uuid?: string } = req.query;
 
 		if (!uuid) {
 			return handleBadRequest(res, 400, 'uuid is required');
