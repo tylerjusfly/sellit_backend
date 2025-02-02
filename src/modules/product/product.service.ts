@@ -12,30 +12,29 @@ import { Categories } from '../../database/entites/categories.entity';
 import { convertToSlug } from '../../utils/convertToSlug';
 import { User } from '../../database/entites/user.entity';
 
-export const CreateProduct = async (req: Request, res: Response) => {
+export const CreateProduct = async (req: CustomRequest, res: Response) => {
 	try {
-		const { productname, shopid } = req.body;
+		const { productName, productType } = req.body;
 
-		if (!shopid || !productname) {
-			return handleBadRequest(res, 400, 'shop id || product name is required');
+		if (!productName || !productType) {
+			return handleBadRequest(res, 400, 'product type or product name is required');
 		}
 
-		const isShop = await dataSource
-			.getRepository(Shop)
+		const user = req.user as ITokenPayload;
+
+		const UserShop = await dataSource
+			.getRepository(User)
 			.createQueryBuilder('shop')
-			.where('shop.id = :id', { id: shopid })
+			.where('shop.id = :id', { id: user.id })
 			.getOne();
 
-		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
-
-		// Generate new unique product ID
-		// const productID = GenerateProductId();
+		if (!UserShop) return handleBadRequest(res, 404, 'shop not found');
 
 		// Create Product
 		const createProductObj = dataSource.getRepository(Product).create({
-			shop_id: shopid,
-			// unique_id: productID,
-			name: productname,
+			shop_id: UserShop,
+			name: productName,
+			product_type: productType,
 		});
 
 		const result = await dataSource.getRepository(Product).save(createProductObj);
