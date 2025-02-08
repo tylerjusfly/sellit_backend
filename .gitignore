@@ -3,3 +3,4 @@ node_modules
 test.txt
 yarn.lock
 package-lock.json
+dist/
