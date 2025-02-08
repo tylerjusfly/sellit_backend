@@ -8,7 +8,7 @@ type PAYMENT_TYPE = 'Coinbase' | 'Stripe' | 'Paypal' | 'CashApp';
 
 export const fetchShopPayments = async (req: Request, res: Response) => {
 	try {
-		const { shopid }: { shopid?: number } = req.query;
+		const { shopid }: { shopid?: string } = req.query;
 
 		const isShop = await findShop(shopid);
 
@@ -29,7 +29,7 @@ export const fetchShopPayments = async (req: Request, res: Response) => {
 
 export const disconnectPayment = async (req: Request, res: Response) => {
 	try {
-		const { shopid, payment }: { shopid?: number; payment?: PAYMENT_TYPE } = req.query;
+		const { shopid, payment }: { shopid?: string; payment?: PAYMENT_TYPE } = req.query;
 
 		const isShop = await findShop(shopid);
 
@@ -71,7 +71,7 @@ export const disconnectPayment = async (req: Request, res: Response) => {
 
 export const connectPayment = async (req: Request, res: Response) => {
 	try {
-		const { shopid, payment, key }: { shopid: number; payment: PAYMENT_TYPE; key: string } =
+		const { shopid, payment, key }: { shopid: string; payment: PAYMENT_TYPE; key: string } =
 			req.body;
 
 		if (!payment || !key) return handleBadRequest(res, 400, 'payment or key is required');
