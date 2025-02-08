@@ -27,7 +27,7 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 		// Find Product
 		const isProduct = await dataSource.getRepository(Product).findOne({
 			where: {
-				unique_id: productid,
+				id: productid,
 			},
 		});
 
@@ -42,7 +42,7 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 		// find shop
 		const isShop = await dataSource.getRepository(Shop).findOne({
 			where: {
-				slug: isProduct.shop_id.slug,
+				slug: '',
 			},
 			loadEagerRelations: true,
 		});

@@ -8,7 +8,7 @@ export type ICreateOrder = {
 };
 
 export type TallOrders = {
-	shopid?: number;
+	shopid?: string;
 	page?: number;
 	limit?: number;
 	status?: string;

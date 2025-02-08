@@ -76,7 +76,7 @@ export const fetchBlacklist = async (req: Request, res: Response) => {
 
 export const deleteBlacklist = async (req: Request, res: Response) => {
 	try {
-		const { uuid }: { uuid?: number } = req.query;
+		const { uuid }: { uuid?: string } = req.query;
 
 		if (!uuid) {
 			return handleBadRequest(res, 400, 'coupon id is required');

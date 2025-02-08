@@ -60,7 +60,7 @@ export const createShop = async (req: CustomRequest, res: Response) => {
 
 export const deleteShop = async (req: Request, res: Response) => {
 	try {
-		const { uuid }: { uuid?: number } = req.query;
+		const { uuid }: { uuid?: string } = req.query;
 
 		if (!uuid) {
 			return handleBadRequest(res, 400, 'shop id is required');
@@ -175,7 +175,7 @@ export const shopEdit = async (req: CustomRequest, res: Response) => {
 			shopname,
 			store_text,
 			store_font,
-		}: { shopid: number; shopname: string; store_text: string; store_font: string } = req.body;
+		}: { shopid: string; shopname: string; store_text: string; store_font: string } = req.body;
 
 		const userReq = req.user as ITokenPayload;
 
