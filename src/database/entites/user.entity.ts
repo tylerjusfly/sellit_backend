@@ -30,6 +30,9 @@ export class User extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: true })
 	discord_link!: string;
 
+	@Column({ type: 'varchar', nullable: true })
+	stripe_key!: string | null;
+
 	@Column({ nullable: false })
 	password!: string;
 

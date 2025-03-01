@@ -9,8 +9,8 @@ export class Product extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: false })
 	name!: string;
 
-	// @Column({ type: 'varchar', unique: true, nullable: false })
-	// unique_id!: string;
+	@Column({ type: 'varchar', nullable: true })
+	description!: string;
 
 	@ManyToOne(() => User, { nullable: false, eager: true })
 	@JoinColumn({ name: 'shop_id' })
@@ -41,13 +41,32 @@ export class Product extends CustomBaseEntity {
 	cashapp!: boolean;
 
 	@Column({ type: 'boolean', default: false })
+	private_mode!: boolean;
+
+	@Column({ type: 'boolean', default: false })
 	warranty!: boolean;
 
 	@Column({ type: 'varchar', nullable: true })
 	warranty_msg!: string;
 
-	@Column({ type: 'varchar', nullable: false, default: 'Serial/Code' })
+	@Column({ type: 'boolean', default: false })
+	enable_youtube!: boolean;
+
+	@Column({ type: 'varchar', nullable: true })
+	video_url!: string;
+
+	@Column({ type: 'varchar', nullable: false, default: 'serial' })
 	product_type!: string;
+
+	@Column({ type: 'varchar', nullable: false, default: 'all' })
+	categoryid!: string;
+
+	@Column({
+		type: 'varchar',
+		nullable: false,
+		default: 'Thank You for Your Interest in Our Products!',
+	})
+	seller_message!: string;
 
 	@Column({ type: 'float4', default: 0 })
 	amount!: number;
@@ -55,11 +74,11 @@ export class Product extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: true })
 	service_info!: string;
 
-	@Column({ type: 'varchar', nullable: true })
-	description!: string;
-
 	@Column({ type: 'integer', default: 10 })
 	max_purchase!: number;
+
+	@Column({ type: 'integer', default: 1 })
+	min_purchase!: number;
 
 	@Column({ type: 'varchar', nullable: true })
 	webhook_url!: string;

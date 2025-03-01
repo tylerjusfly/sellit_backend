@@ -47,7 +47,7 @@ export const CreateProduct = async (req: CustomRequest, res: Response) => {
 
 export const editProduct = async (req: CustomRequest, res: Response) => {
 	try {
-		const { id, unlisted, items, ...restData }: IEditProduct = req.body;
+		const { id, items, ...restData }: IEditProduct = req.body;
 
 		const productObj = await Product.findOne({
 			where: {
@@ -61,11 +61,6 @@ export const editProduct = async (req: CustomRequest, res: Response) => {
 
 		Object.assign(productObj, restData);
 
-		// Start update
-		if (unlisted) {
-			productObj.unlisted = unlisted === '1' ? true : false;
-		}
-
 		productObj.items = items || null;
 
 		if (items && items !== '') {
@@ -75,13 +70,13 @@ export const editProduct = async (req: CustomRequest, res: Response) => {
 			productObj.stock = 0;
 		}
 
-		if (restData.amount) {
-			productObj.amount = restData.amount;
-		}
+		// if (restData.amount) {
+		// 	productObj.amount = restData.amount;
+		// }
 
-		if (restData.description && restData.description !== '') {
-			productObj.description = restData.description;
-		}
+		// if (restData.description && restData.description !== '') {
+		// 	productObj.description = restData.description;
+		// }
 		// if (restData.productImage && restData.productImage !== '') {
 		// 	productObj.image_src = restData.productImage;
 		// }
@@ -100,25 +95,23 @@ export const editProduct = async (req: CustomRequest, res: Response) => {
 
 export const getSpecificProduct = async (req: Request, res: Response) => {
 	try {
-		const { uniqueId, id }: { uniqueId?: string; id?: string } = req.query;
+		const { id }: { id?: string } = req.query;
 
 		if (!id) {
-			return handleBadRequest(res, 400, 'unique id / id is required');
+			return handleBadRequest(res, 400, 'id is required');
 		}
 
-		if (id && id !== '') {
-			const foundProduct = await Product.findOne({
-				where: {
-					id: id,
-				},
-			});
+		const foundProduct = await Product.findOne({
+			where: {
+				id: id,
+			},
+		});
 
-			if (!foundProduct) {
-				return handleBadRequest(res, 404, 'product does not exist');
-			}
-
-			return handleSuccess(res, foundProduct, 'found', 200, undefined);
+		if (!foundProduct) {
+			return handleBadRequest(res, 404, 'product does not exist');
 		}
+
+		return handleSuccess(res, foundProduct, 'found', 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
