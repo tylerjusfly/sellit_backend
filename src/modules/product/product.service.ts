@@ -14,10 +14,10 @@ import { User } from '../../database/entites/user.entity';
 
 export const CreateProduct = async (req: CustomRequest, res: Response) => {
 	try {
-		const { productName, productType } = req.body;
+		const { productName, productType, description } = req.body;
 
-		if (!productName || !productType) {
-			return handleBadRequest(res, 400, 'product type or product name is required');
+		if (!productName || !productType || !description) {
+			return handleBadRequest(res, 400, 'required fields are missings');
 		}
 
 		const user = req.user as ITokenPayload;
@@ -35,6 +35,7 @@ export const CreateProduct = async (req: CustomRequest, res: Response) => {
 			shop_id: UserShop,
 			name: productName,
 			product_type: productType,
+			description: description,
 		});
 
 		const result = await dataSource.getRepository(Product).save(createProductObj);

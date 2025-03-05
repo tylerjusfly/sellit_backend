@@ -28,16 +28,16 @@ export class Product extends CustomBaseEntity {
 	@Column({ type: 'boolean', default: false })
 	unlisted!: boolean;
 
-	@Column({ type: 'boolean', default: true })
+	@Column({ type: 'boolean', default: false })
 	paypal!: boolean;
 
-	@Column({ type: 'boolean', default: true })
+	@Column({ type: 'boolean', default: false })
 	stripe!: boolean;
 
-	@Column({ type: 'boolean', default: true })
+	@Column({ type: 'boolean', default: false })
 	crypto!: boolean;
 
-	@Column({ type: 'boolean', default: true })
+	@Column({ type: 'boolean', default: false })
 	cashapp!: boolean;
 
 	@Column({ type: 'boolean', default: false })
