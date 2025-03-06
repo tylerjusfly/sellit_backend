@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { CustomBaseEntity } from '../custom-base.entity';
-import { Shop } from './shop.entity';
+import { Store } from './store.entity';
 import { ORDER_STATUS } from '../../constants/result';
 
 @Entity({ name: 'orders' })
@@ -38,7 +38,7 @@ export class Orders extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: false, default: 0 })
 	platform_fee!: string;
 
-	@ManyToOne(() => Shop, { nullable: false, eager: true })
+	@ManyToOne(() => Store, { nullable: false, eager: true })
 	@JoinColumn({ name: 'shop_id' })
-	shop_id!: Shop;
+	shop_id!: Store;
 }

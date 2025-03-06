@@ -1,9 +1,13 @@
-// import { Request, Response } from 'express';
-// import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
+import { Request, Response } from 'express';
+import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
+import { dataSource } from '../../database/dataSource';
+import { ICategories } from '../../interfaces/categories';
+import { Categories } from '../../database/entites/categories.entity';
+import { CustomRequest } from '../../middlewares/verifyauth';
+import { ITokenPayload } from '../../utils/token-helper';
+import { Store } from '../../database/entites/store.entity';
 // import { ICategories, IeditCategories, IgetAllCat } from '../../interfaces/categories';
-// import { dataSource } from '../../database/dataSource';
 // import { Categories } from '../../database/entites/categories.entity';
-// import { Shop } from '../../database/entites/shop.entity';
 // import { GenerateCategoryid } from '../../utils/generateIds';
 // import { IPaginate } from '../../interfaces/pagination';
 // import { ILike } from 'typeorm';
@@ -22,46 +26,35 @@
 // 	return !existingCategory;
 // };
 
-// export const CreateCategories = async (req: Request, res: Response) => {
-// 	try {
-// 		const { shop_id, category_name }: ICategories = req.body;
+export const CreateCategories = async (req: CustomRequest, res: Response) => {
+	try {
+		const { category_name }: ICategories = req.body;
 
-// 		if (!shop_id || !category_name) {
-// 			return handleBadRequest(res, 400, 'shop id or name is required');
-// 		}
+		const user = req.user as ITokenPayload;
 
-// 		const isShop = await dataSource
-// 			.getRepository(Shop)
-// 			.createQueryBuilder('shop')
-// 			.where('shop.id = :id', { id: shop_id })
-// 			.getOne();
+		let shop_id = user.id;
 
-// 		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
+		const isShop = await dataSource
+			.getRepository(Store)
+			.createQueryBuilder('shop')
+			.where('shop.id = :id', { id: shop_id })
+			.getOne();
 
-// 		//check if category name already exist
-// 		const isUnique = await isCategoryUnique(shop_id, category_name);
+		if (!isShop) return handleBadRequest(res, 404, 'store not found');
 
-// 		if (!isUnique) {
-// 			return handleBadRequest(res, 400, 'you already created this category');
-// 		}
+		const categoryCreate = dataSource.getRepository(Categories).create({
+			shop_id,
+			category_name,
+			shop_name: isShop.storename,
+		});
 
-// 		// Generate new unique Category ID
-// 		const category_id = GenerateCategoryid();
+		const result = await categoryCreate.save();
 
-// 		const categoryCreate = dataSource.getRepository(Categories).create({
-// 			shop_id,
-// 			category_name,
-// 			category_id,
-// 			shop_name: isShop.name,
-// 		});
-
-// 		const result = await categoryCreate.save();
-
-// 		return handleSuccess(res, result, 'created category', 201, undefined);
-// 	} catch (error) {
-// 		return handleError(res, error);
-// 	}
-// };
+		return handleSuccess(res, result, 'created category', 201, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
 
 // export const fetchCategories = async (req: Request, res: Response) => {
 // 	try {
@@ -76,7 +69,7 @@
 // 		const offset = page ? (Number(page) - 1) * page_limit : 0;
 
 // 		const isShop = await dataSource
-// 			.getRepository(Shop)
+// 			.getRepository(Store)
 // 			.createQueryBuilder('shop')
 // 			.where('shop.id = :id', { id: shop_id })
 // 			.getOne();
@@ -203,7 +196,7 @@
 // 		// const slugged = convertToSlug(name);
 
 // 		// const isShop = await dataSource
-// 		// 	.getRepository(Shop)
+// 		// 	.getRepository(Store)
 // 		// 	.createQueryBuilder('shop')
 // 		// 	.where('shop.slug = :name', { name: slugged })
 // 		// 	.getOne();

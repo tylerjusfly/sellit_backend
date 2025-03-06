@@ -3,7 +3,7 @@ import { handleBadRequest, handleError, handleSuccess } from '../../constants/re
 import { ICoupon, IeditCoupon } from '../../interfaces/coupon';
 import { Coupon } from '../../database/entites/coupon.entity';
 import { dataSource } from '../../database/dataSource';
-import { Shop } from '../../database/entites/shop.entity';
+import { Store } from '../../database/entites/shop.entity';
 import { IPaginate } from '../../interfaces/pagination';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { ITokenPayload } from '../../utils/token-helper';
@@ -34,7 +34,7 @@ export const createCoupon = async (req: Request, res: Response) => {
 		}
 
 		const isShop = await dataSource
-			.getRepository(Shop)
+			.getRepository(Store)
 			.createQueryBuilder('shop')
 			.where('shop.id = :id', { id: shopid })
 			.getOne();
@@ -82,11 +82,9 @@ export const checkCouponCode = async (req: Request, res: Response) => {
 			return res.status(200).json({ status: false });
 		}
 
-		
 		if (couponCode.max_use <= couponCode.total_usage) {
 			return res.status(200).json({ status: false });
 		}
-		
 
 		// else coupon is valid
 		return res.status(200).json({ status: true, discount: couponCode.discount });
@@ -108,7 +106,7 @@ export const fetchCoupons = async (req: Request, res: Response) => {
 		const offset = page ? (Number(page) - 1) * page_limit : 0;
 
 		const isShop = await dataSource
-			.getRepository(Shop)
+			.getRepository(Store)
 			.createQueryBuilder('shop')
 			.where('shop.id = :id', { id: shop_id })
 			.getOne();

@@ -1,10 +1,10 @@
 export interface ICategories {
 	category_name: string;
-	shop_id: number;
+	shop_id: string;
 }
 
 export interface IgetAllCat {
-	shop_id?: number;
+	shop_id?: string;
 	page?: number;
 	limit?: number;
 	value?: string;

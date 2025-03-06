@@ -3,7 +3,6 @@ import { TAdminLogin, TCreate, TLogin, TUserVerify } from '../../interfaces/auth
 import { validationResult } from 'express-validator';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
 import { dataSource } from '../../database/dataSource';
-import { User } from '../../database/entites/user.entity';
 import { isValidPassword } from '../../utils/password-helper';
 import { pbkdf2Sync, randomBytes } from 'crypto';
 import { ITokenPayload, cJwtPayload, getPayload, getToken } from '../../utils/token-helper';
@@ -11,6 +10,7 @@ import { CustomRequest } from '../../middlewares/verifyauth';
 import { adminKey, uniqueID } from '../../utils/generateIds';
 import { Admins } from '../../database/entites/admins.entity';
 import { sendUserVerificationToken } from '../../mail-providers/sendtokenmail';
+import { Store } from '../../database/entites/store.entity';
 
 export const loginUser = async (req: Request, res: Response) => {
 	try {
@@ -26,7 +26,7 @@ export const loginUser = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, errorMessageString);
 		}
 
-		const IsUser = await dataSource.getRepository(User).findOne({
+		const IsUser = await dataSource.getRepository(Store).findOne({
 			where: {
 				storename,
 			},
@@ -58,7 +58,7 @@ export const create = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'all fields are required');
 		}
 
-		const IsEmail = await dataSource.getRepository(User).findOne({
+		const IsEmail = await dataSource.getRepository(Store).findOne({
 			where: {
 				email,
 			},
@@ -73,7 +73,7 @@ export const create = async (req: Request, res: Response) => {
 
 		const verificationToken = adminKey(4);
 
-		const createdUser = dataSource.getRepository(User).create({
+		const createdStore = dataSource.getRepository(Store).create({
 			storename,
 			password: hashedPass,
 			token: verificationToken,
@@ -81,12 +81,12 @@ export const create = async (req: Request, res: Response) => {
 			salt,
 		});
 
-		await dataSource.getRepository(User).save(createdUser);
+		await dataSource.getRepository(Store).save(createdStore);
 
 		/**SEND VERIFICATION EMAIL */
-		await sendUserVerificationToken(createdUser);
+		await sendUserVerificationToken(createdStore);
 
-		return handleSuccess(res, {}, 'created user', 201, undefined);
+		return handleSuccess(res, {}, 'created store', 201, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
@@ -96,7 +96,7 @@ export const getMyProfile = async (req: CustomRequest, res: Response) => {
 	try {
 		const userReq = req.user as cJwtPayload;
 
-		const isUser = await dataSource.getRepository(User).findOne({
+		const isUser = await dataSource.getRepository(Store).findOne({
 			where: { id: userReq.id },
 		});
 
@@ -140,7 +140,7 @@ export const verifyMail = async (req: Request, res: Response) => {
 	try {
 		const { email, code }: TUserVerify = req.body;
 
-		const userWithEmail = await dataSource.getRepository(User).findOne({
+		const userWithEmail = await dataSource.getRepository(Store).findOne({
 			where: {
 				email,
 			},
@@ -177,7 +177,7 @@ export const resendVerificationCode = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'email is required');
 		}
 
-		const userWithEmail = await dataSource.getRepository(User).findOne({
+		const userWithEmail = await dataSource.getRepository(Store).findOne({
 			where: {
 				email,
 			},

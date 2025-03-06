@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
 import { convertToSlug } from '../../utils/convertToSlug';
 import { dataSource } from '../../database/dataSource';
-import { Shop } from '../../database/entites/shop.entity';
+import { Store } from '../../database/entites/shop.entity';
 import { IPaginate } from '../../interfaces/pagination';
-import { User } from '../../database/entites/user.entity';
+import { Store } from '../../database/entites/store.entity';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { ITokenPayload } from '../../utils/token-helper';
 import { Brackets } from 'typeorm';
@@ -26,7 +26,7 @@ export const createShop = async (req: CustomRequest, res: Response) => {
 
 		const userReq = req.user as ITokenPayload;
 
-		const isShopOwner = await dataSource.getRepository(User).findOne({
+		const isShopOwner = await dataSource.getRepository(Store).findOne({
 			where: {
 				id: userReq.id,
 			},
@@ -36,21 +36,21 @@ export const createShop = async (req: CustomRequest, res: Response) => {
 			return handleBadRequest(res, 404, 'shop owner not found');
 		}
 
-		const IsShop = await dataSource.getRepository(Shop).findOne({
+		const IsShop = await dataSource.getRepository(Store).findOne({
 			where: {
 				slug: slugged,
 			},
 		});
 
-		if (IsShop) return handleBadRequest(res, 400, 'Shop Already Exist');
+		if (IsShop) return handleBadRequest(res, 400, 'Store Already Exist');
 
-		const createShop = dataSource.getRepository(Shop).create({
+		const createShop = dataSource.getRepository(Store).create({
 			name: shopname,
 			slug: slugged,
 			shop_owner: isShopOwner,
 		});
 
-		const result = await dataSource.getRepository(Shop).save(createShop);
+		const result = await dataSource.getRepository(Store).save(createShop);
 
 		return handleSuccess(res, result, 'created shop', 201, undefined);
 	} catch (error) {
@@ -66,7 +66,7 @@ export const deleteShop = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'shop id is required');
 		}
 
-		const isShop = await dataSource.getRepository(Shop).findOne({
+		const isShop = await dataSource.getRepository(Store).findOne({
 			where: { id: uuid },
 		});
 
@@ -90,14 +90,14 @@ export const getAllShops = async (req: CustomRequest, res: Response) => {
 
 		const userReq = req.user as ITokenPayload;
 
-		const isUser = await dataSource.getRepository(User).findOne({
+		const isUser = await dataSource.getRepository(Store).findOne({
 			where: { id: userReq.id },
 		});
 
 		if (!isUser) return handleBadRequest(res, 404, 'user not found');
 
 		const query = dataSource
-			.getRepository(Shop)
+			.getRepository(Store)
 			.createQueryBuilder('q')
 			.leftJoinAndSelect('q.shop_owner', 'user')
 			.where('q.shop_owner = :user', { user: isUser.id });
@@ -143,14 +143,14 @@ export const authenticateShop = async (req: CustomRequest, res: Response) => {
 
 		const userReq = req.user as ITokenPayload;
 
-		const isUser = await dataSource.getRepository(User).findOne({
+		const isUser = await dataSource.getRepository(Store).findOne({
 			where: { id: userReq.id },
 		});
 
 		if (!isUser) return handleBadRequest(res, 404, 'user not found');
 
 		const isShop = await dataSource
-			.getRepository(Shop)
+			.getRepository(Store)
 			.createQueryBuilder('shop')
 			.leftJoinAndSelect('shop.shop_owner', 'user')
 			.where('shop.id = :id', { id: shopid })
@@ -179,13 +179,13 @@ export const shopEdit = async (req: CustomRequest, res: Response) => {
 
 		const userReq = req.user as ITokenPayload;
 
-		const isUser = await dataSource.getRepository(User).findOne({
+		const isUser = await dataSource.getRepository(Store).findOne({
 			where: { id: userReq.id },
 		});
 
 		if (!isUser) return handleBadRequest(res, 404, 'user not found');
 
-		const isShop = await dataSource.getRepository(Shop).findOne({
+		const isShop = await dataSource.getRepository(Store).findOne({
 			where: { id: shopid },
 		});
 
@@ -229,7 +229,7 @@ export const authenticateShopByname = async (req: Request, res: Response) => {
 		const slugged = convertToSlug(shopname);
 
 		const isShop = await dataSource
-			.getRepository(Shop)
+			.getRepository(Store)
 			.createQueryBuilder('shop')
 			.select([
 				'shop.id',

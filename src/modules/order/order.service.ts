@@ -4,7 +4,7 @@ import { handleBadRequest, handleError, handleSuccess } from '../../constants/re
 import { ICreateOrder, TallOrders } from '../../interfaces/orders';
 import { dataSource } from '../../database/dataSource';
 import { Product } from '../../database/entites/product.entity';
-import { Shop } from '../../database/entites/shop.entity';
+import { Store } from '../../database/entites/shop.entity';
 import { uniqueID } from '../../utils/generateIds';
 import { Orders } from '../../database/entites/orders.entity';
 import moment from 'moment';
@@ -40,7 +40,7 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 		}
 
 		// find shop
-		const isShop = await dataSource.getRepository(Shop).findOne({
+		const isShop = await dataSource.getRepository(Store).findOne({
 			where: {
 				slug: '',
 			},
@@ -164,7 +164,7 @@ export const getAllOrder = async (req: CustomRequest, res: Response) => {
 		const offset = page ? (Number(page) - 1) * page_limit : 0;
 
 		// find shop
-		const isShop = await dataSource.getRepository(Shop).findOne({
+		const isShop = await dataSource.getRepository(Store).findOne({
 			where: {
 				id: shopid,
 			},
@@ -292,7 +292,7 @@ export const getPopularPayment = async (req: CustomRequest, res: Response) => {
 	try {
 		const shopid = req.query.shopid as any;
 		// find shop
-		const isShop = await dataSource.getRepository(Shop).findOne({
+		const isShop = await dataSource.getRepository(Store).findOne({
 			where: {
 				id: shopid,
 			},

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { handleBadRequest } from '../constants/response-handler';
-import { User } from '../database/entites/user.entity';
+import { Store } from '../database/entites/store.entity';
 import { dataSource } from '../database/dataSource';
 
 export const checkstorenameIsAvailable = async (
@@ -14,7 +14,7 @@ export const checkstorenameIsAvailable = async (
 		return handleBadRequest(res, 400, 'storename is required');
 	}
 
-	const storenameExists = await dataSource.getRepository(User).findOne({
+	const storenameExists = await dataSource.getRepository(Store).findOne({
 		where: {
 			storename,
 		},

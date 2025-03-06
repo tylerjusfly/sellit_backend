@@ -4,10 +4,10 @@ import { CustomBaseEntity } from '../custom-base.entity';
 @Entity({ name: 'categories' })
 export class Categories extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: false })
-	shop_id!: number;
+	shop_id!: string;
 
-	@Column({ type: 'varchar', nullable: false })
-	category_id!: string;
+	// @Column({ type: 'varchar', nullable: false })
+	// category_id!: string;
 
 	@Column({ type: 'varchar', nullable: false })
 	category_name!: string;
@@ -17,7 +17,4 @@ export class Categories extends CustomBaseEntity {
 
 	@Column({ type: 'varchar', nullable: false })
 	shop_name!: string;
-
-	@Column({ type: 'simple-array', nullable: true })
-	products!: string[];
 }

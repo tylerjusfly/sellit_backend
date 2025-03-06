@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken';
-import { User } from '../database/entites/user.entity';
+import { Store } from '../database/entites/store.entity';
 
 export interface ITokenPayload {
 	id: string;
@@ -14,25 +14,25 @@ export type cJwtPayload = Pick<ITokenPayload, 'storename' | 'user_type' | 'id'>;
 
 export const JWT_SECRET = 'scagamore';
 
-export const getPayload = (user: User): ITokenPayload => {
+export const getPayload = (store: Store): ITokenPayload => {
 	const payload = {
-		storename: user.storename,
-		user_type: user.user_type,
-		id: user.id,
-		verified: user.active,
-		email: user.email,
-		permissions: JSON.parse(user.permissions) || [],
+		storename: store.storename,
+		user_type: store.user_type,
+		id: store.id,
+		verified: store.active,
+		email: store.email,
+		permissions: JSON.parse(store.permissions) || [],
 	};
 	return payload;
 };
 
-export const getToken = async (user: User) => {
-	const payload: ITokenPayload = getPayload(user);
+export const getToken = async (store: Store) => {
+	const payload: ITokenPayload = getPayload(store);
 	const token = jwt.sign(
 		{
-			storename: user.storename,
-			user_type: user.user_type,
-			id: user.id,
+			storename: store.storename,
+			user_type: store.user_type,
+			id: store.id,
 		},
 		JWT_SECRET,
 		{

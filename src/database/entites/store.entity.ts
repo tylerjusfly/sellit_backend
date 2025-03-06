@@ -1,15 +1,15 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column } from 'typeorm';
 import { CustomBaseEntity } from '../custom-base.entity';
 
-@Entity({ name: 'users' })
-export class User extends CustomBaseEntity {
+@Entity({ name: 'stores' })
+export class Store extends CustomBaseEntity {
 	@Column({ type: 'varchar', unique: true, nullable: false })
 	storename!: string;
 
 	@Column({ type: 'varchar', default: 'shop_admin' })
 	user_type!: string;
 
-	@Column({ type: 'varchar', unique: true, nullable: false })
+	@Column({ type: 'varchar', unique: false, nullable: false })
 	email!: string;
 
 	@Column({ type: 'varchar', unique: false, nullable: true })

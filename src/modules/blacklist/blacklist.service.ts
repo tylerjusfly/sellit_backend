@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
 import { PostBlacklist } from '../../interfaces/blacklist';
 import { dataSource } from '../../database/dataSource';
-import { Shop } from '../../database/entites/shop.entity';
+import { Store } from '../../database/entites/shop.entity';
 import { BlackLists } from '../../database/entites/blacklist.entity';
 import { IPaginate } from '../../interfaces/pagination';
 
@@ -11,7 +11,7 @@ export const CreateBlacklist = async (req: Request, res: Response) => {
 		const { shop_id, type, data, note }: PostBlacklist = req.body;
 
 		const isShop = await dataSource
-			.getRepository(Shop)
+			.getRepository(Store)
 			.createQueryBuilder('shop')
 			.where('shop.id = :id', { id: shop_id })
 			.getOne();
@@ -46,7 +46,7 @@ export const fetchBlacklist = async (req: Request, res: Response) => {
 		const offset = page ? (Number(page) - 1) * page_limit : 0;
 
 		const isShop = await dataSource
-			.getRepository(Shop)
+			.getRepository(Store)
 			.createQueryBuilder('shop')
 			.where('shop.id = :id', { id: shop_id })
 			.getOne();

@@ -1,16 +1,15 @@
 import { Response, Request } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
 import { dataSource } from '../../database/dataSource';
-import { Shop } from '../../database/entites/shop.entity';
 import { Product } from '../../database/entites/product.entity';
 import { IEditProduct, IStoreProduct, IgetAllProduct } from '../../interfaces/product';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { ITokenPayload } from '../../utils/token-helper';
 import { IPaginate } from '../../interfaces/pagination';
 import { Brackets } from 'typeorm';
-import { Categories } from '../../database/entites/categories.entity';
+// import { Categories } from '../../database/entites/categories.entity';
 import { convertToSlug } from '../../utils/convertToSlug';
-import { User } from '../../database/entites/user.entity';
+import { Store } from '../../database/entites/store.entity';
 
 export const CreateProduct = async (req: CustomRequest, res: Response) => {
 	try {
@@ -23,7 +22,7 @@ export const CreateProduct = async (req: CustomRequest, res: Response) => {
 		const user = req.user as ITokenPayload;
 
 		const UserShop = await dataSource
-			.getRepository(User)
+			.getRepository(Store)
 			.createQueryBuilder('shop')
 			.where('shop.id = :id', { id: user.id })
 			.getOne();
@@ -131,7 +130,7 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 		const offset = page ? (Number(page) - 1) * page_limit : 0;
 
 		// Find shop
-		const foundShop = await User.findOne({
+		const foundShop = await Store.findOne({
 			where: {
 				id: shopid,
 			},
@@ -208,143 +207,143 @@ export const deleteProduct = async (req: Request, res: Response) => {
 	}
 };
 
-export const getAllProductByShopname = async (req: Request, res: Response) => {
-	try {
-		const { shopname, search, page, category, limit }: IStoreProduct = req.query;
+// export const getAllProductByShopname = async (req: Request, res: Response) => {
+// 	try {
+// 		const { shopname, search, page, category, limit }: IStoreProduct = req.query;
 
-		if (!shopname) {
-			return handleBadRequest(res, 400, 'shop id/name is required');
-		}
+// 		if (!shopname) {
+// 			return handleBadRequest(res, 400, 'shop id/name is required');
+// 		}
 
-		const page_limit = limit ? limit : 20;
+// 		const page_limit = limit ? limit : 20;
 
-		const offset = page ? (Number(page) - 1) * page_limit : 0;
+// 		const offset = page ? (Number(page) - 1) * page_limit : 0;
 
-		const slugged = convertToSlug(shopname);
+// 		const slugged = convertToSlug(shopname);
 
-		// Find shop
-		const foundShop = await Shop.findOne({
-			where: {
-				slug: slugged,
-			},
-		});
+// 		// Find shop
+// 		const foundShop = await Store.findOne({
+// 			where: {
+// 				slug: slugged,
+// 			},
+// 		});
 
-		if (!foundShop) return handleBadRequest(res, 404, 'shop not found');
+// 		if (!foundShop) return handleBadRequest(res, 404, 'shop not found');
 
-		// fetch all shop product
-		const query = dataSource.getRepository(Product).createQueryBuilder('q').select([
-			'q.id',
-			'q.name',
-			'q.unique_id',
-			'q.image_src',
-			'q.stock',
-			// 'q.unlisted',
-			'q.paypal',
-			'q.stripe',
-			'q.crypto',
-			'q.cashapp',
-			// 'q.product_type',
-			'q.amount',
-			// 'q.service_info',
-			'q.description',
-			// 'q.webhook_url',
-			'q.callback_url',
-		]);
+// 		// fetch all shop product
+// 		const query = dataSource.getRepository(Product).createQueryBuilder('q').select([
+// 			'q.id',
+// 			'q.name',
+// 			'q.unique_id',
+// 			'q.image_src',
+// 			'q.stock',
+// 			// 'q.unlisted',
+// 			'q.paypal',
+// 			'q.stripe',
+// 			'q.crypto',
+// 			'q.cashapp',
+// 			// 'q.product_type',
+// 			'q.amount',
+// 			// 'q.service_info',
+// 			'q.description',
+// 			// 'q.webhook_url',
+// 			'q.callback_url',
+// 		]);
 
-		query.where('q.shop_id = :val', { val: foundShop.id });
+// 		query.where('q.shop_id = :val', { val: foundShop.id });
 
-		query.andWhere('q.unlisted = :value', { value: false });
+// 		query.andWhere('q.unlisted = :value', { value: false });
 
-		if (search && search !== '') {
-			query.andWhere(
-				new Brackets((qb) => {
-					qb.where('LOWER(q.name) Like :name', { name: `%${search.toLowerCase()}%` });
-				})
-			);
-		}
+// 		if (search && search !== '') {
+// 			query.andWhere(
+// 				new Brackets((qb) => {
+// 					qb.where('LOWER(q.name) Like :name', { name: `%${search.toLowerCase()}%` });
+// 				})
+// 			);
+// 		}
 
-		const AllProducts = await query
-			.offset(offset)
-			.limit(page_limit)
-			.orderBy('q.created_at', 'DESC')
-			.getMany();
+// 		const AllProducts = await query
+// 			.offset(offset)
+// 			.limit(page_limit)
+// 			.orderBy('q.created_at', 'DESC')
+// 			.getMany();
 
-		const Productcount = await query.getCount();
+// 		const Productcount = await query.getCount();
 
-		const totalPages = Math.ceil(Productcount / page_limit);
+// 		const totalPages = Math.ceil(Productcount / page_limit);
 
-		const paging: IPaginate = {
-			totalItems: Productcount,
-			currentPage: page ? Number(page) : 1,
-			totalpages: totalPages,
-			itemsPerPage: page_limit,
-		};
+// 		const paging: IPaginate = {
+// 			totalItems: Productcount,
+// 			currentPage: page ? Number(page) : 1,
+// 			totalpages: totalPages,
+// 			itemsPerPage: page_limit,
+// 		};
 
-		return handleSuccess(
-			res,
-			{
-				// shop: foundShop,
-				products: AllProducts,
-			},
-			`All Products`,
-			200,
-			paging
-		);
-	} catch (error) {
-		return handleError(res, error);
-	}
-};
+// 		return handleSuccess(
+// 			res,
+// 			{
+// 				// shop: foundShop,
+// 				products: AllProducts,
+// 			},
+// 			`All Products`,
+// 			200,
+// 			paging
+// 		);
+// 	} catch (error) {
+// 		return handleError(res, error);
+// 	}
+// };
 
-export const fetchProductCategory = async (req: Request, res: Response) => {
-	try {
-		const { uuid }: { uuid?: string } = req.query;
+// export const fetchProductCategory = async (req: Request, res: Response) => {
+// 	try {
+// 		const { uuid }: { uuid?: string } = req.query;
 
-		if (!uuid) {
-			return handleBadRequest(res, 400, 'uuid is required');
-		}
+// 		if (!uuid) {
+// 			return handleBadRequest(res, 400, 'uuid is required');
+// 		}
 
-		const foundCategory = await Categories.findOne({
-			where: {
-				id: uuid,
-			},
-		});
+// 		const foundCategory = await Categories.findOne({
+// 			where: {
+// 				id: uuid,
+// 			},
+// 		});
 
-		if (!foundCategory) {
-			return handleBadRequest(res, 404, 'category not found');
-		}
+// 		if (!foundCategory) {
+// 			return handleBadRequest(res, 404, 'category not found');
+// 		}
 
-		// fetch product if product in category
+// 		// fetch product if product in category
 
-		const selectedProducts = await dataSource
-			.getRepository(Product)
-			.createQueryBuilder('product')
-			.select([
-				'product.id',
-				'product.name',
-				'product.unique_id',
-				'product.stock',
-				'product.image_src',
-				'product.unlisted',
-				'product.paypal',
-				'product.stripe',
-				'product.crypto',
-				'product.cashapp',
-				// 'product.product_type',
-				'product.amount',
-				// 'product.service_info',
-				'product.description',
-				// 'product.webhook_url',
-				// 'product.callback_url',
-			])
-			.whereInIds(foundCategory.products || [])
-			.andWhere('product.unlisted= :value', { value: false })
-			.getMany();
+// 		const selectedProducts = await dataSource
+// 			.getRepository(Product)
+// 			.createQueryBuilder('product')
+// 			.select([
+// 				'product.id',
+// 				'product.name',
+// 				'product.unique_id',
+// 				'product.stock',
+// 				'product.image_src',
+// 				'product.unlisted',
+// 				'product.paypal',
+// 				'product.stripe',
+// 				'product.crypto',
+// 				'product.cashapp',
+// 				// 'product.product_type',
+// 				'product.amount',
+// 				// 'product.service_info',
+// 				'product.description',
+// 				// 'product.webhook_url',
+// 				// 'product.callback_url',
+// 			])
+// 			.whereInIds(foundCategory.products || [])
+// 			.andWhere('product.unlisted= :value', { value: false })
+// 			.getMany();
 
-		return handleSuccess(res, selectedProducts, `category`, 200, undefined);
-	} catch (error) {
-		return handleError(res, error);
-	}
-};
+// 		return handleSuccess(res, selectedProducts, `category`, 200, undefined);
+// 	} catch (error) {
+// 		return handleError(res, error);
+// 	}
+// };
 
 
 

@@ -3,7 +3,7 @@ import { EntityTarget, FindOptionsWhere, ObjectLiteral } from 'typeorm';
 import { handleBadRequest, handleError, handleSuccess } from '../constants/response-handler';
 import { dataSource } from '../database/dataSource';
 import { IPaginate } from '../interfaces/pagination';
-import { Shop } from '../database/entites/shop.entity';
+import { Store } from '../database/entites/shop.entity';
 
 export function createFetchMiddleware<T extends ObjectLiteral>(
 	targetEntity: EntityTarget<T>,
@@ -20,7 +20,7 @@ export function createFetchMiddleware<T extends ObjectLiteral>(
 			const page_limit = limit ? Number(limit) : 10;
 			const offset = page ? (Number(page) - 1) * page_limit : 0;
 
-			const shopRepository = dataSource.getRepository(Shop);
+			const shopRepository = dataSource.getRepository(Store);
 			const isShop = await shopRepository
 				.createQueryBuilder('shop')
 				.where('shop.id = :id', { id: shop_id })

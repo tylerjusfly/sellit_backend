@@ -2,14 +2,14 @@ import { NextFunction, Response } from 'express';
 import { handleBadRequest } from '../constants/response-handler';
 import { CustomRequest } from './verifyauth';
 import { ITokenPayload } from '../utils/token-helper';
-import { User } from '../database/entites/user.entity';
+import { Store } from '../database/entites/store.entity';
 
 export const authorize = (requiredPermissions: string[]) => {
 	return [
 		async (req: CustomRequest, res: Response, next: NextFunction) => {
 			const { id } = req.user as ITokenPayload;
 
-			const userProfile = await User.findOne({
+			const userProfile = await Store.findOne({
 				where: {
 					id,
 				},

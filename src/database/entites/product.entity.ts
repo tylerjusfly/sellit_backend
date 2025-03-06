@@ -1,8 +1,7 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { CustomBaseEntity } from '../custom-base.entity';
-import { Shop } from './shop.entity';
 import { Coupon } from './coupon.entity';
-import { User } from './user.entity';
+import { Store } from './store.entity';
 
 @Entity({ name: 'products' })
 export class Product extends CustomBaseEntity {
@@ -12,9 +11,9 @@ export class Product extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: true })
 	description!: string;
 
-	@ManyToOne(() => User, { nullable: false, eager: true })
+	@ManyToOne(() => Store, { nullable: false, eager: true })
 	@JoinColumn({ name: 'shop_id' })
-	shop_id!: User;
+	shop_id!: Store;
 
 	@Column({ type: 'varchar', nullable: true, default: '/images/products/attachment.png' })
 	image_src!: string;

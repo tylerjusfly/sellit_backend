@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
 import { dataSource } from '../../database/dataSource';
-import { Shop } from '../../database/entites/shop.entity';
+import { Store } from '../../database/entites/shop.entity';
 import { Tickets } from '../../database/entites/ticket.entity';
 import { IPaginate } from '../../interfaces/pagination';
 
@@ -17,7 +17,7 @@ export const CreateTicket = async (req: Request, res: Response) => {
 		const { shop_id, order_id, piority, message }: PostTickets = req.body;
 
 		const isShop = await dataSource
-			.getRepository(Shop)
+			.getRepository(Store)
 			.createQueryBuilder('shop')
 			.where('shop.id = :id', { id: shop_id })
 			.getOne();
@@ -52,7 +52,7 @@ export const fetchTickets = async (req: Request, res: Response) => {
 		const offset = page ? (Number(page) - 1) * page_limit : 0;
 
 		const isShop = await dataSource
-			.getRepository(Shop)
+			.getRepository(Store)
 			.createQueryBuilder('shop')
 			.where('shop.id = :id', { id: shop_id })
 			.getOne();

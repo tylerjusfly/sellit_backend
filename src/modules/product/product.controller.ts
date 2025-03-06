@@ -3,9 +3,8 @@ import {
 	CreateProduct,
 	deleteProduct,
 	editProduct,
-	fetchProductCategory,
 	getAllProductByShop,
-	getAllProductByShopname,
+	// getAllProductByShopname,
 	getOneProduct,
 	getSpecificProduct,
 } from './product.service';
@@ -28,8 +27,8 @@ productRouter.get('/one', verifyToken, getSpecificProduct);
 productRouter.delete('/', verifyToken, deleteProduct);
 
 // Public routes
-productRouter.get('/store', getAllProductByShopname);
-productRouter.get('/categories', fetchProductCategory);
+// productRouter.get('/store', getAllProductByShopname);
+// productRouter.get('/categories', fetchProductCategory);
 productRouter.get('/cart-product', getOneProduct);
 
 export const ProductController = { router: productRouter };

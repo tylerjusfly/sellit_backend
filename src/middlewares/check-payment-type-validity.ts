@@ -3,7 +3,6 @@ import { Product } from '../database/entites/product.entity';
 import { dataSource } from '../database/dataSource';
 import { handleBadRequest } from '../constants/response-handler';
 import { IEditProduct } from '../interfaces/product';
-import { Shop } from '../database/entites/shop.entity';
 
 export const checkPaymentTypeVlidity = async (req: Request, res: Response, next: NextFunction) => {
 	const { id, cashapp, crypto, paypal, stripe }: IEditProduct = req.body;
