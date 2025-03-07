@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { verifyToken } from '../../middlewares/verifyauth';
 import {
 	CreateCategories,
-	// deleteCategories,
+	fetchCategories,
+	deleteCategories,
 	// editCategories,
 	// fetchCategories,
 	// fetchCategoriesByShopName,
@@ -14,11 +15,10 @@ import { createCategorySchema } from './category.validation';
 const categoriesRouter = Router();
 
 categoriesRouter.post('/', verifyToken, validateRequest(createCategorySchema), CreateCategories);
-// categoriesRouter.get('/', verifyToken, fetchCategories);
 // categoriesRouter.patch('/', verifyToken, editCategories);
-// categoriesRouter.get('/one', verifyToken, fetchSingleCategory);
-// categoriesRouter.delete('/', verifyToken, deleteCategories);
+categoriesRouter.delete('/', verifyToken, deleteCategories);
 
+categoriesRouter.get('/', fetchCategories);
 // // Public
 // categoriesRouter.get('/shop', fetchCategoriesByShopName);
 

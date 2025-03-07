@@ -3,11 +3,9 @@ export interface ICategories {
 	shop_id: string;
 }
 
-export interface IgetAllCat {
+export interface IgetAllCategory {
 	shop_id?: string;
-	page?: number;
-	limit?: number;
-	value?: string;
+	shop_name?: string;
 }
 
 export interface IeditCategories {

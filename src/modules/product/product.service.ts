@@ -13,18 +13,18 @@ import { Store } from '../../database/entites/store.entity';
 
 export const CreateProduct = async (req: CustomRequest, res: Response) => {
 	try {
-		const { productName, productType, description } = req.body;
+		const { productName, productType, description, categoryid } = req.body;
 
 		if (!productName || !productType || !description) {
 			return handleBadRequest(res, 400, 'required fields are missings');
 		}
 
-		const user = req.user as ITokenPayload;
+		const store = req.user as ITokenPayload;
 
 		const UserShop = await dataSource
 			.getRepository(Store)
 			.createQueryBuilder('shop')
-			.where('shop.id = :id', { id: user.id })
+			.where('shop.id = :id', { id: store.id })
 			.getOne();
 
 		if (!UserShop) return handleBadRequest(res, 404, 'shop not found');
@@ -35,6 +35,7 @@ export const CreateProduct = async (req: CustomRequest, res: Response) => {
 			name: productName,
 			product_type: productType,
 			description: description,
+			categoryid,
 		});
 
 		const result = await dataSource.getRepository(Product).save(createProductObj);
@@ -70,13 +71,6 @@ export const editProduct = async (req: CustomRequest, res: Response) => {
 			productObj.stock = 0;
 		}
 
-		// if (restData.amount) {
-		// 	productObj.amount = restData.amount;
-		// }
-
-		// if (restData.description && restData.description !== '') {
-		// 	productObj.description = restData.description;
-		// }
 		// if (restData.productImage && restData.productImage !== '') {
 		// 	productObj.image_src = restData.productImage;
 		// }
@@ -146,13 +140,13 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 
 		query.where('q.shop_id = :val', { val: shopid });
 
-		if (unlisted === '1') {
-			query.andWhere('q.unlisted = :value', { value: true });
-		}
+		// if (unlisted === '1') {
+		// 	query.andWhere('q.unlisted = :value', { value: true });
+		// }
 
-		if (unlisted === '0') {
-			query.andWhere('q.unlisted = :value', { value: false });
-		}
+		// if (unlisted === '0') {
+		// 	query.andWhere('q.unlisted = :value', { value: false });
+		// }
 
 		if (search && search !== '') {
 			query.andWhere(

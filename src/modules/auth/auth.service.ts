@@ -74,7 +74,7 @@ export const create = async (req: Request, res: Response) => {
 		const verificationToken = adminKey(4);
 
 		const createdStore = dataSource.getRepository(Store).create({
-			storename,
+			storename: storename.toLowerCase(),
 			password: hashedPass,
 			token: verificationToken,
 			email,
