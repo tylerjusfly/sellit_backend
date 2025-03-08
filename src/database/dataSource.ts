@@ -40,3 +40,17 @@ export async function initialiseDataSource(retries = DATABASE_RETRY_COUNT): Prom
 			});
 		});
 }
+
+
+// AppDataSource.initialize().then(async () => {
+//     console.log("Database connected!");
+
+//     const categoryRepo = AppDataSource.getRepository(Categories);
+//     const exists = await categoryRepo.findOneBy({ name: "Default Category" });
+
+//     if (!exists) {
+//         const category = categoryRepo.create({ name: "Default Category" });
+//         await categoryRepo.save(category);
+//         console.log("Inserted default category.");
+//     }
+// }).catch(error => console.log(error));

@@ -6,6 +6,7 @@ import { Categories } from '../../database/entites/categories.entity';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { ITokenPayload } from '../../utils/token-helper';
 import { Store } from '../../database/entites/store.entity';
+import { Product } from '../../database/entites/product.entity';
 
 export const CreateCategories = async (req: CustomRequest, res: Response) => {
 	try {
@@ -65,20 +66,35 @@ export const fetchCategories = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 404, 'Shop not found');
 		}
 
-		const [CategoryItems, total] = await Categories.findAndCount({
-			where: {
-				shop_id: shop.id,
-			},
-			order: {
-				created_at: 'DESC',
-			},
-		});
+		const categoriesWithProductCount = await dataSource
+			.getRepository(Categories)
+			.createQueryBuilder('category')
+			.leftJoin(Product, 'product', 'product.categoryid = category.id') // Join Product table using categoryid
+			.select([
+				'category.id AS id',
+				'category.category_name AS category_name',
+				'category.category_postion AS category_postion',
+				'category.shop_name AS shop_name',
+				'COUNT(product.id) AS product_count', // Count the number of products per category
+			])
+			.where('category.shop_id = :shopId', { shopId: shop.id })
+			.groupBy('category.id') // Ensure proper aggregation
+			.orderBy('category.created_at', 'DESC')
+			.getRawMany();
 
-		return handleSuccess(res, CategoryItems, `categories`, 200, undefined);
+		return handleSuccess(res, categoriesWithProductCount, `categories`, 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
 };
+
+// .select([
+// 	'category.id AS id',
+// 	'category.name AS name',
+// 	'category.shop_name AS shop_name',
+// 	'category.category_postion AS category_position',
+// 	'COUNT(product.id) AS product_count', // Count products
+// ])
 
 export const deleteCategories = async (req: Request, res: Response) => {
 	try {

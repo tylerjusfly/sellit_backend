@@ -1,7 +1,16 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import {
+	BeforeInsert,
+	BeforeUpdate,
+	Column,
+	Entity,
+	JoinColumn,
+	ManyToOne,
+	RelationId,
+} from 'typeorm';
 import { CustomBaseEntity } from '../custom-base.entity';
 import { Coupon } from './coupon.entity';
 import { Store } from './store.entity';
+import { Categories } from './categories.entity';
 
 @Entity({ name: 'products' })
 export class Product extends CustomBaseEntity {
@@ -57,8 +66,10 @@ export class Product extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: false, default: 'serial' })
 	product_type!: string;
 
-	@Column({ type: 'varchar', nullable: false, default: 'all' })
-	categoryid!: string;
+	@ManyToOne(() => Categories, { nullable: true, eager: true, onDelete: 'SET NULL' })
+	@JoinColumn({ name: 'categoryid' })
+	@RelationId((product: Product) => product.categoryid)
+	categoryid!: Categories;
 
 	@Column({
 		type: 'varchar',

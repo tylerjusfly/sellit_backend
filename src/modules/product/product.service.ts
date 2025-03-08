@@ -95,18 +95,17 @@ export const getSpecificProduct = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'id is required');
 		}
 
-		const foundProduct = await Product.findOne({
+		const foundProduct = await Product.findOneOrFail({
 			where: {
 				id: id,
 			},
 		});
 
-		if (!foundProduct) {
+		return handleSuccess(res, foundProduct, 'found', 200, undefined);
+	} catch (error: any) {
+		if (error.name === 'EntityNotFoundError') {
 			return handleBadRequest(res, 404, 'product does not exist');
 		}
-
-		return handleSuccess(res, foundProduct, 'found', 200, undefined);
-	} catch (error) {
 		return handleError(res, error);
 	}
 };
@@ -116,7 +115,7 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 		const { shopid, page, limit, unlisted, search }: IgetAllProduct = req.query;
 
 		if (!shopid) {
-			return handleBadRequest(res, 400, 'shop id/name is required');
+			return handleBadRequest(res, 400, 'shopid is required');
 		}
 
 		const page_limit = limit ? Number(limit) : 10;
@@ -136,6 +135,7 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 		const query = dataSource
 			.getRepository(Product)
 			.createQueryBuilder('q')
+			// .leftJoinAndSelect('q.categoryid', 'category')
 			.select(['q.id', 'q.name', 'q.product_type', 'q.amount', 'q.stock']);
 
 		query.where('q.shop_id = :val', { val: shopid });
