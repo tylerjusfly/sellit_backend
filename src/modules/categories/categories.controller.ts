@@ -4,18 +4,18 @@ import {
 	CreateCategories,
 	fetchCategories,
 	deleteCategories,
-	// editCategories,
+	editCategories,
 	// fetchCategories,
 	// fetchCategoriesByShopName,
 	// fetchSingleCategory,
 } from './categories.service';
 import { validateRequest } from '../../middlewares/validate-body';
-import { createCategorySchema } from './category.validation';
+import { createCategorySchema, editCategorySchema } from './category.validation';
 
 const categoriesRouter = Router();
 
 categoriesRouter.post('/', verifyToken, validateRequest(createCategorySchema), CreateCategories);
-// categoriesRouter.patch('/', verifyToken, editCategories);
+categoriesRouter.patch('/', verifyToken, validateRequest(editCategorySchema), editCategories);
 categoriesRouter.delete('/', verifyToken, deleteCategories);
 
 categoriesRouter.get('/', fetchCategories);

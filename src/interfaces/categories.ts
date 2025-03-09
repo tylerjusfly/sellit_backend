@@ -11,5 +11,5 @@ export interface IgetAllCategory {
 export interface IeditCategories {
 	category_name: string;
 	category_postion: number;
-	items: string[];
+	id: string;
 }

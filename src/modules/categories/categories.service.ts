@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
 import { dataSource } from '../../database/dataSource';
-import { ICategories, IgetAllCategory } from '../../interfaces/categories';
+import { ICategories, IeditCategories, IgetAllCategory } from '../../interfaces/categories';
 import { Categories } from '../../database/entites/categories.entity';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { ITokenPayload } from '../../utils/token-helper';
@@ -88,14 +88,6 @@ export const fetchCategories = async (req: Request, res: Response) => {
 	}
 };
 
-// .select([
-// 	'category.id AS id',
-// 	'category.name AS name',
-// 	'category.shop_name AS shop_name',
-// 	'category.category_postion AS category_position',
-// 	'COUNT(product.id) AS product_count', // Count products
-// ])
-
 export const deleteCategories = async (req: Request, res: Response) => {
 	try {
 		const { uuid }: { uuid?: string } = req.query;
@@ -118,42 +110,36 @@ export const deleteCategories = async (req: Request, res: Response) => {
 	}
 };
 
-// export const editCategories = async (req: CustomRequest, res: Response) => {
-// 	try {
-// 		const { id }: { id?: string } = req.query;
+export const editCategories = async (req: CustomRequest, res: Response) => {
+	try {
+		const { category_name, category_postion, id }: IeditCategories = req.body;
 
-// 		const { category_name, category_postion, items }: IeditCategories = req.body;
+		// Find coupon
+		const foundCategory = await Categories.findOneBy({ id });
 
-// 		// Find coupon
-// 		const foundCategory = await Categories.findOneBy({ id });
+		if (!foundCategory) {
+			return handleBadRequest(res, 404, 'category not found');
+		}
 
-// 		if (!foundCategory) {
-// 			return handleBadRequest(res, 404, 'coupon not found');
-// 		}
+		if (category_name && category_name !== '') {
+			foundCategory.category_name = category_name;
+		}
 
-// 		if (category_name && category_name !== '') {
-// 			foundCategory.category_name = category_name;
-// 		}
+		if (category_postion && category_postion >= 1) {
+			foundCategory.category_postion = category_postion;
+		}
 
-// 		if (category_postion && category_postion >= 1) {
-// 			foundCategory.category_postion = category_postion;
-// 		}
+		const user = req.user as ITokenPayload;
 
-// 		if (items) {
-// 			foundCategory.products = items;
-// 		}
+		foundCategory.lastChanged_by = user.email;
 
-// 		const user = req.user as ITokenPayload;
+		await foundCategory.save();
 
-// 		foundCategory.lastChanged_by = user.storename;
-
-// 		await foundCategory.save();
-
-// 		return handleSuccess(res, foundCategory, 'updated category', 200, undefined);
-// 	} catch (error) {
-// 		return handleError(res, error);
-// 	}
-// };
+		return handleSuccess(res, foundCategory, 'updated category', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
 
 // export const fetchCategoriesByShopName = async (req: Request, res: Response) => {
 // 	try {
