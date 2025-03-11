@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
-import { dataSource } from '../../database/dataSource';
-import { Store } from '../../database/entites/shop.entity';
 import { findShop } from '../../utils/shopchecker';
 
 type PAYMENT_TYPE = 'Coinbase' | 'Stripe' | 'Paypal' | 'CashApp';

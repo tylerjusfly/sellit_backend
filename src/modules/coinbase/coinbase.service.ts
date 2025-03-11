@@ -35,8 +35,9 @@ export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 
 		const shop = isOrder.shop_id;
 
-		// const shopCoinbase_key = shop.stripe_key;
-		if (!ENV.COINBASE_KEY) {
+		const shopCoinbaseKey = shop.stripe_key;
+
+		if (!shopCoinbaseKey) {
 			return handleBadRequest(res, 400, 'Payment with coinbase is not alllowed yet');
 		}
 
@@ -44,7 +45,7 @@ export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 			method: 'POST',
 			headers: {
 				Accept: 'application/json',
-				'X-CC-Api-Key': ENV.COINBASE_KEY,
+				'X-CC-Api-Key': shopCoinbaseKey,
 				'X-CC-Api-Version': ' 2018-03-22',
 				'Content-Type': 'application/json',
 			},
@@ -52,9 +53,9 @@ export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 				local_price: { amount: isOrder.total_amount, currency: 'USD' },
 				name: isOrder.product_name,
 				pricing_type: 'fixed_price',
-				redirect_url: `${origin}/coinbase/success/${orderid}/${shop.name}`,
-				cancel_url: `${ENV.FRONTEND_URL}/${shop.name}`,
-				description: `payment for ${isOrder.product_name} to ${shop.name} `,
+				redirect_url: `${origin}/coinbase/success/${orderid}/${shop.storename}`,
+				cancel_url: `${ENV.FRONTEND_URL}/${shop.storename}`,
+				description: `payment for ${isOrder.product_name} to ${shop.storename} `,
 				// logo_url:'',
 			}),
 		};
