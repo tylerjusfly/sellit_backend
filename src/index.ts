@@ -1,8 +1,7 @@
-import express, { Express, NextFunction, Request, Response } from 'express';
-import { dataSource, initialiseDataSource } from './database/dataSource';
+import express, { Request, Response } from 'express';
+import { initialiseDataSource } from './database/dataSource';
 import { LogHelper } from './utils/LogHelper';
 import cors from 'cors';
-// import { Store } from './database/entites/user.entity';
 import { apiRouter } from './modules/router';
 import { requsetLogger } from './middlewares/requestlogger';
 // import { cacheRedisClient } from './database/redis/redis-client';
@@ -49,7 +48,6 @@ app.use(express.static(join(__dirname, '../public')));
 // app.use(rateLimiter);
 app.use('/', apiRouter);
 
-
 app.get('/', async (req: Request, res: Response) => {
 	return res.send('Hello test folder');
 });
@@ -57,8 +55,6 @@ app.get('/', async (req: Request, res: Response) => {
 function genericErrorHandler(req: Request, res: Response) {
 	res.status(404).json({ success: false, message: 'Internal Sever Error' });
 }
-
-// app.use('*', genericErrorHandler);
 
 app.listen(port, () => {
 	LogHelper.info(`Server running at http://localhost:${port}`);

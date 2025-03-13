@@ -1,48 +1,34 @@
 import { Request, Response } from 'express';
 import { TAdminLogin, TCreate, TLogin, TUserVerify } from '../../interfaces/auth';
-import { validationResult } from 'express-validator';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
 import { dataSource } from '../../database/dataSource';
 import { isValidPassword } from '../../utils/password-helper';
 import { pbkdf2Sync, randomBytes } from 'crypto';
-import { ITokenPayload, cJwtPayload, getPayload, getToken } from '../../utils/token-helper';
+import { cJwtPayload, getPayload, getToken } from '../../utils/token-helper';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { adminKey, uniqueID } from '../../utils/generateIds';
 import { Admins } from '../../database/entites/admins.entity';
 import { sendUserVerificationToken } from '../../mail-providers/sendtokenmail';
 import { Store } from '../../database/entites/store.entity';
+import { getStoreByEmail, getStoreByStorename } from '../store/storehelpers';
 
 export const loginUser = async (req: Request, res: Response) => {
 	try {
 		const { storename, password }: TLogin = req.body;
 
-		const errors = validationResult(req);
+		const IsStore = await getStoreByStorename(storename);
 
-		if (!errors.isEmpty()) {
-			const errorMessages = errors.array().map((err) => err.msg);
-
-			const errorMessageString = errorMessages.join(' | ');
-
-			return handleBadRequest(res, 400, errorMessageString);
-		}
-
-		const IsUser = await dataSource.getRepository(Store).findOne({
-			where: {
-				storename,
-			},
-		});
-
-		if (!IsUser) {
+		if (!IsStore) {
 			return handleBadRequest(res, 400, 'Invalid user credentials');
 		}
 
-		let rs = await isValidPassword(IsUser, password);
+		let rs = await isValidPassword(IsStore, password);
 
 		if (!rs.success) {
 			return handleBadRequest(res, 400, 'Invalid user credentials');
 		}
 
-		const token = await getToken(IsUser);
+		const token = await getToken(IsStore);
 
 		return handleSuccess(res, token, 'success', 200, undefined);
 	} catch (error) {
@@ -58,13 +44,9 @@ export const create = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'all fields are required');
 		}
 
-		const IsEmail = await dataSource.getRepository(Store).findOne({
-			where: {
-				email,
-			},
-		});
+		const storeExist = await getStoreByEmail(email);
 
-		if (IsEmail) {
+		if (storeExist) {
 			return handleBadRequest(res, 400, 'email already exists');
 		}
 
@@ -140,11 +122,7 @@ export const verifyMail = async (req: Request, res: Response) => {
 	try {
 		const { email, code }: TUserVerify = req.body;
 
-		const userWithEmail = await dataSource.getRepository(Store).findOne({
-			where: {
-				email,
-			},
-		});
+		const userWithEmail = await getStoreByEmail(email);
 
 		if (!userWithEmail) {
 			return handleBadRequest(res, 400, 'verification failed');
@@ -177,23 +155,19 @@ export const resendVerificationCode = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'email is required');
 		}
 
-		const userWithEmail = await dataSource.getRepository(Store).findOne({
-			where: {
-				email,
-			},
-		});
+		const storeWithEmail = await getStoreByEmail(email);
 
-		if (!userWithEmail) {
+		if (!storeWithEmail) {
 			return handleSuccess(res, {}, 'user', 200, undefined);
 		}
 
 		const verificationToken = adminKey(4);
-		userWithEmail.token = verificationToken;
+		storeWithEmail.token = verificationToken;
 
-		await userWithEmail.save();
+		await storeWithEmail.save();
 
 		/**SEND VERIFICATION EMAIL */
-		await sendUserVerificationToken(userWithEmail);
+		await sendUserVerificationToken(storeWithEmail);
 
 		return handleSuccess(res, {}, 'user', 200, undefined);
 	} catch (error) {
