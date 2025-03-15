@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
-import { findShop } from '../../utils/shopchecker';
+import { getStoreByStoreId } from '../store/storehelpers';
 
 type PAYMENT_TYPE = 'Coinbase' | 'Stripe' | 'Paypal' | 'CashApp';
 
@@ -8,16 +8,16 @@ export const fetchShopPayments = async (req: Request, res: Response) => {
 	try {
 		const { shopid }: { shopid?: string } = req.query;
 
-		const isShop = await findShop(shopid);
+		const isShop = await getStoreByStoreId(shopid as string);
 
 		if (!isShop) return handleBadRequest(res, 400, 'shop not found');
 
-		const payments_method = [
-			{ name: 'Coinbase', active: isShop.coin_base_key ? true : false },
-			{ name: 'Stripe', active: isShop.stripe_key ? true : false },
-			{ name: 'Paypal', active: false },
-			{ name: 'CashApp', active: false },
-		];
+		const payments_method = {
+			coinbase: { name: 'Coinbase', active: isShop.coinbase_key ? true : false },
+			stripe: { name: 'Stripe', active: isShop.stripe_key ? true : false },
+			paypal: { name: 'Paypal', active: false },
+			cashapp: { name: 'CashApp', active: false },
+		};
 
 		return handleSuccess(res, payments_method, '', 200, undefined);
 	} catch (error) {
@@ -29,13 +29,13 @@ export const disconnectPayment = async (req: Request, res: Response) => {
 	try {
 		const { shopid, payment }: { shopid?: string; payment?: PAYMENT_TYPE } = req.query;
 
-		const isShop = await findShop(shopid);
+		const isShop = await getStoreByStoreId(shopid);
 
 		if (!isShop) return handleBadRequest(res, 400, 'shop not found');
 
 		switch (payment) {
 			case 'Coinbase':
-				isShop.coin_base_key = null;
+				isShop.coinbase_key = null;
 				break;
 			case 'Stripe':
 				isShop.stripe_key = null;
@@ -49,7 +49,7 @@ export const disconnectPayment = async (req: Request, res: Response) => {
 		await isShop.save();
 
 		const payments_method = [
-			{ name: 'Coinbase', active: isShop.coin_base_key ? true : false },
+			{ name: 'Coinbase', active: isShop.coinbase_key ? true : false },
 			{ name: 'Stripe', active: isShop.stripe_key ? true : false },
 			{ name: 'Paypal', active: false },
 			{ name: 'CashApp', active: false },
@@ -74,13 +74,13 @@ export const connectPayment = async (req: Request, res: Response) => {
 
 		if (!payment || !key) return handleBadRequest(res, 400, 'payment or key is required');
 
-		const shop_data = await findShop(shopid);
+		const shop_data = await getStoreByStoreId(shopid);
 
 		if (!shop_data) return handleBadRequest(res, 400, 'shop not found');
 
 		switch (payment) {
 			case 'Coinbase':
-				shop_data.coin_base_key = key;
+				shop_data.coinbase_key = key;
 				break;
 			case 'Stripe':
 				shop_data.stripe_key = key;
@@ -92,6 +92,13 @@ export const connectPayment = async (req: Request, res: Response) => {
 		}
 
 		await shop_data.save();
+
+		// const payments_method = {
+		// 	coinbase: { name: 'Coinbase', active: shop_data.coinbase_key ? true : false },
+		// 	stripe: { name: 'Stripe', active: shop_data.stripe_key ? true : false },
+		// 	paypal: { name: 'Paypal', active: false },
+		// 	cashapp: { name: 'CashApp', active: false },
+		// };
 
 		return handleSuccess(res, {}, `${payment} successfully connected`, 200, undefined);
 	} catch (error) {

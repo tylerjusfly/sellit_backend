@@ -1,12 +1,12 @@
 import { Response, Request } from 'express';
-import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
+import { handleBadRequest, handleError } from '../../constants/response-handler';
 import { ICreateCoinbase } from '../../interfaces/payment.interface';
 import { dataSource } from '../../database/dataSource';
 import { Orders } from '../../database/entites/orders.entity';
 import { ENV } from '../../constants/env-variables';
-import { ORDER_STATUS } from '../../constants/result';
 import { manipulateOrderItem } from '../../utils/order-helpers';
 import { sendOrderMail } from '../../mail-providers/sendordermail';
+import https from 'https';
 
 export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 	try {
@@ -24,7 +24,7 @@ export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 		// Fetch shop
 		const isOrder = await dataSource.getRepository(Orders).findOne({
 			where: {
-				orderid: orderid,
+				id: orderid,
 			},
 			loadEagerRelations: true,
 		});
@@ -35,14 +35,17 @@ export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 
 		const shop = isOrder.shop_id;
 
-		const shopCoinbaseKey = shop.stripe_key;
+		const shopCoinbaseKey = shop.coinbase_key;
 
 		if (!shopCoinbaseKey) {
 			return handleBadRequest(res, 400, 'Payment with coinbase is not alllowed yet');
 		}
 
+		const agent = new https.Agent({ keepAlive: true });
+
 		const options = {
 			method: 'POST',
+			agent,
 			headers: {
 				Accept: 'application/json',
 				'X-CC-Api-Key': shopCoinbaseKey,
@@ -51,11 +54,11 @@ export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 			},
 			body: JSON.stringify({
 				local_price: { amount: isOrder.total_amount, currency: 'USD' },
-				name: isOrder.product_name,
+				name: isOrder.productid.name,
 				pricing_type: 'fixed_price',
 				redirect_url: `${origin}/coinbase/success/${orderid}/${shop.storename}`,
 				cancel_url: `${ENV.FRONTEND_URL}/${shop.storename}`,
-				description: `payment for ${isOrder.product_name} to ${shop.storename} `,
+				description: `payment for ${isOrder.productid.name} to ${shop.storename} `,
 				// logo_url:'',
 			}),
 		};
@@ -75,9 +78,8 @@ export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 				}
 			})
 			.catch((err) => {
-				// console.error('errorme:' + err);
-
-				return handleError(res, err);
+				console.error('errorme:' + err);
+				return handleError(res, { message: 'unable to initiate coinbase charge' });
 			});
 	} catch (error) {
 		return handleError(res, error);
@@ -93,7 +95,7 @@ export const coinbaseSuccess = async (req: Request, res: Response) => {
 
 		const isOrder = await dataSource.getRepository(Orders).findOne({
 			where: {
-				orderid,
+				id: orderid,
 			},
 			loadEagerRelations: true,
 		});
@@ -104,7 +106,7 @@ export const coinbaseSuccess = async (req: Request, res: Response) => {
 
 		/**Change order */
 
-		await manipulateOrderItem(isOrder.id, isOrder.productid);
+		await manipulateOrderItem(isOrder.id, isOrder.productid.id);
 
 		// if (!manipulate_result) {
 		// 	return handleBadRequest(res, 400, 'failed to approve order');

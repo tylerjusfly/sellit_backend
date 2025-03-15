@@ -21,14 +21,14 @@ export const sendOrderMail = async (orderid: string) => {
 		text: 'Sucessful Order !!',
 		template: 'orderitems',
 		context: {
-			orderid: orderData.orderid,
+			orderid: orderData.id,
 			name: orderData.order_from,
 			status: orderData.order_status,
 			total: orderData.total_amount,
 		},
 		attachments: [
 			{
-				filename: `${orderData.product_name}-items.bin`,
+				filename: `${orderData.productid.name}-items.bin`,
 				content: `${orderData.items}`,
 				contentType: 'text/plain',
 			},

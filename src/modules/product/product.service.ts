@@ -288,56 +288,6 @@ export const deleteProduct = async (req: Request, res: Response) => {
 // 	}
 // };
 
-// export const fetchProductCategory = async (req: Request, res: Response) => {
-// 	try {
-// 		const { uuid }: { uuid?: string } = req.query;
-
-// 		if (!uuid) {
-// 			return handleBadRequest(res, 400, 'uuid is required');
-// 		}
-
-// 		const foundCategory = await Categories.findOne({
-// 			where: {
-// 				id: uuid,
-// 			},
-// 		});
-
-// 		if (!foundCategory) {
-// 			return handleBadRequest(res, 404, 'category not found');
-// 		}
-
-// 		// fetch product if product in category
-
-// 		const selectedProducts = await dataSource
-// 			.getRepository(Product)
-// 			.createQueryBuilder('product')
-// 			.select([
-// 				'product.id',
-// 				'product.name',
-// 				'product.unique_id',
-// 				'product.stock',
-// 				'product.image_src',
-// 				'product.unlisted',
-// 				'product.paypal',
-// 				'product.stripe',
-// 				'product.crypto',
-// 				'product.cashapp',
-// 				// 'product.product_type',
-// 				'product.amount',
-// 				// 'product.service_info',
-// 				'product.description',
-// 				// 'product.webhook_url',
-// 				// 'product.callback_url',
-// 			])
-// 			.whereInIds(foundCategory.products || [])
-// 			.andWhere('product.unlisted= :value', { value: false })
-// 			.getMany();
-
-// 		return handleSuccess(res, selectedProducts, `category`, 200, undefined);
-// 	} catch (error) {
-// 		return handleError(res, error);
-// 	}
-// };
 
 
 
@@ -346,7 +296,7 @@ export const getOneProduct = async (req: Request, res: Response) => {
 		const { uniqueId }: { uniqueId?: string } = req.query;
 
 		if (!uniqueId) {
-			return handleBadRequest(res, 400, 'unique id / id is required');
+			return handleBadRequest(res, 400, 'id is required');
 		}
 
 		const foundProduct = await dataSource
@@ -362,7 +312,7 @@ export const getOneProduct = async (req: Request, res: Response) => {
 				'product.max_purchase',
 				'product.paypal',
 				'product.stripe',
-				'product.crypto',
+				'product.coinbase_key',
 				'product.cashapp',
 				'product.product_type',
 				'product.amount',
@@ -371,7 +321,7 @@ export const getOneProduct = async (req: Request, res: Response) => {
 				// 'product.webhook_url',
 				// 'product.callback_url',
 			])
-			.where('product.unique_id = :val', { val: uniqueId })
+			.where('product.id = :val', { val: uniqueId })
 			.andWhere('product.unlisted= :value', { value: false })
 			.getRawOne();
 

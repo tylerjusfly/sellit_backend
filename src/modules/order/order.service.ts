@@ -4,7 +4,7 @@ import { handleBadRequest, handleError, handleSuccess } from '../../constants/re
 import { ICreateOrder, TallOrders } from '../../interfaces/orders';
 import { dataSource } from '../../database/dataSource';
 import { Product } from '../../database/entites/product.entity';
-import { Store } from '../../database/entites/shop.entity';
+import { Store } from '../../database/entites/store.entity';
 import { uniqueID } from '../../utils/generateIds';
 import { Orders } from '../../database/entites/orders.entity';
 import moment from 'moment';
@@ -16,11 +16,12 @@ import { transporter } from '../../mail-providers/nodemailer';
 import { sendOrderMail } from '../../mail-providers/sendordermail';
 import { Coupon } from '../../database/entites/coupon.entity';
 
-export const createOrder = async (req: CustomRequest, res: Response) => {
+export const createOrder = async (req: Request, res: Response) => {
 	try {
-		const { productid, qty, payment_gateway, order_from, coupon }: ICreateOrder = req.body;
+		const { productid, qty, payment_gateway, order_from, coupon, shopname }: ICreateOrder =
+			req.body;
 
-		if (!productid || !qty || !payment_gateway || !order_from) {
+		if (!productid || !qty || !payment_gateway || !order_from || !shopname) {
 			return handleBadRequest(res, 400, 'all field is required');
 		}
 
@@ -42,7 +43,7 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 		// find shop
 		const isShop = await dataSource.getRepository(Store).findOne({
 			where: {
-				slug: '',
+				storename: shopname,
 			},
 			loadEagerRelations: true,
 		});
@@ -52,19 +53,19 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 		}
 
 		// Create unique order id and calculate total amount
-		const orderId = uniqueID(12);
+		// const orderId = uniqueID(12);
 
-		let shopcredit = isShop.shop_credit - 1;
-		let shopowner = isShop.shop_owner;
+		let shopcredit = 3;
+		let shopownerEmail = isShop.email;
 
 		if (shopcredit < 5) {
 			// Send mail
 			const creditsMail = {
 				from: 'admin.AnyBuy',
-				to: shopowner.email,
+				to: shopownerEmail,
 				subject: 'Low credit',
 				html: `<div>
-            <p> Hello  ${shopowner.storename} </p>
+            <p> Hello  ${isShop.storename} </p>
             <p> <h3> Your credits on is Running low, Please Recharge </h3></p>
             </div>`,
 			};
@@ -107,12 +108,9 @@ export const createOrder = async (req: CustomRequest, res: Response) => {
 		}
 
 		const createOrders = dataSource.getRepository(Orders).create({
-			orderid: orderId,
-			productid: productid,
-			product_name: isProduct.name,
+			productid: isProduct,
 			qty,
 			shop_id: isShop,
-			shop_slug: isShop.slug,
 			payment_gateway,
 			order_from: order_from,
 			total_amount: totalOrderAmount,
@@ -136,7 +134,7 @@ export const getOrderById = async (req: Request, res: Response) => {
 
 		const OrderData = await dataSource.getRepository(Orders).findOne({
 			where: {
-				orderid,
+				id: orderid,
 			},
 			loadEagerRelations: true,
 		});
@@ -236,7 +234,7 @@ export const approveOrder = async (req: CustomRequest, res: Response) => {
 
 		const OrderData = await dataSource.getRepository(Orders).findOne({
 			where: {
-				orderid,
+				id: orderid,
 			},
 			loadEagerRelations: false,
 		});
@@ -245,7 +243,8 @@ export const approveOrder = async (req: CustomRequest, res: Response) => {
 			return handleBadRequest(res, 400, 'order cannot be found');
 		}
 
-		const manipulate_result = await manipulateOrderItem(OrderData.id, OrderData.productid);
+		// const manipulate_result = await manipulateOrderItem(OrderData.id, OrderData.productid);
+		const manipulate_result = false;
 
 		if (!manipulate_result) {
 			return handleBadRequest(res, 400, 'failed to approve order');
@@ -270,7 +269,7 @@ export const disapproveOrder = async (req: CustomRequest, res: Response) => {
 
 		const OrderData = await dataSource.getRepository(Orders).findOne({
 			where: {
-				orderid,
+				id: orderid,
 			},
 		});
 

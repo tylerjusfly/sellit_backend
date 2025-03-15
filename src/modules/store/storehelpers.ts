@@ -20,3 +20,11 @@ export const getStoreByEmail = async (email: string) => {
 
 	return IsStore; // Pretend this is from a real DB
 };
+export const getStoreByStoreId = async (storeid?: string) => {
+	const isShop = await dataSource.getRepository(Store).findOne({
+		where: { id: storeid },
+	});
+
+	return isShop;
+};
+

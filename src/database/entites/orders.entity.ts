@@ -2,17 +2,13 @@ import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { CustomBaseEntity } from '../custom-base.entity';
 import { Store } from './store.entity';
 import { ORDER_STATUS } from '../../constants/result';
+import { Product } from './product.entity';
 
 @Entity({ name: 'orders' })
 export class Orders extends CustomBaseEntity {
-	@Column({ type: 'varchar', unique: true, nullable: false })
-	orderid!: string;
-
-	@Column({ type: 'varchar', nullable: false })
-	productid!: string;
-
-	@Column({ type: 'varchar', nullable: false })
-	product_name!: string;
+	@ManyToOne(() => Product, { nullable: false, eager: true })
+	@JoinColumn({ name: 'productid' })
+	productid!: Product;
 
 	@Column({ type: 'varchar', nullable: false })
 	qty!: number;
@@ -25,9 +21,6 @@ export class Orders extends CustomBaseEntity {
 
 	@Column({ type: 'varchar', nullable: false })
 	order_from!: string;
-
-	@Column({ type: 'varchar', nullable: false })
-	shop_slug!: string;
 
 	@Column({ type: 'varchar', nullable: false })
 	payment_gateway!: string;

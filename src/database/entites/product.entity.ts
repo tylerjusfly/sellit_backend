@@ -43,7 +43,7 @@ export class Product extends CustomBaseEntity {
 	stripe!: boolean;
 
 	@Column({ type: 'boolean', default: false })
-	crypto!: boolean;
+	coinbase_key!: boolean;
 
 	@Column({ type: 'boolean', default: false })
 	cashapp!: boolean;

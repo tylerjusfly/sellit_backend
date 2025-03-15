@@ -33,12 +33,15 @@ export class Store extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: true })
 	stripe_key!: string | null;
 
+	@Column({ type: 'varchar', nullable: true })
+	coinbase_key!: string | null;
+
 	@Column({ nullable: false })
 	password!: string;
 
 	@Column({ nullable: false })
 	salt!: string;
 
-	@Column({ type: 'simple-array', nullable: false, default: ['product:read'] })
+	@Column({ type: 'simple-array', nullable: false, default: ['product:read', 'payment:create'] })
 	permissions!: string;
 }
