@@ -4,7 +4,6 @@ import Stripe from 'stripe';
 import { dataSource } from '../../database/dataSource';
 import { Orders } from '../../database/entites/orders.entity';
 import { ENV } from '../../constants/env-variables';
-import { ORDER_STATUS } from '../../constants/result';
 import { manipulateOrderItem } from '../../utils/order-helpers';
 import { sendOrderMail } from '../../mail-providers/sendordermail';
 const stripe = new Stripe(ENV.STRIPE_SECRET_KEY || '');
@@ -22,7 +21,7 @@ export const stripeChargeForVendors = async (req: Request, res: Response) => {
 		// First check for orderid
 		const isOrder = await dataSource.getRepository(Orders).findOne({
 			where: {
-				orderid: orderid,
+				id: orderid,
 			},
 			loadEagerRelations: true,
 		});
@@ -42,7 +41,9 @@ export const stripeChargeForVendors = async (req: Request, res: Response) => {
 					price_data: {
 						currency: 'usd',
 						product_data: {
-							name: `${isOrder?.product_name || 'unknown product from shop'}`,
+							name: `${
+								isOrder?.productid.name || `unknown product from ${isOrder.shop_id.storename} `
+							}`,
 						},
 						unit_amount: isOrder.total_amount * 100,
 					},
@@ -54,8 +55,8 @@ export const stripeChargeForVendors = async (req: Request, res: Response) => {
 			metadata: {
 				userEmail: isOrder.order_from,
 			},
-			success_url: `${origin}/stripe/successful/${isOrder.orderid}/${isOrder.shop_slug}`,
-			cancel_url: `${ENV.FRONTEND_URL}/store/${isOrder.shop_slug}`,
+			success_url: `${origin}/stripe/successful/${isOrder.id}/${isOrder.shop_id.storename}`,
+			cancel_url: `${ENV.FRONTEND_URL}/store/${isOrder.shop_id.storename}`,
 		});
 
 		res.json({ success: true, url: session.url });
@@ -77,7 +78,7 @@ export const cashappChargeForVendors = async (req: Request, res: Response) => {
 		// First check for orderid
 		const isOrder = await dataSource.getRepository(Orders).findOne({
 			where: {
-				orderid: orderid,
+				id: orderid,
 			},
 			loadEagerRelations: true,
 		});
@@ -96,7 +97,7 @@ export const cashappChargeForVendors = async (req: Request, res: Response) => {
 					price_data: {
 						currency: 'usd',
 						product_data: {
-							name: `${isOrder?.product_name || 'unknown product from shop'}`,
+							name: `${isOrder?.productid.name || 'unknown product from shop'}`,
 						},
 						unit_amount: isOrder.total_amount * 100,
 					},
@@ -105,8 +106,8 @@ export const cashappChargeForVendors = async (req: Request, res: Response) => {
 			],
 			payment_method_types: ['cashapp'],
 			mode: 'payment',
-			success_url: `${origin}/stripe/successful/${isOrder.orderid}/${isOrder.shop_slug}`,
-			cancel_url: `${ENV.FRONTEND_URL}/store/${isOrder.shop_slug}`,
+			success_url: `${origin}/stripe/successful/${isOrder.id}/${isOrder.shop_id.storename}`,
+			cancel_url: `${ENV.FRONTEND_URL}/store/${isOrder.shop_id.storename}`,
 		});
 
 		res.json({ success: true, url: session.url });
@@ -127,7 +128,7 @@ export const stripeSuccess = async (req: Request, res: Response) => {
 
 		const isOrder = await dataSource.getRepository(Orders).findOne({
 			where: {
-				orderid,
+				id: orderid,
 			},
 			loadEagerRelations: true,
 		});
@@ -138,7 +139,7 @@ export const stripeSuccess = async (req: Request, res: Response) => {
 
 		/**Change order */
 
-		const manipulate_result = await manipulateOrderItem(isOrder.id, isOrder.productid);
+		const manipulate_result = await manipulateOrderItem(isOrder.id, isOrder.productid.id);
 
 		// if (!manipulate_result) {
 		// 	return handleBadRequest(res, 400, 'failed to approve order');
@@ -150,5 +151,28 @@ export const stripeSuccess = async (req: Request, res: Response) => {
 		return res.redirect(`${ENV.FRONTEND_URL}/store/${shop}/order/${orderid}`);
 	} catch (error) {
 		return res.redirect(`${ENV.FRONTEND_URL}/store/${shop}`);
+	}
+};
+
+export const onBoardStripeUsers = async (req: Request, res: Response) => {
+	const { shopname } = req.body;
+
+	if (!shopname) {
+		return handleBadRequest(res, 404, 'shopname Field is required');
+	}
+	try {
+		if (!stripe) {
+			return handleBadRequest(res, 404, 'internal stripe error');
+		}
+
+		const account = await stripe.accounts.create({ type: 'standard' });
+
+		// setting account Id to session
+		req.params.shopName = shopname;
+		req.params.accountID = account.id;
+		res.redirect(`/api/v1/onboard-user/refresh/${req.params.shopName}/${req.params.accountID}`);
+	} catch (error) {
+		console.log(error);
+		return handleError(res, error);
 	}
 };
