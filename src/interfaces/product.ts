@@ -6,8 +6,8 @@ export type IEditProduct = {
 	coinbase_key: boolean;
 	cashapp: boolean;
 	stripe: boolean;
-	unlisted?: '1' | '0';
-	webhook_url?: string;
+	unlisted?: boolean;
+	stock: number;
 	callback_url?: string;
 	product_type?: string;
 	description?: string;

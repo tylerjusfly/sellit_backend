@@ -68,16 +68,12 @@ export const editProduct = async (req: CustomRequest, res: Response) => {
 			const itemsArray = items?.split(',').map((item) => item.trim());
 			productObj.stock = itemsArray.length;
 		} else {
-			productObj.stock = 0;
+			productObj.stock = +restData.stock;
 		}
-
-		// if (restData.productImage && restData.productImage !== '') {
-		// 	productObj.image_src = restData.productImage;
-		// }
 
 		const user = req.user as ITokenPayload;
 
-		productObj.lastChanged_by = user.storename;
+		productObj.lastChanged_by = user.email;
 
 		await productObj.save();
 
