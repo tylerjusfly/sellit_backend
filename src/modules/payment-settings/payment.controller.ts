@@ -17,7 +17,7 @@ paymentSettingsRouter.post(
 	'/disconnect',
 	verifyToken,
 	authorize(['payment:create']),
-	validateQueryRequest(paymentOrderSchema),
+	validateRequest(paymentOrderSchema),
 	disconnectPayment
 );
 

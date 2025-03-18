@@ -5,7 +5,7 @@ import { handleBadRequest } from '../constants/response-handler';
 import { IEditProduct } from '../interfaces/product';
 
 export const checkPaymentTypeVlidity = async (req: Request, res: Response, next: NextFunction) => {
-	const { id, cashapp, crypto, paypal, stripe }: IEditProduct = req.body;
+	const { id, cashapp, coinbase_key, paypal, stripe }: IEditProduct = req.body;
 
 	const product_data = await dataSource.getRepository(Product).findOne({
 		where: {
@@ -18,7 +18,7 @@ export const checkPaymentTypeVlidity = async (req: Request, res: Response, next:
 	}
 
 	// Check if payment in request is true and check the validity
-	if (crypto && !product_data.shop_id.coinbase_key) {
+	if (coinbase_key && !product_data.shop_id.coinbase_key) {
 		return handleBadRequest(res, 404, 'Gateway coinbase is not configured for shop');
 	}
 

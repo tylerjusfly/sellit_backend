@@ -9,6 +9,7 @@ import { sendOrderMail } from '../../mail-providers/sendordermail';
 const stripe = new Stripe(ENV.STRIPE_SECRET_KEY || '');
 
 export const stripeChargeForVendors = async (req: Request, res: Response) => {
+	
 	try {
 		const { orderid }: { orderid: string } = req.body;
 
@@ -30,11 +31,23 @@ export const stripeChargeForVendors = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'order does not exist');
 		}
 
-		if (!stripe) {
+		const StripeKeyFromStore = isOrder.shop_id.stripe_key;
+
+		if (!StripeKeyFromStore) {
+			return handleBadRequest(
+				res,
+				400,
+				'stripe payment is no longer available for this product. Contact Store Support'
+			);
+		}
+
+		const stripeCharge = new Stripe(StripeKeyFromStore || '');
+
+		if (!stripeCharge) {
 			return handleBadRequest(res, 400, 'unable to create stripe payment');
 		}
 
-		const session = await stripe.checkout.sessions.create({
+		const session = await stripeCharge.checkout.sessions.create({
 			customer_email: isOrder.order_from,
 			line_items: [
 				{

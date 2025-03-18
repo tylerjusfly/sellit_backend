@@ -3,7 +3,7 @@ export type IEditProduct = {
 	name?: string;
 	amount?: number;
 	paypal: boolean;
-	crypto: boolean;
+	coinbase_key: boolean;
 	cashapp: boolean;
 	stripe: boolean;
 	unlisted?: '1' | '0';

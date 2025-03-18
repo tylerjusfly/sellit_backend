@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
 import { getStoreByStoreId } from '../store/storehelpers';
 
-type PAYMENT_TYPE = 'Coinbase' | 'Stripe' | 'Paypal' | 'CashApp';
+type PAYMENT_TYPE = 'coinbase' | 'stripe' | 'paypal' | 'cashApp';
 
 export const fetchShopPayments = async (req: Request, res: Response) => {
 	try {
@@ -27,17 +27,17 @@ export const fetchShopPayments = async (req: Request, res: Response) => {
 
 export const disconnectPayment = async (req: Request, res: Response) => {
 	try {
-		const { shopid, payment }: { shopid?: string; payment?: PAYMENT_TYPE } = req.query;
+		const { shopid, payment }: { shopid: string; payment: PAYMENT_TYPE } = req.body;
 
 		const isShop = await getStoreByStoreId(shopid);
 
 		if (!isShop) return handleBadRequest(res, 400, 'shop not found');
 
-		switch (payment) {
-			case 'Coinbase':
+		switch (payment.toLowerCase()) {
+			case 'coinbase':
 				isShop.coinbase_key = null;
 				break;
-			case 'Stripe':
+			case 'stripe':
 				isShop.stripe_key = null;
 				break;
 			// Add more cases if needed
@@ -78,11 +78,11 @@ export const connectPayment = async (req: Request, res: Response) => {
 
 		if (!shop_data) return handleBadRequest(res, 400, 'shop not found');
 
-		switch (payment) {
-			case 'Coinbase':
+		switch (payment.toLowerCase()) {
+			case 'coinbase':
 				shop_data.coinbase_key = key;
 				break;
-			case 'Stripe':
+			case 'stripe':
 				shop_data.stripe_key = key;
 				break;
 			// Add more cases if needed
