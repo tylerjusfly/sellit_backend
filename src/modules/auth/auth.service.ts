@@ -4,8 +4,7 @@ import { handleBadRequest, handleError, handleSuccess } from '../../constants/re
 import { dataSource } from '../../database/dataSource';
 import { isValidPassword } from '../../utils/password-helper';
 import { pbkdf2Sync, randomBytes } from 'crypto';
-import { cJwtPayload, getPayload, getToken } from '../../utils/token-helper';
-import { CustomRequest } from '../../middlewares/verifyauth';
+import { getToken } from '../../utils/token-helper';
 import { adminKey, uniqueID } from '../../utils/generateIds';
 import { Admins } from '../../database/entites/admins.entity';
 import { sendUserVerificationToken } from '../../mail-providers/sendtokenmail';
@@ -69,22 +68,6 @@ export const create = async (req: Request, res: Response) => {
 		await sendUserVerificationToken(createdStore);
 
 		return handleSuccess(res, {}, 'created store', 201, undefined);
-	} catch (error) {
-		return handleError(res, error);
-	}
-};
-
-export const getMyProfile = async (req: CustomRequest, res: Response) => {
-	try {
-		const userReq = req.user as cJwtPayload;
-
-		const isUser = await dataSource.getRepository(Store).findOne({
-			where: { id: userReq.id },
-		});
-
-		if (!isUser) return handleBadRequest(res, 404, 'user not found');
-
-		return handleSuccess(res, { token: '', payload: getPayload(isUser) }, 'user', 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}

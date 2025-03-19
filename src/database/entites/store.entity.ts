@@ -6,6 +6,12 @@ export class Store extends CustomBaseEntity {
 	@Column({ type: 'varchar', unique: true, nullable: false })
 	storename!: string;
 
+	@Column({ type: 'varchar', unique: true, nullable: true, default: 'sellit.app' })
+	domain_name!: string;
+
+	@Column({ type: 'text', nullable: true })
+	hero_text!: string;
+
 	@Column({ type: 'varchar', default: 'shop_admin' })
 	user_type!: string;
 

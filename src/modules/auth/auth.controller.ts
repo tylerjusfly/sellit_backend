@@ -1,11 +1,5 @@
 import { Router } from 'express';
-import {
-	create,
-	getMyProfile,
-	loginUser,
-	resendVerificationCode,
-	verifyMail,
-} from './auth.service';
+import { create, loginUser, resendVerificationCode, verifyMail } from './auth.service';
 import { loginStoreSchema, verifyAccountSchema } from './auth.validations';
 import { verifyToken } from '../../middlewares/verifyauth';
 import { checkstorenameIsAvailable } from '../../middlewares/check-storename-availability';
@@ -13,7 +7,6 @@ import { validateRequest } from '../../middlewares/validate-body';
 
 const authRouter = Router();
 
-authRouter.get('/me', verifyToken, getMyProfile);
 authRouter.post('/login', validateRequest(loginStoreSchema), loginUser);
 authRouter.post('/create', checkstorenameIsAvailable, create);
 authRouter.post('/verify-mail', validateRequest(verifyAccountSchema), verifyMail);
