@@ -1,5 +1,6 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, OneToOne } from 'typeorm';
 import { CustomBaseEntity } from '../custom-base.entity';
+import { Customization } from './customization.entity';
 
 @Entity({ name: 'stores' })
 export class Store extends CustomBaseEntity {
@@ -50,4 +51,12 @@ export class Store extends CustomBaseEntity {
 
 	@Column({ type: 'simple-array', nullable: false, default: ['product:read', 'payment:create'] })
 	permissions!: string;
+
+	@OneToOne(() => Customization, (customization) => customization.store, {
+		cascade: ['remove'], // Automatically insert/update Customization when Store changes
+		eager: true, // Auto-load Customization when fetching Store
+		onDelete: 'CASCADE',
+		orphanedRowAction: 'delete',
+	})
+	customization!: Customization;
 }

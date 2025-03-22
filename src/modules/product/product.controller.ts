@@ -6,6 +6,7 @@ import {
 	getAllProductByShop,
 	// getAllProductByShopname,
 	getOneProduct,
+	getProductsForPublic,
 	getSpecificProduct,
 } from './product.service';
 import { verifyToken } from '../../middlewares/verifyauth';
@@ -27,7 +28,7 @@ productRouter.get('/one', verifyToken, getSpecificProduct);
 productRouter.delete('/', verifyToken, deleteProduct);
 
 // Public routes
-// productRouter.get('/store', getAllProductByShopname);
+productRouter.get('/store', getProductsForPublic);
 // productRouter.get('/categories', fetchProductCategory);
 productRouter.get('/cart-product', getOneProduct);
 

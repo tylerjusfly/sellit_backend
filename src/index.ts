@@ -53,7 +53,7 @@ app.get('/', async (req: Request, res: Response) => {
 });
 
 function genericErrorHandler(req: Request, res: Response) {
-	res.status(404).json({ success: false, message: 'unknown route' });
+	res.status(404).json({ success: false, message: 'Sending requests to unknown destination.' });
 }
 
 app.listen(port, () => {

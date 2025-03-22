@@ -2,7 +2,12 @@ import { Response, Request } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
 import { dataSource } from '../../database/dataSource';
 import { Product } from '../../database/entites/product.entity';
-import { IEditProduct, IStoreProduct, IgetAllProduct } from '../../interfaces/product';
+import {
+	IEditProduct,
+	IStoreProduct,
+	IgetAllProduct,
+	IgetPublicProduct,
+} from '../../interfaces/product';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { ITokenPayload } from '../../utils/token-helper';
 import { IPaginate } from '../../interfaces/pagination';
@@ -283,6 +288,69 @@ export const deleteProduct = async (req: Request, res: Response) => {
 // 		return handleError(res, error);
 // 	}
 // };
+
+export const getProductsForPublic = async (req: Request, res: Response) => {
+	try {
+		const { storeid, limit, page, search, categoryid }: IgetPublicProduct = req.query;
+
+		// Find shop
+		// const foundShop = await Store.findOne({
+		// 	where: {
+		// 		id: storeid,
+		// 	},
+		// });
+
+		// if (!foundShop) return handleBadRequest(res, 404, 'shop not found');
+
+		const page_limit = limit ? Number(limit) : 20;
+
+		const offset = page ? (Number(page) - 1) * page_limit : 0;
+
+		// fetch all shop product
+		const query = dataSource
+			.getRepository(Product)
+			.createQueryBuilder('q')
+			.leftJoinAndSelect('q.categoryid', 'category')
+			.select(['q.id', 'q.name', 'q.image_src', 'q.amount', 'q.stock']);
+
+		query.where('q.shop_id = :shop_id', { shop_id: storeid });
+		query.andWhere('q.unlisted = :unlisted', { unlisted: 'false' });
+		query.andWhere('q.private_mode = :val', { val: 'false' });
+
+		if (categoryid && categoryid !== '') {
+			query.andWhere('q.categoryid = :catid', { catid: categoryid });
+		}
+
+		if (search && search !== '') {
+			query.andWhere(
+				new Brackets((qb) => {
+					qb.where('LOWER(q.name) Like :name', { name: `%${search.toLowerCase()}%` });
+				})
+			);
+		}
+
+		const AllProducts = await query
+			.offset(offset)
+			.limit(page_limit)
+			.orderBy('q.created_at', 'DESC')
+			.getMany();
+
+		const Productcount = await query.getCount();
+
+		const totalPages = Math.ceil(Productcount / page_limit);
+
+		const paging: IPaginate = {
+			totalItems: Productcount,
+			currentPage: page ? Number(page) : 1,
+			totalpages: totalPages,
+			itemsPerPage: page_limit,
+		};
+
+		return handleSuccess(res, AllProducts, `All Products`, 200, paging);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
 
 
 

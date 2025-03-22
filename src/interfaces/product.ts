@@ -36,3 +36,11 @@ export type IStoreProduct = {
 	limit?: number;
 };
 
+
+export type IgetPublicProduct = {
+	storeid?: string;
+	page?: number;
+	limit?: number;
+	categoryid?: string;
+	search?: string;
+};
