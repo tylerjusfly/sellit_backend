@@ -3,7 +3,7 @@ import { handleBadRequest, handleError, handleSuccess } from '../../constants/re
 import { ICoupon, IeditCoupon } from '../../interfaces/coupon';
 import { Coupon } from '../../database/entites/coupon.entity';
 import { dataSource } from '../../database/dataSource';
-import { Store } from '../../database/entites/shop.entity';
+import { Store } from '../../database/entites/store.entity';
 import { IPaginate } from '../../interfaces/pagination';
 import { CustomRequest } from '../../middlewares/verifyauth';
 import { ITokenPayload } from '../../utils/token-helper';

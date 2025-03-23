@@ -51,7 +51,16 @@ export const getstoreInPublic = async (req: CustomRequest, res: Response) => {
 			.getRepository(Store)
 			.createQueryBuilder('q')
 			.leftJoinAndSelect('q.customization', 'customization')
-			.select(['q.id', 'q.storename', 'q.display_picture', 'q.domain_name', 'q.hero_text']);
+			.select([
+				'q.id',
+				'q.storename',
+				'q.display_picture',
+				'q.domain_name',
+				'q.hero_text',
+				'customization.id',
+				'customization.main_color',
+				'customization.hero_svg',
+			]);
 
 		query.where('q.storename = :val', { val: storename });
 
