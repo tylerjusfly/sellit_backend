@@ -19,6 +19,8 @@ categoriesRouter.patch('/', verifyToken, validateRequest(editCategorySchema), ed
 categoriesRouter.delete('/', verifyToken, deleteCategories);
 
 categoriesRouter.get('/', fetchCategories);
+
+
 // // Public
 // categoriesRouter.get('/shop', fetchCategoriesByShopName);
 

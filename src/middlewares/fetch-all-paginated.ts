@@ -3,7 +3,7 @@ import { EntityTarget, FindOptionsWhere, ObjectLiteral } from 'typeorm';
 import { handleBadRequest, handleError, handleSuccess } from '../constants/response-handler';
 import { dataSource } from '../database/dataSource';
 import { IPaginate } from '../interfaces/pagination';
-import { Store } from '../database/entites/shop.entity';
+import { Store } from '../database/entites/store.entity';
 
 export function createFetchMiddleware<T extends ObjectLiteral>(
 	targetEntity: EntityTarget<T>,

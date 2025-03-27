@@ -29,7 +29,6 @@ productRouter.delete('/', verifyToken, deleteProduct);
 
 // Public routes
 productRouter.get('/store', getProductsForPublic);
-// productRouter.get('/categories', fetchProductCategory);
-productRouter.get('/cart-product', getOneProduct);
+productRouter.get('/view', getOneProduct);
 
 export const ProductController = { router: productRouter };

@@ -151,13 +151,13 @@ export const editCategories = async (req: CustomRequest, res: Response) => {
 
 // 		// const slugged = convertToSlug(name);
 
-// 		// const isShop = await dataSource
-// 		// 	.getRepository(Store)
-// 		// 	.createQueryBuilder('shop')
-// 		// 	.where('shop.slug = :name', { name: slugged })
-// 		// 	.getOne();
+// 		const isShop = await dataSource
+// 			.getRepository(Store)
+// 			.createQueryBuilder('shop')
+// 			.where('shop.storename = :name', { name })
+// 			.getOne();
 
-// 		// if (!isShop) return handleBadRequest(res, 404, 'shop not found');
+// 		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
 
 // 		const AllCategories = await Categories.find({
 // 			where: {

@@ -141,14 +141,6 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 
 		query.where('q.shop_id = :val', { val: shopid });
 
-		// if (unlisted === '1') {
-		// 	query.andWhere('q.unlisted = :value', { value: true });
-		// }
-
-		// if (unlisted === '0') {
-		// 	query.andWhere('q.unlisted = :value', { value: false });
-		// }
-
 		if (search && search !== '') {
 			query.andWhere(
 				new Brackets((qb) => {
@@ -293,15 +285,6 @@ export const getProductsForPublic = async (req: Request, res: Response) => {
 	try {
 		const { storeid, limit, page, search, categoryid }: IgetPublicProduct = req.query;
 
-		// Find shop
-		// const foundShop = await Store.findOne({
-		// 	where: {
-		// 		id: storeid,
-		// 	},
-		// });
-
-		// if (!foundShop) return handleBadRequest(res, 404, 'shop not found');
-
 		const page_limit = limit ? Number(limit) : 20;
 
 		const offset = page ? (Number(page) - 1) * page_limit : 0;
@@ -357,9 +340,9 @@ export const getProductsForPublic = async (req: Request, res: Response) => {
 
 export const getOneProduct = async (req: Request, res: Response) => {
 	try {
-		const { uniqueId }: { uniqueId?: string } = req.query;
+		const { id }: { id?: string } = req.query;
 
-		if (!uniqueId) {
+		if (!id) {
 			return handleBadRequest(res, 400, 'id is required');
 		}
 
@@ -370,24 +353,24 @@ export const getOneProduct = async (req: Request, res: Response) => {
 			.select([
 				'product.id',
 				'product.name',
-				'product.unique_id',
 				'product.stock',
 				'product.image_src',
-				'product.max_purchase',
-				'product.paypal',
-				'product.stripe',
-				'product.coinbase_key',
-				'product.cashapp',
-				'product.product_type',
 				'product.amount',
-				'product.shop_id',
 				'product.description',
+				'product.product_type',
+				'product.max_purchase',
+				'product.min_purchase',
+				// 'product.stripe',
+				// 'product.coinbase_key',
+				// 'product.cashapp',
+				// 'product.product_type',
+				// 'product.shop_id',
 				// 'product.webhook_url',
 				// 'product.callback_url',
 			])
-			.where('product.id = :val', { val: uniqueId })
+			.where('product.id = :val', { val: id })
 			.andWhere('product.unlisted= :value', { value: false })
-			.getRawOne();
+			.getOne();
 
 		if (!foundProduct) {
 			return handleBadRequest(res, 404, 'product does not exist');
