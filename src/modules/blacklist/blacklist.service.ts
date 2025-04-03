@@ -2,24 +2,28 @@ import { Request, Response } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
 import { PostBlacklist } from '../../interfaces/blacklist';
 import { dataSource } from '../../database/dataSource';
-import { Store } from '../../database/entites/shop.entity';
 import { BlackLists } from '../../database/entites/blacklist.entity';
 import { IPaginate } from '../../interfaces/pagination';
+import { Store } from '../../database/entites/store.entity';
+import { ITokenPayload } from '../../utils/token-helper';
+import { CustomRequest } from '../../middlewares/verifyauth';
 
-export const CreateBlacklist = async (req: Request, res: Response) => {
+export const CreateBlacklist = async (req: CustomRequest, res: Response) => {
 	try {
-		const { shop_id, type, data, note }: PostBlacklist = req.body;
+		const { type, data, note }: PostBlacklist = req.body;
+
+		const store = req.user as ITokenPayload;
 
 		const isShop = await dataSource
 			.getRepository(Store)
 			.createQueryBuilder('shop')
-			.where('shop.id = :id', { id: shop_id })
+			.where('shop.id = :id', { id: store.id })
 			.getOne();
 
 		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
 
 		const ToCreate = dataSource.getRepository(BlackLists).create({
-			shop_id: shop_id,
+			shop_id: isShop.id,
 			type,
 			data,
 			note,
@@ -33,13 +37,11 @@ export const CreateBlacklist = async (req: Request, res: Response) => {
 	}
 };
 
-export const fetchBlacklist = async (req: Request, res: Response) => {
+export const fetchBlacklist = async (req: CustomRequest, res: Response) => {
 	try {
-		const { shop_id, page, limit }: { shop_id?: number; page?: number; limit?: number } = req.query;
+		const { page, limit }: { shop_id?: string; page?: number; limit?: number } = req.query;
 
-		if (!shop_id) {
-			return handleBadRequest(res, 400, 'shop is required');
-		}
+		const store = req.user as ITokenPayload;
 
 		const page_limit = limit ? Number(limit) : 10;
 
@@ -48,14 +50,14 @@ export const fetchBlacklist = async (req: Request, res: Response) => {
 		const isShop = await dataSource
 			.getRepository(Store)
 			.createQueryBuilder('shop')
-			.where('shop.id = :id', { id: shop_id })
+			.where('shop.id = :id', { id: store.id })
 			.getOne();
 
 		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
 
 		const [Lists, total] = await BlackLists.findAndCount({
 			where: {
-				shop_id,
+				shop_id: store.id,
 			},
 			skip: offset,
 			take: page_limit,
@@ -79,16 +81,16 @@ export const deleteBlacklist = async (req: Request, res: Response) => {
 		const { uuid }: { uuid?: string } = req.query;
 
 		if (!uuid) {
-			return handleBadRequest(res, 400, 'coupon id is required');
+			return handleBadRequest(res, 400, 'record id is required to delete record');
 		}
 
 		const isItem = await dataSource.getRepository(BlackLists).findOne({
 			where: { id: uuid },
 		});
 
-		if (!isItem) return handleBadRequest(res, 400, 'cannot delete unexisting coupon');
+		if (!isItem) return handleBadRequest(res, 400, 'cannot delete unexisting blacklist');
 
-		await isItem.softRemove();
+		await isItem.remove();
 
 		return handleSuccess(res, null, 'dropped', 200, undefined);
 	} catch (error) {

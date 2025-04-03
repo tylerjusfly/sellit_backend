@@ -9,11 +9,11 @@ export class BlackLists extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: false })
 	data!: string;
 
-	@Column({ type: 'varchar', nullable: false })
+	@Column({ type: 'varchar', nullable: true })
 	note!: string;
 
 	@Column({ type: 'varchar', nullable: false })
-	shop_id!: number;
+	shop_id!: string;
 
 	// @Column({ type: 'varchar', nullable: false })
 	// shop_name!: string;
