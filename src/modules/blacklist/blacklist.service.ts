@@ -97,3 +97,21 @@ export const deleteBlacklist = async (req: Request, res: Response) => {
 		return handleError(res, error);
 	}
 };
+
+export const isDataInBlacklist = async (req: Request, res: Response) => {
+	try {
+		const { data, type }: { data: string; type: string } = req.body;
+
+		const isItem = await dataSource.getRepository(BlackLists).findOne({
+			where: { data: data, type: type },
+		});
+
+		if (isItem) {
+			return handleBadRequest(res, 400, 'You have been blacklisted by store owner.');
+		}
+
+		return handleSuccess(res, null, 'not blacklisted', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
