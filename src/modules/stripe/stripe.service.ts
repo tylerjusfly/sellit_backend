@@ -9,7 +9,6 @@ import { sendOrderMail } from '../../mail-providers/sendordermail';
 const stripe = new Stripe(ENV.STRIPE_SECRET_KEY || '');
 
 export const stripeChargeForVendors = async (req: Request, res: Response) => {
-	
 	try {
 		const { orderid }: { orderid: string } = req.body;
 
@@ -69,10 +68,10 @@ export const stripeChargeForVendors = async (req: Request, res: Response) => {
 				userEmail: isOrder.order_from,
 			},
 			success_url: `${origin}/stripe/successful/${isOrder.id}/${isOrder.shop_id.storename}`,
-			cancel_url: `${ENV.FRONTEND_URL}/store/${isOrder.shop_id.storename}`,
+			cancel_url: `${ENV.FRONTEND_URL}/orders/${orderid}`,
 		});
 
-		res.json({ success: true, url: session.url });
+		return handleSuccess(res, { url: session.url }, 'created', 201, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
@@ -120,10 +119,10 @@ export const cashappChargeForVendors = async (req: Request, res: Response) => {
 			payment_method_types: ['cashapp'],
 			mode: 'payment',
 			success_url: `${origin}/stripe/successful/${isOrder.id}/${isOrder.shop_id.storename}`,
-			cancel_url: `${ENV.FRONTEND_URL}/store/${isOrder.shop_id.storename}`,
+			cancel_url: `${ENV.FRONTEND_URL}/orders/${orderid}`,
 		});
 
-		res.json({ success: true, url: session.url });
+		return handleSuccess(res, { url: session.url }, 'created', 201, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
@@ -132,10 +131,10 @@ export const cashappChargeForVendors = async (req: Request, res: Response) => {
 // "affirm", "alipay", "card", "cashapp", "klarna", "link", "wechat_pay"],
 
 export const stripeSuccess = async (req: Request, res: Response) => {
-	const { orderid, shop }: { orderid?: string; shop?: string } = req.params;
+	const { orderid }: { orderid?: string } = req.params;
 
 	try {
-		if (!orderid || !shop) {
+		if (!orderid) {
 			return res.redirect(`${ENV.FRONTEND_URL}`);
 		}
 
@@ -147,7 +146,7 @@ export const stripeSuccess = async (req: Request, res: Response) => {
 		});
 
 		if (!isOrder) {
-			return res.redirect(`${ENV.FRONTEND_URL}/store/${shop}`);
+			return res.redirect(`${ENV.FRONTEND_URL}`);
 		}
 
 		/**Change order */
@@ -159,11 +158,11 @@ export const stripeSuccess = async (req: Request, res: Response) => {
 		// }
 
 		// Send email to user about order
-		await sendOrderMail(isOrder.id);
+		// await sendOrderMail(isOrder.id);
 
-		return res.redirect(`${ENV.FRONTEND_URL}/store/${shop}/order/${orderid}`);
+		return res.redirect(`${ENV.FRONTEND_URL}/orders/${orderid}`);
 	} catch (error) {
-		return res.redirect(`${ENV.FRONTEND_URL}/store/${shop}`);
+		return res.redirect(`${ENV.FRONTEND_URL}/orders/${orderid}`);
 	}
 };
 

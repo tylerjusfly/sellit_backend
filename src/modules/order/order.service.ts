@@ -18,10 +18,9 @@ import { Coupon } from '../../database/entites/coupon.entity';
 
 export const createOrder = async (req: Request, res: Response) => {
 	try {
-		const { productid, qty, payment_gateway, order_from, coupon, shopname }: ICreateOrder =
-			req.body;
+		const { productid, qty, payment_gateway, order_from, coupon }: ICreateOrder = req.body;
 
-		if (!productid || !qty || !payment_gateway || !order_from || !shopname) {
+		if (!productid || !qty || !payment_gateway || !order_from) {
 			return handleBadRequest(res, 400, 'all field is required');
 		}
 
@@ -43,7 +42,7 @@ export const createOrder = async (req: Request, res: Response) => {
 		// find shop
 		const isShop = await dataSource.getRepository(Store).findOne({
 			where: {
-				storename: shopname,
+				id: isProduct.shop_id.id,
 			},
 			loadEagerRelations: true,
 		});
@@ -52,10 +51,16 @@ export const createOrder = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'shop does not exist');
 		}
 
-		// Create unique order id and calculate total amount
-		// const orderId = uniqueID(12);
-
 		let shopcredit = 3;
+
+		if (shopcredit <= 0) {
+			return handleBadRequest(
+				res,
+				400,
+				'Cannot create an order at the moment, Reach out to store owner.'
+			);
+		}
+
 		let shopownerEmail = isShop.email;
 
 		if (shopcredit < 5) {
@@ -90,7 +95,7 @@ export const createOrder = async (req: Request, res: Response) => {
 			const couponCode = await Coupon.findOne({
 				where: {
 					shop_id: `${isShop.id}`,
-					coupon_code: coupon,
+					id: coupon,
 				},
 			});
 
@@ -118,7 +123,7 @@ export const createOrder = async (req: Request, res: Response) => {
 
 		const result = await dataSource.getRepository(Orders).save(createOrders);
 
-		return handleSuccess(res, result, 'created', 201, undefined);
+		return handleSuccess(res, { id: result.id }, 'created', 201, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
