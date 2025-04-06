@@ -1,7 +1,7 @@
 version: '3'
 services:
   dbsql:
-    image: postgres:alpine3.21
+    image: postgres:13
     container_name: postgres_container
     restart: always
     environment:
@@ -20,24 +20,20 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8000:4000
+    depends_on: 
+      - dbsql
     environment:
-      EMAIL_SECRET: "czmpfrduvibtunoc"
-      DATABASE_HOST: localhost
-      # DATABASE_HOST: "dpg-csp6ufd6l47c73a19s60-a"
+      EMAIL_SECRET: ${EMAIL_SECRET}
+      EMAIL_USER: ${EMAIL_USER}
+      # connect to the PostgreSQL container by its service name, not localhost
+      DATABASE_HOST: dbsql
       DATABASE_USER: "postgres"
-      DATABASE_PASSWORD: "password1"
+      DATABASE_PASSWORD: password1
       DATABASE_NAME: "shopcrm"
+      FRONTEND_URL: ${FRONTEND_URL}
+      DATABASE_ENABLE_SYNC: true
+      DATABASE_ENABLE_LOGGING: false
+      DATABASE_CONNECT_RETRY_COUNT: 4
 
 volumes:
   postgres_data:
-  
-    # depends_on:
-      # - dbsql
-    #   DATABASE_HOST: localhost
-      # STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
-    #   Client_URL: https://buy-tylerjusfly.vercel.app
-    #   COINBASE_API_KEY: ${COINBASE_KEY}
-    #  PORT: 8081
-    #  STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
-    #  SERVICE_TAGS: prod
-    #  SERVICE_NAME: nodeapiservice 
