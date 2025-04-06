@@ -16,8 +16,6 @@
 		// Transpiling with typescript
 		"module": "NodeNext",
 		"moduleResolution": "nodenext",
-		// "module": "ESNext",
-		// "moduleResolution": "bundler",
 		"outDir": "./dist",
 		"sourceMap": true,
 
@@ -28,5 +26,6 @@
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true
 	},
+	"include": ["src"],
 	"exclude": ["node_modules", "jest.config.ts"]
 }

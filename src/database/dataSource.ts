@@ -14,7 +14,7 @@ export const dataSource = new DataSource({
 	username: ENV.PG_USER,
 	password: ENV.PG_PASSWORD,
 	database: ENV.PG_DATABASE,
-	entities: ['**/*.entity.ts'],
+	entities: ['**/*.entity.js'],
 	logging: DATABASE_ENABLE_LOGGING,
 	synchronize: DATABASE_ENABLE_SYNC,
 });
