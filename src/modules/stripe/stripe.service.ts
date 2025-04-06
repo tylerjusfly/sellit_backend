@@ -36,7 +36,7 @@ export const stripeChargeForVendors = async (req: Request, res: Response) => {
 			return handleBadRequest(
 				res,
 				400,
-				'stripe payment is no longer available for this product. Contact Store Support'
+				'stripe payment is no longer available for this product. Please Contact Store Support'
 			);
 		}
 

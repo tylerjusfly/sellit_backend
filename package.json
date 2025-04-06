@@ -5,9 +5,8 @@
 	"description": "backend to project auto in typescript",
 	"main": "index.js",
 	"scripts": {
-		"dev": "nodemon ./src/index.js",
-		"dev:tst": "nodemon --watch src --exec \"tsc && node dist/index.js\"",
-		"start": "ts-node src/index.ts",
+		"dev": "concurrently -k \"tsc --watch\" \"nodemon dist/index.js\"",
+		"start": "yarn build && yarn serve",
 		"build": "tsc",
 		"serve": "node dist/index.js",
 		"test": "jest"
@@ -41,6 +40,7 @@
 		"@types/node": "^20.8.4",
 		"@types/nodemailer": "^6.4.14",
 		"@types/nodemailer-express-handlebars": "^4.0.5",
+		"concurrently": "^9.1.2",
 		"jest": "^29.7.0",
 		"nodemon": "^3.0.1",
 		"ts-jest": "^29.2.6",
