@@ -11,6 +11,7 @@ import { StoreController } from './store/store.controller';
 import { CustomizationController } from './customization/customization.controller';
 import { TicketsController } from './tickets/tickets.controller';
 import { BlacklistsController } from './blacklist/blacklist.controller';
+import { CouponController } from './coupon/coupon.controller';
 // import { CouponController } from './coupon/coupon.controller';
 // import { BlacklistsController } from './blacklist/blacklist.controller';
 // import { TicketsController } from './tickets/tickets.controller';
@@ -27,6 +28,7 @@ router.use('/stripe', StripeController.router);
 router.use('/store', StoreController.router);
 router.use('/customization', CustomizationController.router);
 router.use('/blacklists', BlacklistsController.router);
+router.use('/coupons', CouponController.router);
 // router.use('/tickets', TicketsController.router);
 // router.use('/queue', QueueRouter.router);
 

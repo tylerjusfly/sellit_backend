@@ -6,7 +6,7 @@ import { dataSource } from '../../database/dataSource';
 import { Store } from '../../database/entites/store.entity';
 import { IPaginate } from '../../interfaces/pagination';
 import { CustomRequest } from '../../middlewares/verifyauth';
-import { ITokenPayload } from '../../utils/token-helper';
+import { cJwtPayload, ITokenPayload } from '../../utils/token-helper';
 
 const isCouponCodeUnique = async (shopId: string, couponCode: string): Promise<boolean> => {
 	const existingCoupon = await dataSource
@@ -19,44 +19,39 @@ const isCouponCodeUnique = async (shopId: string, couponCode: string): Promise<b
 	return !existingCoupon;
 };
 
-export const createCoupon = async (req: Request, res: Response) => {
+export const createCoupon = async (req: CustomRequest, res: Response) => {
 	try {
-		const { shopid, coupon_code }: ICoupon = req.body;
+		const { coupon_code, type, coupon_value, max_use }: ICoupon = req.body;
 
-		let { discount } = req.body;
-
-		if (!shopid || !coupon_code) {
-			return handleBadRequest(res, 400, 'all fields are required');
-		}
-
-		if (!discount) {
-			discount = 0;
-		}
+		const shop = req.user as cJwtPayload;
 
 		const isShop = await dataSource
 			.getRepository(Store)
 			.createQueryBuilder('shop')
-			.where('shop.id = :id', { id: shopid })
+			.where('shop.id = :id', { id: shop.id })
 			.getOne();
 
 		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
 
 		//check if coupon code already exist
-		const isUnique = await isCouponCodeUnique(shopid, coupon_code);
+		const isUnique = await isCouponCodeUnique(shop.id, coupon_code);
 
 		if (!isUnique) {
 			return handleBadRequest(res, 400, 'you already created this coupon code');
 		}
 
 		const couponToCreate = dataSource.getRepository(Coupon).create({
-			shop_id: shopid,
-			coupon_code,
-			discount,
+			shop_id: shop.id,
+			coupon_code: coupon_code,
+			coupon_value: coupon_value,
+			type: type,
+			max_use,
+			total_usage: 0,
 		});
 
 		const result = await couponToCreate.save();
 
-		return handleSuccess(res, result, 'created coupon', 201, undefined);
+		return handleSuccess(res, {}, 'created coupon', 201, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
@@ -87,7 +82,7 @@ export const checkCouponCode = async (req: Request, res: Response) => {
 		}
 
 		// else coupon is valid
-		return res.status(200).json({ status: true, discount: couponCode.discount });
+		return res.status(200).json({ status: true, discount: couponCode.coupon_value });
 	} catch (error) {
 		return handleError(res, error);
 	}
@@ -172,17 +167,17 @@ export const editCoupon = async (req: CustomRequest, res: Response) => {
 			return handleBadRequest(res, 404, 'coupon not found');
 		}
 
-		if (discount && discount !== '') {
-			foundCoupon.discount = +discount;
-		}
+		// if (discount && discount !== '') {
+		// 	foundCoupon.discount = +discount;
+		// }
 
-		if (max_use && max_use !== '') {
-			foundCoupon.max_use = +max_use;
-		}
+		// if (max_use && max_use !== '') {
+		// 	foundCoupon.max_use = +max_use;
+		// }
 
-		if (items) {
-			foundCoupon.items = items;
-		}
+		// if (items) {
+		// 	foundCoupon.items = items;
+		// }
 
 		const user = req.user as ITokenPayload;
 
@@ -221,9 +216,9 @@ export const couponApplyToProduct = async (req: Request, res: Response) => {
 			return res.status(200).json({ status: false });
 		}
 
-		if (!couponCode.items.includes(productid)) {
-			return res.status(200).json({ status: false });
-		}
+		// if (!couponCode.items.includes(productid)) {
+		// 	return res.status(200).json({ status: false });
+		// }
 
 		// else coupon is valid
 		return res.status(200).json({ status: true });

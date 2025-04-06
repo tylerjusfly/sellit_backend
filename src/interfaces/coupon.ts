@@ -1,7 +1,8 @@
 export interface ICoupon {
-	shopid: string;
+	type: string;
 	coupon_code: string;
-	discount: number;
+	coupon_value: number;
+	max_use: number;
 }
 
 export interface IeditCoupon {

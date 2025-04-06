@@ -51,7 +51,7 @@ export const createOrder = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'shop does not exist');
 		}
 
-		let shopcredit = 3;
+		let shopcredit = 31;
 
 		if (shopcredit <= 0) {
 			return handleBadRequest(
@@ -103,7 +103,7 @@ export const createOrder = async (req: Request, res: Response) => {
 				// do something
 				const new_amount = qty * isProduct.amount;
 
-				let discountRate = (couponCode.discount / 100).toFixed(2); //discount rate
+				let discountRate = (couponCode.coupon_value / 100).toFixed(2); //discount rate
 				const discountedPrice = new_amount - new_amount * parseFloat(discountRate);
 
 				totalOrderAmount = discountedPrice;

@@ -9,15 +9,21 @@ export class Coupon extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: false })
 	coupon_code!: string;
 
+	@Column({ type: 'varchar', nullable: false, default: 'discount' })
+	type!: string;
+
 	@Column({ type: 'integer', nullable: false })
-	discount!: number;
+	coupon_value!: number;
+
+	@Column({ type: 'varchar', nullable: true })
+	payment_method!: string;
+
+	@Column({ type: 'varchar', nullable: true })
+	product_id!: string;
 
 	@Column({ type: 'integer', default: 1 })
 	max_use!: number;
 
 	@Column({ type: 'integer', default: 0 })
 	total_usage!: number;
-
-	@Column({ type: 'simple-array', nullable: true })
-	items!: string[];
 }

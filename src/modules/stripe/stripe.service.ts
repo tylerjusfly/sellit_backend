@@ -6,7 +6,7 @@ import { Orders } from '../../database/entites/orders.entity';
 import { ENV } from '../../constants/env-variables';
 import { manipulateOrderItem } from '../../utils/order-helpers';
 import { sendOrderMail } from '../../mail-providers/sendordermail';
-const stripe = new Stripe(ENV.STRIPE_SECRET_KEY || '');
+// const stripe = new Stripe(ENV.STRIPE_SECRET_KEY || '');
 
 export const stripeChargeForVendors = async (req: Request, res: Response) => {
 	try {
@@ -99,6 +99,18 @@ export const cashappChargeForVendors = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'order does not exist');
 		}
 
+		const StripeKeyFromStore = isOrder.shop_id.stripe_key;
+
+		if (!StripeKeyFromStore) {
+			return handleBadRequest(
+				res,
+				400,
+				'cashapp payment is no longer available for this product. Contact Store Support'
+			);
+		}
+
+		const stripe = new Stripe(StripeKeyFromStore || '');
+
 		if (!stripe) {
 			return handleBadRequest(res, 400, 'unable to create stripe payment');
 		}
@@ -166,25 +178,25 @@ export const stripeSuccess = async (req: Request, res: Response) => {
 	}
 };
 
-export const onBoardStripeUsers = async (req: Request, res: Response) => {
-	const { shopname } = req.body;
+// export const onBoardStripeUsers = async (req: Request, res: Response) => {
+// 	const { shopname } = req.body;
 
-	if (!shopname) {
-		return handleBadRequest(res, 404, 'shopname Field is required');
-	}
-	try {
-		if (!stripe) {
-			return handleBadRequest(res, 404, 'internal stripe error');
-		}
+// 	if (!shopname) {
+// 		return handleBadRequest(res, 404, 'shopname Field is required');
+// 	}
+// 	try {
+// 		if (!stripe) {
+// 			return handleBadRequest(res, 404, 'internal stripe error');
+// 		}
 
-		const account = await stripe.accounts.create({ type: 'standard' });
+// 		const account = await stripe.accounts.create({ type: 'standard' });
 
-		// setting account Id to session
-		req.params.shopName = shopname;
-		req.params.accountID = account.id;
-		res.redirect(`/api/v1/onboard-user/refresh/${req.params.shopName}/${req.params.accountID}`);
-	} catch (error) {
-		console.log(error);
-		return handleError(res, error);
-	}
-};
+// 		// setting account Id to session
+// 		req.params.shopName = shopname;
+// 		req.params.accountID = account.id;
+// 		res.redirect(`/api/v1/onboard-user/refresh/${req.params.shopName}/${req.params.accountID}`);
+// 	} catch (error) {
+// 		console.log(error);
+// 		return handleError(res, error);
+// 	}
+// };
