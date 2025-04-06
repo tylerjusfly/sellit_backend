@@ -27,8 +27,6 @@
 		"rootDir": "./src",
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true
-
-		// "allowImportingTsExtensions": true
 	},
 	"exclude": ["node_modules", "jest.config.ts"]
 }

@@ -8,7 +8,11 @@ import { apiRouter } from './modules/router.js';
 import { requsetLogger } from './middlewares/requestlogger.js';
 // import { cacheRedisClient } from './database/redis/redis-client';
 // import { rateLimiter } from './middlewares/rate-limiter';
-import { join } from 'path';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const port = process.env.PORT || 4000;
