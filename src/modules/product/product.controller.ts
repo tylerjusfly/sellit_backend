@@ -8,10 +8,10 @@ import {
 	getOneProduct,
 	getProductsForPublic,
 	getSpecificProduct,
-} from './product.service';
+} from './product.service.js';
 import { verifyToken } from '../../middlewares/verifyauth.js';
-import { authorize } from '../../middlewares/confirm-permission';
-import { checkPaymentTypeVlidity } from '../../middlewares/check-payment-type-validity';
+import { authorize } from '../../middlewares/confirm-permission.js';
+import { checkPaymentTypeVlidity } from '../../middlewares/check-payment-type-validity.js';
 
 const productRouter = Router();
 

@@ -8,11 +8,11 @@ import {
 	getAllOrder,
 	getOrderById,
 	getPopularPayment,
-} from './order.service';
+} from './order.service.js';
 
-import { paymentOrderSchema } from './order.validation';
-import { validateQueryRequest } from '../../middlewares/validate-body';
-import { authorize } from '../../middlewares/confirm-permission';
+import { paymentOrderSchema } from './order.validation.js';
+import { validateQueryRequest } from '../../middlewares/validate-body.js';
+import { authorize } from '../../middlewares/confirm-permission.js';
 
 const orderRouter = Router();
 

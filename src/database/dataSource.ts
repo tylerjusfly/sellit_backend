@@ -1,6 +1,8 @@
+import dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
 import { ENV } from '../constants/env-variables.js';
-require('dotenv').config();
+
+dotenv.config();
 
 const DATABASE_ENABLE_LOGGING = process.env.DATABASE_ENABLE_LOGGING === 'true';
 const DATABASE_ENABLE_SYNC = process.env.DATABASE_ENABLE_SYNC === 'true';
@@ -41,7 +43,6 @@ export async function initialiseDataSource(retries = DATABASE_RETRY_COUNT): Prom
 			});
 		});
 }
-
 
 // AppDataSource.initialize().then(async () => {
 //     console.log("Database connected!");

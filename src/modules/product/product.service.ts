@@ -1,19 +1,18 @@
-import { Response, Request } from 'express';
+import type { Response, Request } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
 import { dataSource } from '../../database/dataSource.js';
-import { Product } from '../../database/entites/product.entity';
-import {
+import { Product } from '../../database/entites/product.entity.js';
+import type {
 	IEditProduct,
 	IStoreProduct,
 	IgetAllProduct,
 	IgetPublicProduct,
-} from '../../interfaces/product';
-import { CustomRequest } from '../../middlewares/verifyauth.js';
-import { ITokenPayload } from '../../utils/token-helper.js';
-import { IPaginate } from '../../interfaces/pagination';
+} from '../../interfaces/product.js';
+import type { CustomRequest } from '../../middlewares/verifyauth.js';
+import type { ITokenPayload } from '../../utils/token-helper.js';
+import type { IPaginate } from '../../interfaces/pagination.js';
 import { Brackets } from 'typeorm';
-// import { Categories } from '../../database/entites/categories.entity';
-import { convertToSlug } from '../../utils/convertToSlug';
+
 import { Store } from '../../database/entites/store.entity.js';
 
 export const CreateProduct = async (req: CustomRequest, res: Response) => {
@@ -334,9 +333,6 @@ export const getProductsForPublic = async (req: Request, res: Response) => {
 		return handleError(res, error);
 	}
 };
-
-
-
 
 export const getOneProduct = async (req: Request, res: Response) => {
 	try {

@@ -1,20 +1,20 @@
 import type { Request, Response } from 'express';
-import { CustomRequest } from '../../middlewares/verifyauth.js';
+import type { CustomRequest } from '../../middlewares/verifyauth.js';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
-import { ICreateOrder, TallOrders } from '../../interfaces/orders';
+import type { ICreateOrder, TallOrders } from '../../interfaces/orders.js';
 import { dataSource } from '../../database/dataSource.js';
-import { Product } from '../../database/entites/product.entity';
+import { Product } from '../../database/entites/product.entity.js';
 import { Store } from '../../database/entites/store.entity.js';
-import { uniqueID } from '../../utils/generateIds';
-import { Orders } from '../../database/entites/orders.entity';
+
+import { Orders } from '../../database/entites/orders.entity.js';
 import moment from 'moment';
-import { IPaginate } from '../../interfaces/pagination';
-import { LogHelper } from '../../utils/LogHelper';
-import { ORDER_STATUS } from '../../constants/result';
-import { manipulateOrderItem } from '../../utils/order-helpers';
-import { transporter } from '../../mail-providers/nodemailer';
-import { sendOrderMail } from '../../mail-providers/sendordermail';
-import { Coupon } from '../../database/entites/coupon.entity';
+import type { IPaginate } from '../../interfaces/pagination.js';
+import { LogHelper } from '../../utils/LogHelper.js';
+import { ORDER_STATUS } from '../../constants/result.js';
+import { manipulateOrderItem } from '../../utils/order-helpers.js';
+import { transporter } from '../../mail-providers/nodemailer.js';
+import { sendOrderMail } from '../../mail-providers/sendordermail.js';
+import { Coupon } from '../../database/entites/coupon.entity.js';
 
 export const createOrder = async (req: Request, res: Response) => {
 	try {

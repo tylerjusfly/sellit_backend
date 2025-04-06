@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { coinBaseChargeForVendors, coinbaseSuccess } from './coinbase.service';
+import { coinBaseChargeForVendors, coinbaseSuccess } from './coinbase.service.js';
 
 const coinbaseRouter = Router();
 

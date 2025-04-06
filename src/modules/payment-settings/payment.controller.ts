@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { verifyToken } from '../../middlewares/verifyauth.js';
-import { connectPayment, disconnectPayment, fetchShopPayments } from './payment.service';
-import { paymentOrderSchema } from '../order/order.validation';
-import { validateQueryRequest, validateRequest } from '../../middlewares/validate-body';
-import { authorize } from '../../middlewares/confirm-permission';
+import { connectPayment, disconnectPayment, fetchShopPayments } from './payment.service.js';
+import { paymentOrderSchema } from '../order/order.validation.js';
+import { validateQueryRequest, validateRequest } from '../../middlewares/validate-body.js';
+import { authorize } from '../../middlewares/confirm-permission.js';
 
 const paymentSettingsRouter = Router();
 

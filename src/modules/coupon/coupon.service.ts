@@ -1,12 +1,12 @@
 import type { Request, Response } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
-import { ICoupon, IeditCoupon } from '../../interfaces/coupon';
-import { Coupon } from '../../database/entites/coupon.entity';
+import type { ICoupon, IeditCoupon } from '../../interfaces/coupon.js';
+import { Coupon } from '../../database/entites/coupon.entity.js';
 import { dataSource } from '../../database/dataSource.js';
 import { Store } from '../../database/entites/store.entity.js';
-import { IPaginate } from '../../interfaces/pagination';
-import { CustomRequest } from '../../middlewares/verifyauth.js';
-import { cJwtPayload, ITokenPayload } from '../../utils/token-helper.js';
+import type { IPaginate } from '../../interfaces/pagination.js';
+import type { CustomRequest } from '../../middlewares/verifyauth.js';
+import type { ITokenPayload } from '../../utils/token-helper.js';
 
 const isCouponCodeUnique = async (shopId: string, couponCode: string): Promise<boolean> => {
 	const existingCoupon = await dataSource
@@ -23,7 +23,7 @@ export const createCoupon = async (req: CustomRequest, res: Response) => {
 	try {
 		const { coupon_code, type, coupon_value, max_use }: ICoupon = req.body;
 
-		const shop = req.user as cJwtPayload;
+		const shop = req.user as ITokenPayload;
 
 		const isShop = await dataSource
 			.getRepository(Store)

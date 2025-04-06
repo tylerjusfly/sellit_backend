@@ -1,5 +1,5 @@
-import { Store } from '../database/entites/store.entity';
-import { getStoreByStorename } from '../modules/store/storehelpers';
+import { Store } from '../database/entites/store.entity.js';
+import { getStoreByStorename } from '../modules/store/storehelpers.js';
 
 jest.mock('../modules/store/storehelpers', () => ({
 	getStoreByStorename: jest.fn().mockImplementation(async () => {

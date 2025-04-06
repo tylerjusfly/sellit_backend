@@ -1,5 +1,9 @@
 import { Router } from 'express';
-import { cashappChargeForVendors, stripeChargeForVendors, stripeSuccess } from './stripe.service';
+import {
+	cashappChargeForVendors,
+	stripeChargeForVendors,
+	stripeSuccess,
+} from './stripe.service.js';
 
 const stripebaseRouter = Router();
 

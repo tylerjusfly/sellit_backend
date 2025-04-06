@@ -8,13 +8,13 @@ import {
 	editCoupon,
 	fetchCoupons,
 	fetchSingleCoupon,
-} from './coupon.service';
-import { authorize } from '../../middlewares/confirm-permission';
-import { deleteMiddleware } from '../../middlewares/delete-item';
-import { Coupon } from '../../database/entites/coupon.entity';
-import { createFetchMiddleware } from '../../middlewares/fetch-all-paginated';
-import { couponSchema } from './coupon.validation';
-import { validateRequest } from '../../middlewares/validate-body';
+} from './coupon.service.js';
+import { authorize } from '../../middlewares/confirm-permission.js';
+import { deleteMiddleware } from '../../middlewares/delete-item.js';
+import { Coupon } from '../../database/entites/coupon.entity.js';
+import { createFetchMiddleware } from '../../middlewares/fetch-all-paginated.js';
+import { couponSchema } from './coupon.validation.js';
+import { validateRequest } from '../../middlewares/validate-body.js';
 
 const couponRouter = Router();
 

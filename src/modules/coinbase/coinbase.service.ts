@@ -1,11 +1,11 @@
-import { Response, Request } from 'express';
+import type { Response, Request } from 'express';
 import { handleBadRequest, handleError } from '../../constants/response-handler.js';
-import { ICreateCoinbase } from '../../interfaces/payment.interface';
+import type { ICreateCoinbase } from '../../interfaces/payment.interface.js';
 import { dataSource } from '../../database/dataSource.js';
-import { Orders } from '../../database/entites/orders.entity';
-import { ENV } from '../../constants/env-variables';
-import { manipulateOrderItem } from '../../utils/order-helpers';
-import { sendOrderMail } from '../../mail-providers/sendordermail';
+import { Orders } from '../../database/entites/orders.entity.js';
+import { ENV } from '../../constants/env-variables.js';
+import { manipulateOrderItem } from '../../utils/order-helpers.js';
+import { sendOrderMail } from '../../mail-providers/sendordermail.js';
 import https from 'https';
 
 export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
@@ -67,15 +67,15 @@ export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 		fetch(url, options)
 			.then((result) => result.json())
 			.then((jsondata) => {
-				if (jsondata.error) {
-					return handleError(res, jsondata.error);
-				} else {
-					res.json({
-						success: true,
-						url: jsondata.data?.hosted_url,
-						// url: 'http://localhost:3000/store/kfc/',
-					});
-				}
+				// if (jsondata.error) {
+				// 	return handleError(res, jsondata.error);
+				// } else {
+				// 	res.json({
+				// 		success: true,
+				// 		url: jsondata.data?.hosted_url,
+				// 		// url: 'http://localhost:3000/store/kfc/',
+				// 	});
+				// }
 			})
 			.catch((err) => {
 				console.error('errorme:' + err);

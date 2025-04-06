@@ -2,8 +2,8 @@ import type { Request, Response } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
 import { dataSource } from '../../database/dataSource.js';
 
-import { Tickets } from '../../database/entites/ticket.entity';
-import { IPaginate } from '../../interfaces/pagination';
+import { Tickets } from '../../database/entites/ticket.entity.js';
+import type { IPaginate } from '../../interfaces/pagination.js';
 import { Store } from '../../database/entites/store.entity.js';
 
 export type PostTickets = {

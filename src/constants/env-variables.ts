@@ -1,4 +1,6 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export const ENV = {
 	COINBASE_KEY: process.env.COINBASE_KEY,

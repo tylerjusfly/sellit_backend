@@ -2,10 +2,10 @@ import type { Request, Response } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
 import Stripe from 'stripe';
 import { dataSource } from '../../database/dataSource.js';
-import { Orders } from '../../database/entites/orders.entity';
-import { ENV } from '../../constants/env-variables';
-import { manipulateOrderItem } from '../../utils/order-helpers';
-import { sendOrderMail } from '../../mail-providers/sendordermail';
+import { Orders } from '../../database/entites/orders.entity.js';
+import { ENV } from '../../constants/env-variables.js';
+import { manipulateOrderItem } from '../../utils/order-helpers.js';
+// import { sendOrderMail } from '../../mail-providers/sendordermail.js';
 // const stripe = new Stripe(ENV.STRIPE_SECRET_KEY || '');
 
 export const stripeChargeForVendors = async (req: Request, res: Response) => {

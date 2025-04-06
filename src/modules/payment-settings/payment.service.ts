@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
-import { getStoreByStoreId } from '../store/storehelpers';
+import { getStoreByStoreId } from '../store/storehelpers.js';
 
 type PAYMENT_TYPE = 'coinbase' | 'stripe' | 'paypal' | 'cashApp';
 
