@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+import { ENV } from '../constants/env-variables';
 require('dotenv').config();
 
 const DATABASE_ENABLE_LOGGING = process.env.DATABASE_ENABLE_LOGGING === 'true';
@@ -6,11 +7,11 @@ const DATABASE_ENABLE_SYNC = process.env.DATABASE_ENABLE_SYNC === 'true';
 
 export const dataSource = new DataSource({
 	type: 'postgres',
-	host: process.env.DATABASE_HOST || 'localhost',
-	port: parseInt(process.env.DATABASE_PORT || '5432'),
-	username: process.env.DATABASE_USER || 'postgres',
-	password: process.env.DATABASE_PASSWORD || 'tylerjusfly1996',
-	database: process.env.DATABASE_NAME || 'shopcrm',
+	host: ENV.PG_HOST,
+	port: ENV.PG_PORT,
+	username: ENV.PG_USER,
+	password: ENV.PG_PASSWORD,
+	database: ENV.PG_DATABASE,
 	entities: ['**/*.entity.ts'],
 	logging: DATABASE_ENABLE_LOGGING,
 	synchronize: DATABASE_ENABLE_SYNC,
