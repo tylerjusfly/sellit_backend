@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import hbs from 'nodemailer-express-handlebars';
-import { ENV } from '../constants/env-variables';
+import { ENV } from '../constants/env-variables.js';
 import { join } from 'path';
 
 export const transporter = nodemailer.createTransport({

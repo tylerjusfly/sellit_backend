@@ -1,8 +1,8 @@
-import { ORDER_STATUS } from '../constants/result';
-import { dataSource } from '../database/dataSource';
-import { Orders } from '../database/entites/orders.entity';
-import { Product } from '../database/entites/product.entity';
-import { LogHelper } from './LogHelper';
+import { ORDER_STATUS } from '../constants/result.js';
+import { dataSource } from '../database/dataSource.js';
+import { Orders } from '../database/entites/orders.entity.js';
+import { Product } from '../database/entites/product.entity.js';
+import { LogHelper } from './LogHelper.js';
 
 function removeId(stockId: string, quantity: number) {
 	let allstockArray: string[] = [];
@@ -18,7 +18,8 @@ function removeId(stockId: string, quantity: number) {
 
 export const manipulateOrderItem = async (orderid: string, productid: string) => {
 	// find order
-	const orderData = await dataSource.getRepository(Orders).findOne({
+	const orderData = null;
+	await dataSource.getRepository(Orders).findOne({
 		where: {
 			id: orderid,
 		},
@@ -39,26 +40,26 @@ export const manipulateOrderItem = async (orderid: string, productid: string) =>
 	}
 
 	// if items is already in an order , do not add
-	if (orderData.items === null) {
-		if (prodsData.items?.split(',').length) {
-			const orderItems = removeId(prodsData.items, orderData.qty);
-			LogHelper.debug(orderItems);
-			prodsData.items = orderItems.newStock ? orderItems.newStock : null;
-			orderData.items = orderItems.productBought ? orderItems.productBought : null;
-			orderData.order_status = ORDER_STATUS.PAID;
+	// if (orderData.items === null) {
+	// 	if (prodsData.items?.split(',').length) {
+	// 		const orderItems = removeId(prodsData.items, orderData.qty);
+	// 		LogHelper.debug(orderItems);
+	// 		prodsData.items = orderItems.newStock ? orderItems.newStock : null;
+	// 		orderData.items = orderItems.productBought ? orderItems.productBought : null;
+	// 		orderData.order_status = ORDER_STATUS.PAID;
 
-			// Keep track of product stock
-			if (orderItems.newStock && orderItems.newStock !== '') {
-				const itemsArray = orderItems.newStock?.split(',').map((item) => item.trim());
-				prodsData.stock = itemsArray.length;
-			} else {
-				prodsData.stock = 0;
-			}
+	// 		// Keep track of product stock
+	// 		if (orderItems.newStock && orderItems.newStock !== '') {
+	// 			const itemsArray = orderItems.newStock?.split(',').map((item) => item.trim());
+	// 			prodsData.stock = itemsArray.length;
+	// 		} else {
+	// 			prodsData.stock = 0;
+	// 		}
 
-			await prodsData.save();
-			await orderData.save();
-		}
-	}
+	// 		await prodsData.save();
+	// 		await orderData.save();
+	// 	}
+	// }
 
 	return true;
 };

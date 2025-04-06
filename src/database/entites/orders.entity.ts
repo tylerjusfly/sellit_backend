@@ -1,8 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { CustomBaseEntity } from '../custom-base.entity';
-import { Store } from './store.entity';
-import { ORDER_STATUS } from '../../constants/result';
-import { Product } from './product.entity';
+import { CustomBaseEntity } from '../custom-base.entity.js';
+import { Store } from './store.entity.js';
+import { ORDER_STATUS } from '../../constants/result.js';
+import { Product } from './product.entity.js';
 
 @Entity({ name: 'orders' })
 export class Orders extends CustomBaseEntity {

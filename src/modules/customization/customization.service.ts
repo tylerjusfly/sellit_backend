@@ -1,9 +1,9 @@
 import { Response, Request } from 'express';
-import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
-import { CustomRequest } from '../../middlewares/verifyauth';
-import { dataSource } from '../../database/dataSource';
+import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
+import { CustomRequest } from '../../middlewares/verifyauth.js';
+import { dataSource } from '../../database/dataSource.js';
 import { Customization } from '../../database/entites/customization.entity';
-import { cJwtPayload } from '../../utils/token-helper';
+import { cJwtPayload } from '../../utils/token-helper.js';
 
 export const getCustomization = async (req: CustomRequest, res: Response) => {
 	try {

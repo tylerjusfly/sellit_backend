@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
-import { CustomRequest } from '../../middlewares/verifyauth';
-import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
+import type { Request, Response } from 'express';
+import { CustomRequest } from '../../middlewares/verifyauth.js';
+import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
 import { ICreateOrder, TallOrders } from '../../interfaces/orders';
-import { dataSource } from '../../database/dataSource';
+import { dataSource } from '../../database/dataSource.js';
 import { Product } from '../../database/entites/product.entity';
-import { Store } from '../../database/entites/store.entity';
+import { Store } from '../../database/entites/store.entity.js';
 import { uniqueID } from '../../utils/generateIds';
 import { Orders } from '../../database/entites/orders.entity';
 import moment from 'moment';

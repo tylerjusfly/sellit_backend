@@ -1,15 +1,15 @@
-import { Request, Response } from 'express';
-import { TAdminLogin, TCreate, TLogin, TUserVerify } from '../../interfaces/auth';
-import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
-import { dataSource } from '../../database/dataSource';
-import { isValidPassword } from '../../utils/password-helper';
+import type { Request, Response } from 'express';
+import type { TAdminLogin, TCreate, TLogin, TUserVerify } from '../../interfaces/auth.js';
+import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
+import { dataSource } from '../../database/dataSource.js';
+import { isValidPassword } from '../../utils/password-helper.js';
 import { pbkdf2Sync, randomBytes } from 'crypto';
-import { getToken } from '../../utils/token-helper';
-import { adminKey, uniqueID } from '../../utils/generateIds';
-import { Admins } from '../../database/entites/admins.entity';
-import { sendUserVerificationToken } from '../../mail-providers/sendtokenmail';
-import { Store } from '../../database/entites/store.entity';
-import { getStoreByEmail, getStoreByStorename } from '../store/storehelpers';
+import { getToken } from '../../utils/token-helper.js';
+import { adminKey, uniqueID } from '../../utils/generateIds.js';
+import { Admins } from '../../database/entites/admins.entity.js';
+import { sendUserVerificationToken } from '../../mail-providers/sendtokenmail.js';
+import { Store } from '../../database/entites/store.entity.js';
+import { getStoreByEmail, getStoreByStorename } from '../store/storehelpers.js';
 
 export const loginUser = async (req: Request, res: Response) => {
 	try {

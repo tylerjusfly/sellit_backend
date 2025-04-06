@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm';
-import { CustomBaseEntity } from '../custom-base.entity';
+import { CustomBaseEntity } from '../custom-base.entity.js';
 
 @Entity({ name: 'blacklists' })
 export class BlackLists extends CustomBaseEntity {
@@ -15,9 +15,4 @@ export class BlackLists extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: false })
 	shop_id!: string;
 
-	// @Column({ type: 'varchar', nullable: false })
-	// shop_name!: string;
-
-	// @Column({ type: 'simple-array', nullable: true })
-	// products!: string[];
 }

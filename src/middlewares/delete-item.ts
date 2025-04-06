@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { EntityTarget, ObjectLiteral } from 'typeorm';
-import { handleBadRequest, handleError, handleSuccess } from '../constants/response-handler';
-import { dataSource } from '../database/dataSource';
+import type { Request, Response, NextFunction } from 'express';
+import type { EntityTarget, ObjectLiteral } from 'typeorm';
+import { handleBadRequest, handleError, handleSuccess } from '../constants/response-handler.js';
+import { dataSource } from '../database/dataSource.js';
 
 export function deleteMiddleware<T extends ObjectLiteral>(entity: EntityTarget<T>) {
 	return async (req: Request, res: Response, next: NextFunction) => {

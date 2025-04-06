@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
-import { Product } from '../database/entites/product.entity';
-import { dataSource } from '../database/dataSource';
-import { handleBadRequest } from '../constants/response-handler';
-import { IEditProduct } from '../interfaces/product';
+import type { NextFunction, Request, Response } from 'express';
+import { Product } from '../database/entites/product.entity.js';
+import { dataSource } from '../database/dataSource.js';
+import { handleBadRequest } from '../constants/response-handler.js';
+import type { IEditProduct } from '../interfaces/product.js';
 
 export const checkPaymentTypeVlidity = async (req: Request, res: Response, next: NextFunction) => {
 	const { id, cashapp, coinbase_key, paypal, stripe }: IEditProduct = req.body;

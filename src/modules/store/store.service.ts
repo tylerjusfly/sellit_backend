@@ -1,9 +1,9 @@
 import { Response } from "express";
-import { handleBadRequest, handleError, handleSuccess } from "../../constants/response-handler";
-import { CustomRequest } from "../../middlewares/verifyauth";
-import { cJwtPayload } from "../../utils/token-helper";
-import { dataSource } from "../../database/dataSource";
-import { Store } from "../../database/entites/store.entity";
+import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
+import { CustomRequest } from '../../middlewares/verifyauth.js';
+import { cJwtPayload } from '../../utils/token-helper.js';
+import { dataSource } from '../../database/dataSource.js';
+import { Store } from '../../database/entites/store.entity.js';
 
 export const getshopdata = async (req: CustomRequest, res: Response) => {
     try {

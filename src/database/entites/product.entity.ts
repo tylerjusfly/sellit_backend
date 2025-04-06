@@ -7,10 +7,10 @@ import {
 	ManyToOne,
 	RelationId,
 } from 'typeorm';
-import { CustomBaseEntity } from '../custom-base.entity';
-import { Coupon } from './coupon.entity';
-import { Store } from './store.entity';
-import { Categories } from './categories.entity';
+import { CustomBaseEntity } from '../custom-base.entity.js';
+import { Coupon } from './coupon.entity.js';
+import { Store } from './store.entity.js';
+import { Categories } from './categories.entity.js';
 
 @Entity({ name: 'products' })
 export class Product extends CustomBaseEntity {

@@ -1,5 +1,5 @@
-import { dataSource } from '../../database/dataSource';
-import { Store } from '../../database/entites/store.entity';
+import { dataSource } from '../../database/dataSource.js';
+import { Store } from '../../database/entites/store.entity.js';
 
 export const getStoreByStorename = async (storename: string): Promise<Store | null> => {
 	const IsStore = await dataSource.getRepository(Store).findOne({
@@ -27,4 +27,3 @@ export const getStoreByStoreId = async (storeid?: string) => {
 
 	return isShop;
 };
-

@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
+import type { Request, Response } from 'express';
+import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
 import { getStoreByStoreId } from '../store/storehelpers';
 
 type PAYMENT_TYPE = 'coinbase' | 'stripe' | 'paypal' | 'cashApp';

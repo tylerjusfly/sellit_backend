@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
-import { cacheRedisClient } from '../database/redis/redis-client';
-import { CustomRequest } from './verifyauth';
-import { ITokenPayload } from '../utils/token-helper';
+import type { NextFunction, Request, Response } from 'express';
+import { cacheRedisClient } from '../database/redis/redis-client.js';
+import type { CustomRequest } from './verifyauth.js';
+import type { ITokenPayload } from '../utils/token-helper.js';
 import moment from 'moment';
 
 const RATELIMIT_DURATION_IN_SECONDS = 60;
@@ -44,9 +44,10 @@ export const rateLimiter = async (req: CustomRequest, res: Response, next: NextF
 			message: "Relax, that's too many request in 60 secs",
 		});
 	} else {
-		await cacheRedisClient.hSet(id.toString(), {
-			count: parseInt(result['count']) + 1,
-		});
+		// come back to fix this error
+		// await cacheRedisClient.hSet(id.toString(), {
+		// 	count: parseInt(result['count']) + 1,
+		// });
 		return next();
 	}
 };

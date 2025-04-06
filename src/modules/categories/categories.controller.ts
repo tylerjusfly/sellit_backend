@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { verifyToken } from '../../middlewares/verifyauth';
+import { verifyToken } from '../../middlewares/verifyauth.js';
 import {
 	CreateCategories,
 	fetchCategories,
@@ -8,9 +8,9 @@ import {
 	// fetchCategories,
 	// fetchCategoriesByShopName,
 	// fetchSingleCategory,
-} from './categories.service';
-import { validateRequest } from '../../middlewares/validate-body';
-import { createCategorySchema, editCategorySchema } from './category.validation';
+} from './categories.service.js';
+import { validateRequest } from '../../middlewares/validate-body.js';
+import { createCategorySchema, editCategorySchema } from './category.validation.js';
 
 const categoriesRouter = Router();
 

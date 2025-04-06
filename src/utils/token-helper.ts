@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken';
-import { Store } from '../database/entites/store.entity';
+import { Store } from '../database/entites/store.entity.js';
 
 export interface ITokenPayload {
 	id: string;

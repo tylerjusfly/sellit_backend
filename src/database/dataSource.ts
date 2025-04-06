@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { ENV } from '../constants/env-variables';
+import { ENV } from '../constants/env-variables.js';
 require('dotenv').config();
 
 const DATABASE_ENABLE_LOGGING = process.env.DATABASE_ENABLE_LOGGING === 'true';

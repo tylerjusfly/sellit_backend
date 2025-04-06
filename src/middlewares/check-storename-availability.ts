@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
-import { handleBadRequest } from '../constants/response-handler';
-import { Store } from '../database/entites/store.entity';
-import { dataSource } from '../database/dataSource';
+import type { NextFunction, Request, Response } from 'express';
+import { handleBadRequest } from '../constants/response-handler.js';
+import { Store } from '../database/entites/store.entity.js';
+import { dataSource } from '../database/dataSource.js';
 
 export const checkstorenameIsAvailable = async (
 	req: Request,

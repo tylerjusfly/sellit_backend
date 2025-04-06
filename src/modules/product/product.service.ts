@@ -1,6 +1,6 @@
 import { Response, Request } from 'express';
-import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
-import { dataSource } from '../../database/dataSource';
+import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
+import { dataSource } from '../../database/dataSource.js';
 import { Product } from '../../database/entites/product.entity';
 import {
 	IEditProduct,
@@ -8,13 +8,13 @@ import {
 	IgetAllProduct,
 	IgetPublicProduct,
 } from '../../interfaces/product';
-import { CustomRequest } from '../../middlewares/verifyauth';
-import { ITokenPayload } from '../../utils/token-helper';
+import { CustomRequest } from '../../middlewares/verifyauth.js';
+import { ITokenPayload } from '../../utils/token-helper.js';
 import { IPaginate } from '../../interfaces/pagination';
 import { Brackets } from 'typeorm';
 // import { Categories } from '../../database/entites/categories.entity';
 import { convertToSlug } from '../../utils/convertToSlug';
-import { Store } from '../../database/entites/store.entity';
+import { Store } from '../../database/entites/store.entity.js';
 
 export const CreateProduct = async (req: CustomRequest, res: Response) => {
 	try {

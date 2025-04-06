@@ -1,7 +1,9 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Request, Response, NextFunction } from 'express';
-import { handleBadRequest } from '../constants/response-handler';
-import { JWT_SECRET } from '../utils/token-helper';
+import jwt from 'jsonwebtoken';
+import { handleBadRequest } from '../constants/response-handler.js';
+import { JWT_SECRET } from '../utils/token-helper.js';
+
+import type { JwtPayload } from 'jsonwebtoken';
+import type { Request, Response, NextFunction } from 'express';
 
 export interface CustomRequest extends Request {
 	user?: string | JwtPayload;

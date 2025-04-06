@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
-import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
+import type { Request, Response } from 'express';
+import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
 import { ICoupon, IeditCoupon } from '../../interfaces/coupon';
 import { Coupon } from '../../database/entites/coupon.entity';
-import { dataSource } from '../../database/dataSource';
-import { Store } from '../../database/entites/store.entity';
+import { dataSource } from '../../database/dataSource.js';
+import { Store } from '../../database/entites/store.entity.js';
 import { IPaginate } from '../../interfaces/pagination';
-import { CustomRequest } from '../../middlewares/verifyauth';
-import { cJwtPayload, ITokenPayload } from '../../utils/token-helper';
+import { CustomRequest } from '../../middlewares/verifyauth.js';
+import { cJwtPayload, ITokenPayload } from '../../utils/token-helper.js';
 
 const isCouponCodeUnique = async (shopId: string, couponCode: string): Promise<boolean> => {
 	const existingCoupon = await dataSource

@@ -9,7 +9,7 @@ import {
 	getProductsForPublic,
 	getSpecificProduct,
 } from './product.service';
-import { verifyToken } from '../../middlewares/verifyauth';
+import { verifyToken } from '../../middlewares/verifyauth.js';
 import { authorize } from '../../middlewares/confirm-permission';
 import { checkPaymentTypeVlidity } from '../../middlewares/check-payment-type-validity';
 

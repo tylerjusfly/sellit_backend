@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { verifyToken } from '../../middlewares/verifyauth';
+import { verifyToken } from '../../middlewares/verifyauth.js';
 import { connectPayment, disconnectPayment, fetchShopPayments } from './payment.service';
 import { paymentOrderSchema } from '../order/order.validation';
 import { validateQueryRequest, validateRequest } from '../../middlewares/validate-body';

@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
-import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
-import { dataSource } from '../../database/dataSource';
-import { ICategories, IeditCategories, IgetAllCategory } from '../../interfaces/categories';
-import { Categories } from '../../database/entites/categories.entity';
-import { CustomRequest } from '../../middlewares/verifyauth';
-import { ITokenPayload } from '../../utils/token-helper';
-import { Store } from '../../database/entites/store.entity';
-import { Product } from '../../database/entites/product.entity';
+import type { Request, Response } from 'express';
+import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
+import { dataSource } from '../../database/dataSource.js';
+import type { ICategories, IeditCategories, IgetAllCategory } from '../../interfaces/categories.js';
+import { Categories } from '../../database/entites/categories.entity.js';
+import type { CustomRequest } from '../../middlewares/verifyauth.js';
+import type { ITokenPayload } from '../../utils/token-helper.js';
+import { Store } from '../../database/entites/store.entity.js';
+import { Product } from '../../database/entites/product.entity.js';
 
 export const CreateCategories = async (req: CustomRequest, res: Response) => {
 	try {

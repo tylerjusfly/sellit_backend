@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { verifyToken } from '../../middlewares/verifyauth';
+import { verifyToken } from '../../middlewares/verifyauth.js';
 import { getshopdata, getstoreInPublic, updateStorename } from './store.service';
 import { checkstorenameIsAvailable } from '../../middlewares/check-storename-availability';
 import { StoreOrderSchema } from './store.validation';

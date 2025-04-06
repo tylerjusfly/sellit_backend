@@ -1,8 +1,8 @@
-import { NextFunction, Response } from 'express';
-import { handleBadRequest } from '../constants/response-handler';
-import { CustomRequest } from './verifyauth';
-import { ITokenPayload } from '../utils/token-helper';
-import { Store } from '../database/entites/store.entity';
+import type { NextFunction, Response } from 'express';
+import { handleBadRequest } from '../constants/response-handler.js';
+import type { CustomRequest } from './verifyauth.js';
+import type { ITokenPayload } from '../utils/token-helper.js';
+import { Store } from '../database/entites/store.entity.js';
 
 export const authorize = (requiredPermissions: string[]) => {
 	return [

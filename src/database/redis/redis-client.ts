@@ -1,6 +1,6 @@
 import process from 'process';
 import { createClient } from 'redis';
-import { LogHelper } from '../../utils/LogHelper';
+import { LogHelper } from '../../utils/LogHelper.js';
 
 const REDIS_CACHE_HOST = process.env.REDIS_CACHE_HOST || 'localhost';
 const REDIS_CACHE_PORT = process.env.REDIS_CACHE_PORT

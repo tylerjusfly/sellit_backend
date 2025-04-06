@@ -1,6 +1,6 @@
-import { TUserType } from '../interfaces/user';
-import { LogHelper } from '../utils/LogHelper';
-import { transporter } from './nodemailer';
+import type { TUserType } from '../interfaces/user.js';
+import { LogHelper } from '../utils/LogHelper.js';
+import { transporter } from './nodemailer.js';
 
 const company_name = 'testme';
 

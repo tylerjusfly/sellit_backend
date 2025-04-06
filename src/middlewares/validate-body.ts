@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import { handleBadRequest } from '../constants/response-handler';
+import type { Request, Response, NextFunction } from 'express';
+import { handleBadRequest } from '../constants/response-handler.js';
 
 export const validateRequest = (schema: any) => {
 	return (req: Request, res: Response, next: NextFunction) => {

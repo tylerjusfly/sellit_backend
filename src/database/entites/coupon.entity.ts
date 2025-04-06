@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { CustomBaseEntity } from '../custom-base.entity';
+import { CustomBaseEntity } from '../custom-base.entity.js';
 
 @Entity({ name: 'coupons' })
 export class Coupon extends CustomBaseEntity {

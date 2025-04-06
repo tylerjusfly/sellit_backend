@@ -1,9 +1,11 @@
-import express, { Request, Response } from 'express';
-import { initialiseDataSource } from './database/dataSource';
-import { LogHelper } from './utils/LogHelper';
+import express from 'express';
+import type { Request, Response } from 'express';
+
+import { initialiseDataSource } from './database/dataSource.js';
+import { LogHelper } from './utils/LogHelper.js';
 import cors from 'cors';
-import { apiRouter } from './modules/router';
-import { requsetLogger } from './middlewares/requestlogger';
+import { apiRouter } from './modules/router.js';
+import { requsetLogger } from './middlewares/requestlogger.js';
 // import { cacheRedisClient } from './database/redis/redis-client';
 // import { rateLimiter } from './middlewares/rate-limiter';
 import { join } from 'path';

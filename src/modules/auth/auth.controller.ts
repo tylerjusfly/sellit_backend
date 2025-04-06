@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { create, loginUser, resendVerificationCode, verifyMail } from './auth.service';
-import { loginStoreSchema, verifyAccountSchema } from './auth.validations';
-import { verifyToken } from '../../middlewares/verifyauth';
-import { checkstorenameIsAvailable } from '../../middlewares/check-storename-availability';
-import { validateRequest } from '../../middlewares/validate-body';
+import { create, loginUser, resendVerificationCode, verifyMail } from './auth.service.js';
+import { loginStoreSchema, verifyAccountSchema } from './auth.validations.js';
+import { verifyToken } from '../../middlewares/verifyauth.js';
+import { checkstorenameIsAvailable } from '../../middlewares/check-storename-availability.js';
+import { validateRequest } from '../../middlewares/validate-body.js';
 
 const authRouter = Router();
 

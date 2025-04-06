@@ -1,16 +1,34 @@
 {
 	"compilerOptions": {
-		"target": "ES2020",
-		"module": "CommonJS",
-		"outDir": "./dist",
-		"strict": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
+		"target": "ES2022",
+		"verbatimModuleSyntax": true,
+		"moduleDetection": "force",
+
+		"allowJs": true,
+		"resolveJsonModule": true,
+
+		// Strictness
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+
+		// Transpiling with typescript
+		"module": "NodeNext",
+		"moduleResolution": "nodenext",
+		// "module": "ESNext",
+		// "moduleResolution": "bundler",
+		"outDir": "./dist",
+		"sourceMap": true,
+
+		"lib": ["ES2022"],
+
 		"forceConsistentCasingInFileNames": true,
 		"rootDir": "./src",
-		"moduleResolution": "node",
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true
+
+		// "allowImportingTsExtensions": true
 	},
 	"exclude": ["node_modules", "jest.config.ts"]
 }

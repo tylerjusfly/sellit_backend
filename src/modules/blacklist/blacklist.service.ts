@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
-import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler';
-import { PostBlacklist } from '../../interfaces/blacklist';
-import { dataSource } from '../../database/dataSource';
-import { BlackLists } from '../../database/entites/blacklist.entity';
-import { IPaginate } from '../../interfaces/pagination';
-import { Store } from '../../database/entites/store.entity';
-import { ITokenPayload } from '../../utils/token-helper';
-import { CustomRequest } from '../../middlewares/verifyauth';
+import type { Request, Response } from 'express';
+import { handleBadRequest, handleError, handleSuccess } from '../../constants/response-handler.js';
+import type { PostBlacklist } from '../../interfaces/blacklist.js';
+import { dataSource } from '../../database/dataSource.js';
+import { BlackLists } from '../../database/entites/blacklist.entity.js';
+import type { IPaginate } from '../../interfaces/pagination.js';
+import { Store } from '../../database/entites/store.entity.js';
+import type { ITokenPayload } from '../../utils/token-helper.js';
+import type { CustomRequest } from '../../middlewares/verifyauth.js';
 
 export const CreateBlacklist = async (req: CustomRequest, res: Response) => {
 	try {

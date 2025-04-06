@@ -1,7 +1,7 @@
 import { Response, Request } from 'express';
-import { handleBadRequest, handleError } from '../../constants/response-handler';
+import { handleBadRequest, handleError } from '../../constants/response-handler.js';
 import { ICreateCoinbase } from '../../interfaces/payment.interface';
-import { dataSource } from '../../database/dataSource';
+import { dataSource } from '../../database/dataSource.js';
 import { Orders } from '../../database/entites/orders.entity';
 import { ENV } from '../../constants/env-variables';
 import { manipulateOrderItem } from '../../utils/order-helpers';

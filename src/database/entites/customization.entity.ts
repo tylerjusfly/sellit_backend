@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
-import { CustomBaseEntity } from '../custom-base.entity';
-import { Store } from './store.entity';
+import { CustomBaseEntity } from '../custom-base.entity.js';
+import { Store } from './store.entity.js';
 
 @Entity({ name: 'customizations' })
 export class Customization extends CustomBaseEntity {

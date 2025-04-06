@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
-import { EntityTarget, FindOptionsWhere, ObjectLiteral } from 'typeorm';
-import { handleBadRequest, handleError, handleSuccess } from '../constants/response-handler';
-import { dataSource } from '../database/dataSource';
-import { IPaginate } from '../interfaces/pagination';
-import { Store } from '../database/entites/store.entity';
+import type { Request, Response, NextFunction } from 'express';
+import type { EntityTarget, FindOptionsWhere, ObjectLiteral } from 'typeorm';
+import { handleBadRequest, handleError, handleSuccess } from '../constants/response-handler.js';
+import { dataSource } from '../database/dataSource.js';
+import type { IPaginate } from '../interfaces/pagination.js';
+import { Store } from '../database/entites/store.entity.js';
 
 export function createFetchMiddleware<T extends ObjectLiteral>(
 	targetEntity: EntityTarget<T>,

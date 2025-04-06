@@ -1,5 +1,5 @@
 import { pbkdf2Sync, randomBytes } from 'crypto';
-import { TUserType } from '../interfaces/user';
+import type { TUserType } from '../interfaces/user.js';
 
 export interface IResult {
 	success: boolean;

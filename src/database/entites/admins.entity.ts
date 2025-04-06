@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm';
-import { CustomBaseEntity } from '../custom-base.entity';
+import { CustomBaseEntity } from '../custom-base.entity.js';
 
 @Entity({ name: 'admins' })
 export class Admins extends CustomBaseEntity {

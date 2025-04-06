@@ -1,6 +1,6 @@
-import { Response } from 'express';
-import { LogHelper } from '../utils/LogHelper';
-import { IPaging } from '../interfaces/general';
+import type { Response } from 'express';
+import { LogHelper } from '../utils/LogHelper.js';
+import type { IPaging } from '../interfaces/general.js';
 
 export const handleSuccess = (
 	res: Response,
