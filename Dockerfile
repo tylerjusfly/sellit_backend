@@ -1,4 +1,6 @@
-FROM node:20.11.0-alpine as builder
+FROM node:20.11.0-alpine as nodeimage
+
+FROM nodeimage as builder
 
 # We are in the app directory
 WORKDIR /app
@@ -13,7 +15,7 @@ COPY . .
 RUN npm run build
 
 # Final stage: runtime
-FROM node:20.11.0-alpine
+FROM nodeimage
 
 WORKDIR /app
 
