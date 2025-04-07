@@ -38,6 +38,8 @@ export const manipulateOrderItem = async (orderid: string, productid: string) =>
 	if (!prodsData) {
 		return false;
 	}
+	// To make sure on person buys it at a time
+	// SELECT available_seats FROM flights WHERE id = $1 FOR UPDATE
 
 	// if items is already in an order , do not add
 	// if (orderData.items === null) {
