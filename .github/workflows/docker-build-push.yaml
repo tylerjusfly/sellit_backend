@@ -6,7 +6,7 @@ on:
       - main
 
 env: 
-  DOCKER_USERNAME: "jusfly/1996"
+  DOCKER_USERNAME: "jusfly1996"
 
 jobs:
   build-and-push:
