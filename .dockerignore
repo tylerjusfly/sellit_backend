@@ -2,7 +2,10 @@ node_modules
 .env
 npm-debug.log
 yarn.lock
-
-dist/
-# Ignore git too
+package-lock.json
+Dockerfile*
 .git
+.github
+.gitignore
+dist/**
+README.md

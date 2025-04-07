@@ -7,6 +7,7 @@ on:
 
 env: 
   DOCKER_USERNAME: "jusfly1996"
+  DOCKER_TAG: "v1"
 
 jobs:
   build-and-push:
@@ -21,9 +22,9 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
       - name: Build Docker image
-        run: docker build -t $DOCKER_USERNAME/fortune:latest .
+        run: docker build -t $DOCKER_USERNAME/fortune:$DOCKER_TAG .
 
       - name: Push Docker image
         run: |
-          docker push $DOCKER_USERNAME/fortune:latest
+          docker push $DOCKER_USERNAME/fortune:$DOCKER_TAG
   

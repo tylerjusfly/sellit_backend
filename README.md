@@ -10,13 +10,21 @@ docker build -t your-image-name .
 
 ```
 
-### START A PG CONTAINER
+### START A MULTI SERVICE
 
 ```
-# docker run --name pg-database -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=sellit -p 5432:5432 -d postgres:13
+RUN `docker-compose up --build`
+
+to stop all services
+RUN `docker-compose down -v`
 
 ```
 
+### VARIABLES
+
+EMAIL_SECRET
+EMAIL_USER
+FRONTEND_URL
 
 ### RESOURCES
 
