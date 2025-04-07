@@ -29,9 +29,9 @@ const options = {
 	viewEngine: {
 		extname: '.hbs',
 		defaultLayout: '',
-		layoutsDir: join(__dirname, './htmltemplates'),
+		layoutsDir: join(__dirname, './templates'),
 	},
-	viewPath: join(__dirname, './htmltemplates'),
+	viewPath: join(__dirname, './templates'),
 	extName: '.hbs',
 };
 

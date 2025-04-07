@@ -5,10 +5,12 @@
 	"description": "backend to project auto in typescript",
 	"main": "index.js",
 	"scripts": {
-		"dev": "concurrently -k \"tsc --watch\" \"nodemon dist/index.js\"",
+		"dev": "nodemon dist/index.js",
+		"node:dev": "nodemon --watch src --exec \"tsc && npm run copy-assets && node dist/index.js\"",
 		"start": "yarn build && yarn serve",
-		"build": "tsc",
+		"build": "tsc && npm run copy:assets",
 		"serve": "node dist/index.js",
+		"copy:assets": "cp -r src/mailproviders/templates dist/mailproviders/templates",
 		"test": "jest"
 	},
 	"keywords": [

@@ -7,7 +7,7 @@ import { pbkdf2Sync, randomBytes } from 'crypto';
 import { getToken } from '../../utils/token-helper.js';
 import { adminKey, uniqueID } from '../../utils/generateIds.js';
 import { Admins } from '../../database/entites/admins.entity.js';
-import { sendUserVerificationToken } from '../../mail-providers/sendtokenmail.js';
+import { sendUserVerificationToken } from '../../mailproviders/sendtokenmail.js';
 import { Store } from '../../database/entites/store.entity.js';
 import { getStoreByEmail, getStoreByStorename } from '../store/storehelpers.js';
 

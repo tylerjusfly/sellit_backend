@@ -12,8 +12,8 @@ import type { IPaginate } from '../../interfaces/pagination.js';
 import { LogHelper } from '../../utils/LogHelper.js';
 import { ORDER_STATUS } from '../../constants/result.js';
 import { manipulateOrderItem } from '../../utils/order-helpers.js';
-import { transporter } from '../../mail-providers/nodemailer.js';
-import { sendOrderMail } from '../../mail-providers/sendordermail.js';
+import { transporter } from '../../mailproviders/nodemailer.js';
+import { sendOrderMail } from '../../mailproviders/sendordermail.js';
 import { Coupon } from '../../database/entites/coupon.entity.js';
 
 export const createOrder = async (req: Request, res: Response) => {

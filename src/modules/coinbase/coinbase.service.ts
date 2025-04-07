@@ -5,7 +5,7 @@ import { dataSource } from '../../database/dataSource.js';
 import { Orders } from '../../database/entites/orders.entity.js';
 import { ENV } from '../../constants/env-variables.js';
 import { manipulateOrderItem } from '../../utils/order-helpers.js';
-import { sendOrderMail } from '../../mail-providers/sendordermail.js';
+import { sendOrderMail } from '../../mailproviders/sendordermail.js';
 import https from 'https';
 
 export const coinBaseChargeForVendors = async (req: Request, res: Response) => {

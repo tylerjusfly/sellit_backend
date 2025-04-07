@@ -47,10 +47,6 @@ app.use(
 app.use(requsetLogger);
 app.use(express.static(join(__dirname, '../public')));
 
-// app.engine('handlebars', engine({ extname: '.hbs' }));
-// app.set('view engine', 'handlebars');
-// app.set('views', join(__dirname, '../views'));
-
 // app.use(rateLimiter);
 app.use('/', apiRouter);
 
