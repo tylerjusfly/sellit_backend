@@ -16,17 +16,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: echo environment
-        run: echo "Environment - $DOCKER_USERNAME"
-
+        # run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
       - name: Log in to Docker Hub
-        run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-      #   run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
       - name: Build Docker image
         run: docker build -t $DOCKER_USERNAME/fortune:latest .
 
-      # - name: Push Docker image
-      #   run: |
-      #     docker push ${{ secrets.DOCKER_USERNAME }}/fortune:latest
+      - name: Push Docker image
+        run: |
+          docker push $DOCKER_USERNAME/fortune:latest
   
