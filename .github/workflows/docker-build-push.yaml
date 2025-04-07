@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env: 
+  DOCKER_USERNAME: "jusfly/1996"
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -13,15 +16,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Log in to Docker Hub
-        run: echo "Environment - $NODE_ENV"
+      - name: echo environment
+        run: echo "Environment - $DOCKER_USERNAME"
 
-      # - name: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
       #   run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # - name: Build Docker image
-      #   run: |
-      #     docker build -t ${{ secrets.DOCKER_USERNAME }}/fortune:latest .
+      - name: Build Docker image
+        run: docker build -t $DOCKER_USERNAME/fortune:latest .
 
       # - name: Push Docker image
       #   run: |
