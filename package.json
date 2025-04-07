@@ -6,7 +6,7 @@
 	"main": "index.js",
 	"scripts": {
 		"dev": "nodemon dist/index.js",
-		"node:dev": "nodemon --watch src --exec \"tsc && npm run copy-assets && node dist/index.js\"",
+		"node:dev": "nodemon --watch src --exec \"tsc && npm run copy:assets && node dist/index.js\"",
 		"start": "yarn build && yarn serve",
 		"build": "tsc && npm run copy:assets",
 		"serve": "node dist/index.js",
