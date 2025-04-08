@@ -25,10 +25,11 @@ couponRouter.post(
 	validateRequest(couponSchema),
 	createCoupon
 );
-couponRouter.get('/', verifyToken, createFetchMiddleware(Coupon, 'shop_id'));
+// couponRouter.get('/', verifyToken, createFetchMiddleware(Coupon, 'shop_id'));
+couponRouter.get('/', verifyToken, fetchCoupons);
 couponRouter.patch('/', verifyToken, authorize(['coupon:create']), editCoupon);
 couponRouter.get('/one', verifyToken, fetchSingleCoupon);
-couponRouter.delete('/', verifyToken, deleteMiddleware(Coupon));
+couponRouter.delete('/', verifyToken, deleteMiddleware(Coupon, false));
 
 /**Public API */
 couponRouter.post('/apply', couponApplyToProduct);

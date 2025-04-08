@@ -88,13 +88,11 @@ export const checkCouponCode = async (req: Request, res: Response) => {
 	}
 };
 
-export const fetchCoupons = async (req: Request, res: Response) => {
+export const fetchCoupons = async (req: CustomRequest, res: Response) => {
 	try {
-		const { shop_id, page, limit }: { shop_id?: string; page?: number; limit?: number } = req.query;
+		const { page, limit }: { shop_id?: string; page?: number; limit?: number } = req.query;
 
-		if (!shop_id) {
-			return handleBadRequest(res, 400, 'shop is required');
-		}
+		const shop_id = req.user as ITokenPayload;
 
 		const page_limit = limit ? Number(limit) : 10;
 
@@ -103,17 +101,18 @@ export const fetchCoupons = async (req: Request, res: Response) => {
 		const isShop = await dataSource
 			.getRepository(Store)
 			.createQueryBuilder('shop')
-			.where('shop.id = :id', { id: shop_id })
+			.where('shop.id = :id', { id: shop_id.id })
 			.getOne();
 
 		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
 
 		const [Coupons, total] = await Coupon.findAndCount({
 			where: {
-				shop_id,
+				shop_id: shop_id.id,
 			},
 			skip: offset,
 			take: page_limit,
+			order: { created_at: 'DESC' },
 		});
 
 		const paging: IPaginate = {

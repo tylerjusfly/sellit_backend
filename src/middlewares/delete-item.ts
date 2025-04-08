@@ -3,7 +3,10 @@ import type { EntityTarget, ObjectLiteral } from 'typeorm';
 import { handleBadRequest, handleError, handleSuccess } from '../constants/response-handler.js';
 import { dataSource } from '../database/dataSource.js';
 
-export function deleteMiddleware<T extends ObjectLiteral>(entity: EntityTarget<T>) {
+export function deleteMiddleware<T extends ObjectLiteral>(
+	entity: EntityTarget<T>,
+	softremove: boolean | undefined = true
+) {
 	return async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { uuid }: { uuid?: number } = req.query;
@@ -20,10 +23,12 @@ export function deleteMiddleware<T extends ObjectLiteral>(entity: EntityTarget<T
 				return handleBadRequest(res, 400, 'cannot delete non-existing item');
 			}
 
-			await repository.softRemove(item);
+			if (softremove) {
+				await repository.softRemove(item);
+			} else {
+				await repository.remove(item);
+			}
 
-			// res.locals.deletedItem = item;
-			// next();
 			return handleSuccess(res, null, 'dropped', 200, undefined);
 		} catch (error) {
 			return handleError(res, error);
