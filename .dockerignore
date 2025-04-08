@@ -2,7 +2,6 @@ node_modules
 .env
 npm-debug.log
 yarn.lock
-package-lock.json
 Dockerfile*
 .git
 .github
