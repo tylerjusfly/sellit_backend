@@ -23,7 +23,8 @@ try {
 
 
 // Running typeorm migration with ESM express is tricky
-// when you compile your typescript code , typeorm migration:generate still generates .ts files by default
+// when you compile your typescript code , 
+// running typeorm migration:generate still generates .ts files by default
 
 // and when you pass --outputJS
 // it still doesn't compile because now the migration file is .js but uses require which is now commonJS instead of import
