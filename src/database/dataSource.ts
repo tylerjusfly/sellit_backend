@@ -15,8 +15,10 @@ export const dataSource = new DataSource({
 	password: ENV.PG_PASSWORD,
 	database: ENV.PG_DATABASE,
 	entities: ['**/*.entity.js'],
+	migrations: ['dist/migrations/*{.cjs,.js}'],
 	logging: DATABASE_ENABLE_LOGGING,
 	synchronize: DATABASE_ENABLE_SYNC,
+	migrationsTableName: 'sellt_migrations',
 });
 
 const DATABASE_RETRY_COUNT = process.env.DATABASE_CONNECT_RETRY_COUNT

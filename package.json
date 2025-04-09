@@ -12,6 +12,8 @@
 		"build": "tsc && npm run copy:assets",
 		"serve": "node dist/index.js",
 		"copy:assets": "cp -r src/mailproviders/templates dist/mailproviders/templates",
+		"migration:create": "node scripts/create-migration.js",
+		"migration:run": "typeorm migration:run -d dist/database/dataSource.js",
 		"test": "jest"
 	},
 	"keywords": [
