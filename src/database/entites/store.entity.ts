@@ -49,14 +49,13 @@ export class Store extends CustomBaseEntity {
 	@Column({ nullable: false })
 	salt!: string;
 
-	@Column({ type: 'simple-array', nullable: false, default: ['product:read', 'payment:create'] })
+	@Column({
+		type: 'simple-array',
+		nullable: false,
+		default: ['product:read', 'product:delete', 'payment:create', 'coupon:read'],
+	})
 	permissions!: string;
 
-	@OneToOne(() => Customization, (customization) => customization.store, {
-		cascade: ['remove'], // Automatically insert/update Customization when Store changes
-		eager: true, // Auto-load Customization when fetching Store
-		onDelete: 'CASCADE',
-		orphanedRowAction: 'delete',
-	})
-	customization!: Customization;
+	@Column({ nullable: true })
+	customizationId!: string;
 }
