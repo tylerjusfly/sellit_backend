@@ -44,30 +44,27 @@ export const updateStorename = async (req: CustomRequest, res: Response) => {
 export const getstoreInPublic = async (req: CustomRequest, res: Response) => {
 	const { storename } = req.query;
 	try {
-		const query = dataSource
-			.getRepository(Store)
-			.createQueryBuilder('q')
-			.leftJoinAndSelect('q.customization', 'customization')
-			.select([
-				'q.id',
-				'q.storename',
-				'q.display_picture',
-				'q.domain_name',
-				'q.hero_text',
-				'customization.id',
-				'customization.main_color',
-				'customization.hero_svg',
-			]);
-
-		query.where('q.storename = :val', { val: storename });
-
-		const StoreData = await query.getOneOrFail();
-
-		// StoreData.customization = StoreData.customization || null;
+		const storeData = await dataSource.query(
+			`
+			SELECT
+				s.id,
+				s.storename,
+				s.display_picture,
+				s.domain_name,
+				s.hero_text,
+				c.main_color,
+				c.hero_svg
+			FROM stores s
+			LEFT JOIN customizations c ON s.customizationid = c.id
+			WHERE s.storename = $1
+			LIMIT 1
+			`,
+			[storename]
+		);
 
 		res.setHeader('Cache-Control', 'public, max-age=10');
 
-		return handleSuccess(res, StoreData, 'store', 200, undefined);
+		return handleSuccess(res, storeData[0], 'store', 200, undefined);
 	} catch (error) {
 		return handleError(res, error || { message: 'Error finding store' });
 	}

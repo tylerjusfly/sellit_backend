@@ -65,3 +65,11 @@ export const manipulateOrderItem = async (orderid: string, productid: string) =>
 
 	return true;
 };
+
+
+export const calculateDiscountedCost = (pcost: number, pdisc: number) => {
+	const totalCost = pcost;
+	const discount = (pdisc / 100) * totalCost;
+	const finalCost = totalCost - discount;
+	return finalCost;
+};

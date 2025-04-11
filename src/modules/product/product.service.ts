@@ -19,7 +19,7 @@ export const CreateProduct = async (req: CustomRequest, res: Response) => {
 	try {
 		const { productName, productType, description, categoryid } = req.body;
 
-		if (!productName || !productType || !description) {
+		if (!productName || !productType || !description || !categoryid) {
 			return handleBadRequest(res, 400, 'required fields are missings');
 		}
 

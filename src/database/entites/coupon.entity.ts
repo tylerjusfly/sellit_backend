@@ -16,7 +16,7 @@ export class Coupon extends CustomBaseEntity {
 	coupon_value!: number;
 
 	@Column({ type: 'varchar', nullable: true })
-	payment_method!: string;
+	payment_method!: string | null;
 
 	@Column({ type: 'varchar', nullable: true })
 	product_id!: string;

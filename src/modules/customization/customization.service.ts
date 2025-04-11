@@ -4,6 +4,7 @@ import type { CustomRequest } from '../../middlewares/verifyauth.js';
 import { dataSource } from '../../database/dataSource.js';
 import { Customization } from '../../database/entites/customization.entity.js';
 import type { ITokenPayload } from '../../utils/token-helper.js';
+import { Store } from '../../database/entites/store.entity.js';
 
 export const getCustomization = async (req: CustomRequest, res: Response) => {
 	try {
@@ -12,7 +13,6 @@ export const getCustomization = async (req: CustomRequest, res: Response) => {
 		const customizeData = await dataSource
 			.getRepository(Customization)
 			.createQueryBuilder('customize')
-			// .addSelect('customize.store')
 			.select(['customize.id', 'customize.main_color', 'customize.hero_svg'])
 			.where('customize.store = :val', { val: storeReq.id })
 			.getOne();
@@ -39,6 +39,11 @@ export const InitializeCustomization = async (req: CustomRequest, res: Response)
 		});
 
 		await dataSource.getRepository(Customization).save(createdCustomize);
+
+		await dataSource.getRepository(Store).update(
+			{ id: storeReq.id }, // Condition
+			{ customizationid: createdCustomize.id }
+		);
 
 		return handleSuccess(res, {}, 'created ', 201, undefined);
 	} catch (error) {
@@ -69,18 +74,6 @@ export const updateCustomization = async (req: CustomRequest, res: Response) => 
 			{ id: Customizationid }, // Condition
 			{ main_color: main_color, hero_svg: hero_svg }
 		);
-
-		// const updateResult = await dataSource
-		//     .getRepository(Customization)
-		//     .createQueryBuilder('customize')
-		//     .update(Customization)
-		//     .set(updateData)
-		//     .where('customize.store = :storeId', { storeId: storeReq.id })
-		//     .execute();
-
-		// if (updateResult.affected === 0) {
-		//     return handleBadRequest(res, 400, 'No customization found for the given store');
-		// }
 
 		return handleSuccess(res, {}, 'Customization updated successfully', 200, undefined);
 	} catch (error) {

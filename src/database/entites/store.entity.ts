@@ -56,6 +56,6 @@ export class Store extends CustomBaseEntity {
 	})
 	permissions!: string;
 
-	@Column({ nullable: true })
-	customizationId!: string;
+	@Column({ type: 'uuid', nullable: true })
+	customizationid!: string;
 }

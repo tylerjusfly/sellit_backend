@@ -7,6 +7,8 @@ import { Store } from '../../database/entites/store.entity.js';
 import type { IPaginate } from '../../interfaces/pagination.js';
 import type { CustomRequest } from '../../middlewares/verifyauth.js';
 import type { ITokenPayload } from '../../utils/token-helper.js';
+import { Product } from '../../database/entites/product.entity.js';
+import { calculateDiscountedCost } from '../../utils/order-helpers.js';
 
 const isCouponCodeUnique = async (shopId: string, couponCode: string): Promise<boolean> => {
 	const existingCoupon = await dataSource
@@ -21,7 +23,7 @@ const isCouponCodeUnique = async (shopId: string, couponCode: string): Promise<b
 
 export const createCoupon = async (req: CustomRequest, res: Response) => {
 	try {
-		const { coupon_code, type, coupon_value, max_use }: ICoupon = req.body;
+		const { coupon_code, type, coupon_value, max_use, payment_method }: ICoupon = req.body;
 
 		const shop = req.user as ITokenPayload;
 
@@ -46,43 +48,13 @@ export const createCoupon = async (req: CustomRequest, res: Response) => {
 			coupon_value: coupon_value,
 			type: type,
 			max_use,
+			payment_method: payment_method ? payment_method : null,
 			total_usage: 0,
 		});
 
 		const result = await couponToCreate.save();
 
 		return handleSuccess(res, {}, 'created coupon', 201, undefined);
-	} catch (error) {
-		return handleError(res, error);
-	}
-};
-
-export const checkCouponCode = async (req: Request, res: Response) => {
-	try {
-		const { shopid, code }: { shopid?: string; code?: string } = req.query;
-
-		if (!code || !shopid) {
-			return handleBadRequest(res, 400, 'coupon code /shop id is required');
-		}
-
-		// find if code exist
-		const couponCode = await Coupon.findOne({
-			where: {
-				shop_id: shopid,
-				coupon_code: code,
-			},
-		});
-
-		if (!couponCode) {
-			return res.status(200).json({ status: false });
-		}
-
-		if (couponCode.max_use <= couponCode.total_usage) {
-			return res.status(200).json({ status: false });
-		}
-
-		// else coupon is valid
-		return res.status(200).json({ status: true, discount: couponCode.coupon_value });
 	} catch (error) {
 		return handleError(res, error);
 	}
@@ -190,37 +162,71 @@ export const editCoupon = async (req: CustomRequest, res: Response) => {
 	}
 };
 
-export const couponApplyToProduct = async (req: Request, res: Response) => {
+export const checkCouponCode = async (req: Request, res: Response) => {
 	try {
-		const { shopid, code, productid }: { shopid?: string; code?: string; productid?: string } =
-			req.query;
+		const { store_id, coupon_code, product_id, payment_gateway } = req.body;
 
-		if (!code || !shopid || !productid) {
+		if (!store_id || !coupon_code || !product_id) {
 			return handleBadRequest(res, 400, 'coupon code /shop id is required');
 		}
 
 		// find if code exist
 		const couponCode = await Coupon.findOne({
 			where: {
-				shop_id: shopid,
-				coupon_code: code,
+				shop_id: store_id,
+				coupon_code: coupon_code,
+			},
+		});
+
+		const product = await Product.findOne({
+			where: {
+				id: product_id,
 			},
 		});
 
 		if (!couponCode) {
-			return res.status(200).json({ status: false });
+			return handleBadRequest(res, 400, 'This Coupon Is Not Valid.');
 		}
 
-		if (couponCode.max_use >= couponCode.total_usage) {
-			return res.status(200).json({ status: false });
+		if (!product) {
+			return handleBadRequest(res, 400, 'This product does not exist');
 		}
 
-		// if (!couponCode.items.includes(productid)) {
-		// 	return res.status(200).json({ status: false });
-		// }
+		if (couponCode.max_use <= couponCode.total_usage) {
+			return handleBadRequest(
+				res,
+				400,
+				'Sorry, this coupon has already been used the maximum number of times.'
+			);
+		}
 
-		// else coupon is valid
-		return res.status(200).json({ status: true });
+		// Check for if product
+
+		if (couponCode.payment_method && couponCode.payment_method !== payment_gateway) {
+			return handleBadRequest(
+				res,
+				400,
+				`Sorry, this coupon is only valid for ${couponCode.payment_method} payment.`
+			);
+		}
+
+		// const productCost = product.amount;
+		const productCost = product.amount;
+		const couponDiscount = couponCode.coupon_value;
+
+		// Calculate new cost
+		const newCost = calculateDiscountedCost(productCost, couponDiscount);
+
+		return handleSuccess(
+			res,
+			{
+				new_cost: newCost,
+				id: couponCode.id,
+			},
+			'',
+			201,
+			undefined
+		);
 	} catch (error) {
 		return handleError(res, error);
 	}

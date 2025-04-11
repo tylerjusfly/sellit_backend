@@ -8,7 +8,6 @@ import {
 	RelationId,
 } from 'typeorm';
 import { CustomBaseEntity } from '../custom-base.entity.js';
-import { Coupon } from './coupon.entity.js';
 import { Store } from './store.entity.js';
 import { Categories } from './categories.entity.js';
 

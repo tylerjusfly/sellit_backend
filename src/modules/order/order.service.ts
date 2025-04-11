@@ -18,7 +18,7 @@ import { Coupon } from '../../database/entites/coupon.entity.js';
 
 export const createOrder = async (req: Request, res: Response) => {
 	try {
-		const { productid, qty, payment_gateway, order_from, coupon }: ICreateOrder = req.body;
+		const { productid, qty, payment_gateway, order_from, coupon_id }: ICreateOrder = req.body;
 
 		if (!productid || !qty || !payment_gateway || !order_from) {
 			return handleBadRequest(res, 400, 'all field is required');
@@ -90,16 +90,16 @@ export const createOrder = async (req: Request, res: Response) => {
 
 		let totalOrderAmount = qty * isProduct.amount;
 
-		if (coupon && coupon !== '') {
+		if (coupon_id && coupon_id !== '') {
 			// find coupon
 			const couponCode = await Coupon.findOne({
 				where: {
-					shop_id: `${isShop.id}`,
-					id: coupon,
+					id: coupon_id,
 				},
 			});
 
-			if (couponCode && couponCode.max_use > couponCode.total_usage) {
+			//  && couponCode.max_use > couponCode.total_usage
+			if (couponCode) {
 				// do something
 				const new_amount = qty * isProduct.amount;
 

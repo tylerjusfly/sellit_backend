@@ -3,7 +3,6 @@ import { Router } from 'express';
 import { verifyToken } from '../../middlewares/verifyauth.js';
 import {
 	checkCouponCode,
-	couponApplyToProduct,
 	createCoupon,
 	editCoupon,
 	fetchCoupons,
@@ -12,7 +11,6 @@ import {
 import { authorize } from '../../middlewares/confirm-permission.js';
 import { deleteMiddleware } from '../../middlewares/delete-item.js';
 import { Coupon } from '../../database/entites/coupon.entity.js';
-import { createFetchMiddleware } from '../../middlewares/fetch-all-paginated.js';
 import { couponSchema } from './coupon.validation.js';
 import { validateRequest } from '../../middlewares/validate-body.js';
 
@@ -25,14 +23,12 @@ couponRouter.post(
 	validateRequest(couponSchema),
 	createCoupon
 );
-// couponRouter.get('/', verifyToken, createFetchMiddleware(Coupon, 'shop_id'));
 couponRouter.get('/', verifyToken, fetchCoupons);
 couponRouter.patch('/', verifyToken, authorize(['coupon:create']), editCoupon);
 couponRouter.get('/one', verifyToken, fetchSingleCoupon);
 couponRouter.delete('/', verifyToken, deleteMiddleware(Coupon, false));
 
 /**Public API */
-couponRouter.post('/apply', couponApplyToProduct);
-couponRouter.get('/check', checkCouponCode);
+couponRouter.post('/check', checkCouponCode);
 
 export const CouponController = { router: couponRouter };
