@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { CustomBaseEntity } from '../custom-base.entity.js';
 import { Store } from './store.entity.js';
-import { ORDER_STATUS } from '../../constants/result.js';
+import { ORDER_STATUS, PAYMENT_STATUS } from '../../constants/result.js';
 import { Product } from './product.entity.js';
 
 @Entity({ name: 'orders' })
@@ -26,6 +26,9 @@ export class Orders extends CustomBaseEntity {
 
 	@Column({ type: 'varchar', default: ORDER_STATUS.UNPAID })
 	order_status!: string;
+
+	@Column({ type: 'varchar', default: PAYMENT_STATUS.PENDING })
+	payment_status!: string;
 
 	@Column({ type: 'varchar', nullable: false })
 	order_from!: string;

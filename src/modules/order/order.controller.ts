@@ -5,7 +5,7 @@ import {
 	approveOrder,
 	createOrder,
 	disapproveOrder,
-	getAllOrder,
+	getStoreOrders,
 	getOrderById,
 	getPopularPayment,
 } from './order.service.js';
@@ -18,7 +18,7 @@ const orderRouter = Router();
 
 orderRouter.post('/', createOrder);
 orderRouter.get('/one', getOrderById);
-orderRouter.get('/shop-orders', verifyToken, getAllOrder);
+orderRouter.get('/store-orders', verifyToken, getStoreOrders);
 orderRouter.post('/shop-orders/approve', verifyToken, authorize(['order:edit']), approveOrder);
 orderRouter.post(
 	'/shop-orders/disapprove',

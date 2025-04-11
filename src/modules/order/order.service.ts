@@ -15,6 +15,7 @@ import { manipulateOrderItem } from '../../utils/order-helpers.js';
 import { transporter } from '../../mailproviders/nodemailer.js';
 import { sendOrderMail } from '../../mailproviders/sendordermail.js';
 import { Coupon } from '../../database/entites/coupon.entity.js';
+import type { ITokenPayload } from '../../utils/token-helper.js';
 
 export const createOrder = async (req: Request, res: Response) => {
 	try {
@@ -166,13 +167,11 @@ export const getOrderById = async (req: Request, res: Response) => {
 	}
 };
 
-export const getAllOrder = async (req: CustomRequest, res: Response) => {
+export const getStoreOrders = async (req: CustomRequest, res: Response) => {
 	try {
-		const { shopid, page, limit, status, startDate, endDate }: TallOrders = req.query;
+		const { page, limit, status, startDate, endDate }: TallOrders = req.query;
 
-		if (!shopid) {
-			return handleBadRequest(res, 400, 'shopid is required');
-		}
+		const storeReq = req.user as ITokenPayload;
 
 		const page_limit = limit ? Number(limit) : 10;
 
@@ -181,7 +180,7 @@ export const getAllOrder = async (req: CustomRequest, res: Response) => {
 		// find shop
 		const isShop = await dataSource.getRepository(Store).findOne({
 			where: {
-				id: shopid,
+				id: storeReq.id,
 			},
 		});
 
@@ -190,20 +189,21 @@ export const getAllOrder = async (req: CustomRequest, res: Response) => {
 		}
 
 		// fetch all shop product
-		const query = dataSource
-			.getRepository(Orders)
-			.createQueryBuilder('q')
-			.select([
-				'q.id',
-				'q.orderid',
-				'q.product_name',
-				'q.total_amount',
-				'q.created_at',
-				'q.order_status',
-				'q.payment_gateway',
-			]);
+		const query = dataSource.getRepository(Orders).createQueryBuilder('q');
+		// .select([
+		// 	'q.id',
+		// 	'q.productid',
+		// 	'q.product_name',
+		// 	'q.product_price',
+		// 	'q.product_type',
+		// 	'q.total_amount',
+		// 	'q.created_at',
+		// 	'q.order_status',
+		// 	'q.order_from',
+		// 	'q.payment_gateway',
+		// ]);
 
-		query.where('q.shop_id = :shopval', { shopval: shopid });
+		query.where('q.shop_id = :shopval', { shopval: storeReq.id });
 
 		if (status && status !== '') {
 			query.andWhere('q.order_status = :status', { status });
