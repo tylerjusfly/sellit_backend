@@ -28,7 +28,7 @@ export const sendOrderMail = async (orderid: string) => {
 		},
 		attachments: [
 			{
-				filename: `${orderData.productid.name}-items.bin`,
+				filename: `${orderData.product_name}-items.bin`,
 				content: `${orderData.items}`,
 				contentType: 'text/plain',
 			},

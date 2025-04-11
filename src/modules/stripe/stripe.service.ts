@@ -5,6 +5,7 @@ import { dataSource } from '../../database/dataSource.js';
 import { Orders } from '../../database/entites/orders.entity.js';
 import { ENV } from '../../constants/env-variables.js';
 import { manipulateOrderItem } from '../../utils/order-helpers.js';
+import { ORDER_STATUS } from '../../constants/result.js';
 // import { sendOrderMail } from '../../mail-providers/sendordermail.js';
 // const stripe = new Stripe(ENV.STRIPE_SECRET_KEY || '');
 
@@ -54,7 +55,7 @@ export const stripeChargeForVendors = async (req: Request, res: Response) => {
 						currency: 'usd',
 						product_data: {
 							name: `${
-								isOrder?.productid.name || `unknown product from ${isOrder.shop_id.storename} `
+								isOrder?.product_name || `unknown product from ${isOrder.shop_id.storename} `
 							}`,
 						},
 						unit_amount: isOrder.total_amount * 100,
@@ -121,7 +122,7 @@ export const cashappChargeForVendors = async (req: Request, res: Response) => {
 					price_data: {
 						currency: 'usd',
 						product_data: {
-							name: `${isOrder?.productid.name || 'unknown product from shop'}`,
+							name: `${isOrder?.product_name || 'unknown product from shop'}`,
 						},
 						unit_amount: isOrder.total_amount * 100,
 					},
@@ -163,7 +164,10 @@ export const stripeSuccess = async (req: Request, res: Response) => {
 
 		/**Change order */
 
-		const manipulate_result = await manipulateOrderItem(isOrder.id, isOrder.productid.id);
+		// const manipulate_result = await manipulateOrderItem(isOrder.id, isOrder.productid);
+		isOrder.order_status = ORDER_STATUS.PAID;
+
+		isOrder.save();
 
 		// if (!manipulate_result) {
 		// 	return handleBadRequest(res, 400, 'failed to approve order');

@@ -54,11 +54,11 @@ export const coinBaseChargeForVendors = async (req: Request, res: Response) => {
 			},
 			body: JSON.stringify({
 				local_price: { amount: isOrder.total_amount, currency: 'USD' },
-				name: isOrder.productid.name,
+				name: isOrder.product_name,
 				pricing_type: 'fixed_price',
 				redirect_url: `${origin}/coinbase/success/${orderid}/${shop.storename}`,
 				cancel_url: `${ENV.FRONTEND_URL}/${shop.storename}`,
-				description: `payment for ${isOrder.productid.name} to ${shop.storename} `,
+				description: `payment for ${isOrder.product_name} to ${shop.storename} `,
 				// logo_url:'',
 			}),
 		};
@@ -106,7 +106,7 @@ export const coinbaseSuccess = async (req: Request, res: Response) => {
 
 		/**Change order */
 
-		await manipulateOrderItem(isOrder.id, isOrder.productid.id);
+		await manipulateOrderItem(isOrder.id, isOrder.productid);
 
 		// if (!manipulate_result) {
 		// 	return handleBadRequest(res, 400, 'failed to approve order');

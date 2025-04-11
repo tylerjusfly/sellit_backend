@@ -90,6 +90,9 @@ export const createOrder = async (req: Request, res: Response) => {
 
 		let totalOrderAmount = qty * isProduct.amount;
 
+		let valueofCoupon = 0;
+		let typeOfCoupon = null;
+
 		if (coupon_id && coupon_id !== '') {
 			// find coupon
 			const couponCode = await Coupon.findOne({
@@ -100,7 +103,10 @@ export const createOrder = async (req: Request, res: Response) => {
 
 			//  && couponCode.max_use > couponCode.total_usage
 			if (couponCode) {
-				// do something
+				// Set value
+				valueofCoupon = couponCode.coupon_value;
+				typeOfCoupon = couponCode.type;
+
 				const new_amount = qty * isProduct.amount;
 
 				let discountRate = (couponCode.coupon_value / 100).toFixed(2); //discount rate
@@ -113,12 +119,17 @@ export const createOrder = async (req: Request, res: Response) => {
 		}
 
 		const createOrders = dataSource.getRepository(Orders).create({
-			productid: isProduct,
 			qty,
 			shop_id: isShop,
 			payment_gateway,
 			order_from: order_from,
 			total_amount: totalOrderAmount,
+			productid: isProduct.id,
+			product_name: isProduct.name,
+			product_price: isProduct.amount,
+			product_type: isProduct.product_type,
+			coupon_value: valueofCoupon,
+			applied_coupon: typeOfCoupon,
 		});
 
 		const result = await dataSource.getRepository(Orders).save(createOrders);
@@ -137,12 +148,13 @@ export const getOrderById = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'orderid is required');
 		}
 
-		const OrderData = await dataSource.getRepository(Orders).findOne({
-			where: {
-				id: orderid,
-			},
-			loadEagerRelations: true,
-		});
+		const orderRepository = dataSource.getRepository(Orders);
+		const OrderData = await orderRepository
+			.createQueryBuilder('o')
+			.leftJoin('o.shop_id', 's') // use the correct relation name here
+			.addSelect(['s.id', 's.storename', 's.display_picture', 's.discord_link'])
+			.where('o.id = :orderid', { orderid: orderid })
+			.getOne();
 
 		if (!OrderData) {
 			return handleBadRequest(res, 400, 'order cannot be found');
