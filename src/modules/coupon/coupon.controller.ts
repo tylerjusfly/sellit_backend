@@ -21,7 +21,7 @@ couponRouter.get('/', verifyToken, fetchCoupons);
 couponRouter.patch(
 	'/',
 	verifyToken,
-	// authorize(['coupon:create']),
+	authorize(['coupon:create']),
 	validateRequest(couponSchemaEdit),
 	editCoupon
 );

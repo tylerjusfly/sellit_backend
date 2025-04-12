@@ -52,7 +52,7 @@ export class Store extends CustomBaseEntity {
 	@Column({
 		type: 'simple-array',
 		nullable: false,
-		default: ['product:read', 'product:delete', 'payment:create', 'coupon:read'],
+		default: ['product:read', 'product:delete', 'payment:create', 'coupon:create', 'auth:create'],
 	})
 	permissions!: string;
 

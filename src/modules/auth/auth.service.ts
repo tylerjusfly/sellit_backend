@@ -4,12 +4,16 @@ import { handleBadRequest, handleError, handleSuccess } from '../../constants/re
 import { dataSource } from '../../database/dataSource.js';
 import { isValidPassword } from '../../utils/password-helper.js';
 import { pbkdf2Sync, randomBytes } from 'crypto';
-import { getToken } from '../../utils/token-helper.js';
+import { getToken, type ITokenPayload } from '../../utils/token-helper.js';
 import { adminKey, uniqueID } from '../../utils/generateIds.js';
 import { Admins } from '../../database/entites/admins.entity.js';
-import { sendUserVerificationToken } from '../../mailproviders/sendtokenmail.js';
+import {
+	sendUserResetTokenEmail,
+	sendUserVerificationToken,
+} from '../../mailproviders/sendtokenmail.js';
 import { Store } from '../../database/entites/store.entity.js';
 import { getStoreByEmail, getStoreByStorename } from '../store/storehelpers.js';
+import type { CustomRequest } from '../../middlewares/verifyauth.js';
 
 export const loginUser = async (req: Request, res: Response) => {
 	try {
@@ -153,6 +157,45 @@ export const resendVerificationCode = async (req: Request, res: Response) => {
 		await sendUserVerificationToken(storeWithEmail);
 
 		return handleSuccess(res, {}, 'user', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+export const changePassword = async (req: CustomRequest, res: Response) => {
+	try {
+		const { current_password, new_password } = req.body;
+
+		const store = req.user as ITokenPayload;
+
+		const storeExist = await getStoreByEmail(store.email);
+
+		if (!storeExist) {
+			return handleBadRequest(res, 400, 'this store does not belong to the loggedIn user');
+		}
+
+		let rs = await isValidPassword(storeExist, current_password);
+
+		if (!rs.success) {
+			return handleBadRequest(res, 400, 'Invalid user credentials');
+		}
+
+		const salt = randomBytes(30).toString('hex');
+		const hashedPass = pbkdf2Sync(new_password, salt, 1000, 64, `sha512`).toString(`hex`);
+
+		const verificationToken = adminKey(4);
+
+		storeExist.active = false;
+		storeExist.salt = salt;
+		storeExist.password = hashedPass;
+		storeExist.token = verificationToken;
+
+		await storeExist.save();
+
+		/**SEND VERIFICATION EMAIL */
+		await sendUserResetTokenEmail(storeExist);
+
+		return handleSuccess(res, {}, 'password reset', 201, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}

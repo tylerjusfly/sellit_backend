@@ -1,4 +1,4 @@
-## SEVER
+## BACKEND SERVER
 
 ### BUILD AND RUN IN A DOCKER CONTAINER
 
@@ -20,12 +20,14 @@ RUN `docker-compose down -v`
 
 ```
 
-### VARIABLES
+## VARIABLES
 
 EMAIL_SECRET
+
 EMAIL_USER
+
 FRONTEND_URL
 
-### RESOURCES
+## RESOURCES
 
  - https://www.youtube.com/watch?v=nQdyiK7-VlQ //To host on ec2
