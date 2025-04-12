@@ -169,7 +169,7 @@ export const getOrderById = async (req: Request, res: Response) => {
 
 export const getStoreOrders = async (req: CustomRequest, res: Response) => {
 	try {
-		const { page, limit, status, startDate, endDate }: TallOrders = req.query;
+		const { page, limit, status, startDate, endDate, gateway }: TallOrders = req.query;
 
 		const storeReq = req.user as ITokenPayload;
 
@@ -190,23 +190,15 @@ export const getStoreOrders = async (req: CustomRequest, res: Response) => {
 
 		// fetch all shop product
 		const query = dataSource.getRepository(Orders).createQueryBuilder('q');
-		// .select([
-		// 	'q.id',
-		// 	'q.productid',
-		// 	'q.product_name',
-		// 	'q.product_price',
-		// 	'q.product_type',
-		// 	'q.total_amount',
-		// 	'q.created_at',
-		// 	'q.order_status',
-		// 	'q.order_from',
-		// 	'q.payment_gateway',
-		// ]);
 
 		query.where('q.shop_id = :shopval', { shopval: storeReq.id });
 
 		if (status && status !== '') {
 			query.andWhere('q.order_status = :status', { status });
+		}
+
+		if (gateway && gateway !== '') {
+			query.andWhere('q.payment_gateway = :gateway', { gateway });
 		}
 
 		if (startDate && startDate !== '') {

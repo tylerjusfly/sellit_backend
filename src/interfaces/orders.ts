@@ -13,6 +13,7 @@ export type TallOrders = {
 	page?: number;
 	limit?: number;
 	status?: string;
+	gateway?: string;
 	startDate?: string;
 	endDate?: string;
 };

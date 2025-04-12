@@ -31,10 +31,10 @@ export const authorize = (requiredPermissions: string[]) => {
 				if (hasRequiredPermissions) {
 					next();
 				} else {
-					return handleBadRequest(res, 400, 'insufficient-permissions');
+					return handleBadRequest(res, 400, 'insufficient permissions, Please reach out to store admin.');
 				}
 			} else {
-				return handleBadRequest(res, 400, 'insufficient-permissions');
+				return handleBadRequest(res, 400, 'insufficient permissions, Please reach out to store admin.');
 			}
 		},
 	];

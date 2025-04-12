@@ -62,7 +62,7 @@ export const createCoupon = async (req: CustomRequest, res: Response) => {
 
 export const fetchCoupons = async (req: CustomRequest, res: Response) => {
 	try {
-		const { page, limit }: { shop_id?: string; page?: number; limit?: number } = req.query;
+		const { page, limit }: { page?: number; limit?: number } = req.query;
 
 		const shop_id = req.user as ITokenPayload;
 
@@ -100,36 +100,9 @@ export const fetchCoupons = async (req: CustomRequest, res: Response) => {
 	}
 };
 
-export const fetchSingleCoupon = async (req: Request, res: Response) => {
-	try {
-		const { shop_id, code }: { shop_id?: string; code?: string } = req.query;
-
-		if (!shop_id || !code) {
-			return handleBadRequest(res, 400, 'shop/code is required');
-		}
-
-		const foundCoupon = await Coupon.findOne({
-			where: {
-				coupon_code: code,
-				shop_id: shop_id,
-			},
-		});
-
-		if (!foundCoupon) {
-			return handleBadRequest(res, 404, 'coupon not found');
-		}
-
-		return handleSuccess(res, foundCoupon, `coupons`, 200, undefined);
-	} catch (error) {
-		return handleError(res, error);
-	}
-};
-
 export const editCoupon = async (req: CustomRequest, res: Response) => {
 	try {
-		const { id }: { id?: string } = req.query;
-
-		const { discount, max_use, items }: IeditCoupon = req.body;
+		const { coupon_value, max_use, id, type, payment_method, product_id }: IeditCoupon = req.body;
 
 		// Find coupon
 		const foundCoupon = await Coupon.findOneBy({ id });
@@ -138,17 +111,25 @@ export const editCoupon = async (req: CustomRequest, res: Response) => {
 			return handleBadRequest(res, 404, 'coupon not found');
 		}
 
-		// if (discount && discount !== '') {
-		// 	foundCoupon.discount = +discount;
-		// }
+		if (coupon_value) {
+			foundCoupon.coupon_value = +coupon_value;
+		}
 
-		// if (max_use && max_use !== '') {
-		// 	foundCoupon.max_use = +max_use;
-		// }
+		if (payment_method && payment_method !== '') {
+			foundCoupon.payment_method = payment_method;
+		}
 
-		// if (items) {
-		// 	foundCoupon.items = items;
-		// }
+		if (product_id && product_id !== '') {
+			foundCoupon.product_id = product_id;
+		}
+
+		if (max_use && max_use > 0) {
+			foundCoupon.max_use = +max_use;
+		}
+
+		if (type !== foundCoupon.type) {
+			foundCoupon.type = type;
+		}
 
 		const user = req.user as ITokenPayload;
 

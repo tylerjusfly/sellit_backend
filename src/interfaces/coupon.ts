@@ -7,7 +7,10 @@ export interface ICoupon {
 }
 
 export interface IeditCoupon {
-	discount: string;
-	max_use: string;
-	items: string[];
+	coupon_value: number;
+	max_use: number;
+	id: string;
+	type: string;
+	product_id: string;
+	payment_method: string;
 }

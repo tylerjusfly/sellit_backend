@@ -1,17 +1,11 @@
 import { Router } from 'express';
 
 import { verifyToken } from '../../middlewares/verifyauth.js';
-import {
-	checkCouponCode,
-	createCoupon,
-	editCoupon,
-	fetchCoupons,
-	fetchSingleCoupon,
-} from './coupon.service.js';
+import { checkCouponCode, createCoupon, editCoupon, fetchCoupons } from './coupon.service.js';
 import { authorize } from '../../middlewares/confirm-permission.js';
 import { deleteMiddleware } from '../../middlewares/delete-item.js';
 import { Coupon } from '../../database/entites/coupon.entity.js';
-import { couponSchema } from './coupon.validation.js';
+import { couponSchema, couponSchemaEdit } from './coupon.validation.js';
 import { validateRequest } from '../../middlewares/validate-body.js';
 
 const couponRouter = Router();
@@ -19,13 +13,18 @@ const couponRouter = Router();
 couponRouter.post(
 	'/',
 	verifyToken,
-	authorize(['product:read']),
+	authorize(['coupon:create']),
 	validateRequest(couponSchema),
 	createCoupon
 );
 couponRouter.get('/', verifyToken, fetchCoupons);
-couponRouter.patch('/', verifyToken, authorize(['coupon:create']), editCoupon);
-couponRouter.get('/one', verifyToken, fetchSingleCoupon);
+couponRouter.patch(
+	'/',
+	verifyToken,
+	// authorize(['coupon:create']),
+	validateRequest(couponSchemaEdit),
+	editCoupon
+);
 couponRouter.delete('/', verifyToken, deleteMiddleware(Coupon, false));
 
 /**Public API */
