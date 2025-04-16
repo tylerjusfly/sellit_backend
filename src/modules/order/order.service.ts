@@ -19,7 +19,8 @@ import type { ITokenPayload } from '../../utils/token-helper.js';
 
 export const createOrder = async (req: Request, res: Response) => {
 	try {
-		const { productid, qty, payment_gateway, order_from, coupon_id }: ICreateOrder = req.body;
+		const { productid, qty, payment_gateway, order_from, coupon_id, device_type }: ICreateOrder =
+			req.body;
 
 		if (!productid || !qty || !payment_gateway || !order_from) {
 			return handleBadRequest(res, 400, 'all field is required');
@@ -108,12 +109,19 @@ export const createOrder = async (req: Request, res: Response) => {
 				valueofCoupon = couponCode.coupon_value;
 				typeOfCoupon = couponCode.type;
 
-				const new_amount = qty * isProduct.amount;
+				if (couponCode.type === 'percent') {
+					const new_amount = qty * isProduct.amount;
 
-				let discountRate = (couponCode.coupon_value / 100).toFixed(2); //discount rate
-				const discountedPrice = new_amount - new_amount * parseFloat(discountRate);
+					let discountRate = (couponCode.coupon_value / 100).toFixed(2); //discount rate
+					const discountedPrice = new_amount - new_amount * parseFloat(discountRate);
 
-				totalOrderAmount = discountedPrice;
+					totalOrderAmount = discountedPrice;
+				}
+
+				if (couponCode.type === 'fixed') {
+					totalOrderAmount = totalOrderAmount - +couponCode.coupon_value;
+				}
+
 				couponCode.total_usage = couponCode.total_usage + 1;
 				couponCode.save();
 			}
@@ -131,6 +139,7 @@ export const createOrder = async (req: Request, res: Response) => {
 			product_type: isProduct.product_type,
 			coupon_value: valueofCoupon,
 			applied_coupon: typeOfCoupon,
+			device_type: device_type ? device_type : 'unknown',
 		});
 
 		const result = await dataSource.getRepository(Orders).save(createOrders);

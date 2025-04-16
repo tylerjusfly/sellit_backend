@@ -145,10 +145,10 @@ export const editCoupon = async (req: CustomRequest, res: Response) => {
 
 export const checkCouponCode = async (req: Request, res: Response) => {
 	try {
-		const { store_id, coupon_code, product_id, payment_gateway } = req.body;
+		const { store_id, coupon_code, product_id, payment_gateway, quantity } = req.body;
 
-		if (!store_id || !coupon_code || !product_id) {
-			return handleBadRequest(res, 400, 'coupon code /shop id is required');
+		if (!store_id || !coupon_code || !product_id || !quantity) {
+			return handleBadRequest(res, 400, 'Please provide all required fields.');
 		}
 
 		// find if code exist
@@ -191,18 +191,35 @@ export const checkCouponCode = async (req: Request, res: Response) => {
 			);
 		}
 
-		// const productCost = product.amount;
-		const productCost = product.amount;
-		const couponDiscount = couponCode.coupon_value;
+		// Calculating coupon rate
+		let newCost = 0;
+
+		if (couponCode.type === 'percent') {
+			const new_amount = quantity * product.amount;
+
+			let discountRate = (couponCode.coupon_value / 100).toFixed(2); //discount rate
+			const discountedPrice = new_amount - new_amount * parseFloat(discountRate);
+
+			newCost = discountedPrice;
+			// newCost = calculateDiscountedCost(productCost, couponDiscount);
+		}
+
+		if (couponCode.type === 'fixed') {
+			const productCost = quantity * product.amount;
+			newCost = productCost - +couponCode.coupon_value;
+		}
 
 		// Calculate new cost
-		const newCost = calculateDiscountedCost(productCost, couponDiscount);
 
 		return handleSuccess(
 			res,
 			{
 				new_cost: newCost,
 				id: couponCode.id,
+				couponval:
+					couponCode.type === 'percent'
+						? `${couponCode.coupon_value}%`
+						: `$${couponCode.coupon_value.toFixed(2)}`,
 			},
 			'',
 			201,

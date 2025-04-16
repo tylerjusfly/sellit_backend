@@ -148,6 +148,12 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 			);
 		}
 
+		/**
+		 SELECT * FROM articles
+WHERE to_tsvector('english', body) @@ to_tsquery('running');
+
+		 */
+
 		const AllProducts = await query
 			.offset(offset)
 			.limit(page_limit)
@@ -373,6 +379,18 @@ export const getOneProduct = async (req: Request, res: Response) => {
 		}
 
 		return handleSuccess(res, foundProduct, 'found', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+export const getOneP = async (req: Request, res: Response) => {
+	try {
+		// const dd = await queueMicrotask
+		// 		SELECT * FROM articles
+		// WHERE to_tsvector(body|| ""|| text) @@ to_tsquery('running');
+
+		return handleSuccess(res, {}, 'found', 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}

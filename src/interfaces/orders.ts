@@ -6,6 +6,7 @@ export type ICreateOrder = {
 	order_from: string;
 	coupon_id?: string;
 	shopname?: string;
+	device_type: string;
 };
 
 export type TallOrders = {

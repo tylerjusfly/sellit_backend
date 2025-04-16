@@ -12,6 +12,7 @@ import { CustomizationController } from './customization/customization.controlle
 import { TicketsController } from './tickets/tickets.controller.js';
 import { BlacklistsController } from './blacklist/blacklist.controller.js';
 import { CouponController } from './coupon/coupon.controller.js';
+import { AnalyticsController } from './analytics/analytics.controller.js';
 // import { CouponController } from './coupon/coupon.controller';
 // import { BlacklistsController } from './blacklist/blacklist.controller';
 // import { TicketsController } from './tickets/tickets.controller';
@@ -29,6 +30,7 @@ router.use('/store', StoreController.router);
 router.use('/customization', CustomizationController.router);
 router.use('/blacklists', BlacklistsController.router);
 router.use('/coupons', CouponController.router);
+router.use('/analytics', AnalyticsController.router);
 // router.use('/tickets', TicketsController.router);
 // router.use('/queue', QueueRouter.router);
 
