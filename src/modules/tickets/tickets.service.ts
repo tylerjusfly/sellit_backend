@@ -70,8 +70,6 @@ export const fetchStoreTickets = async (req: CustomRequest, res: Response) => {
 			order: { updated_at: 'DESC' },
 		});
 
-		// .orderBy('q.created_at', 'DESC')
-
 		const paging: IPaginate = {
 			totalItems: total,
 			currentPage: page ? Number(page) : 1,
@@ -113,6 +111,51 @@ export const resolveTickets = async (req: CustomRequest, res: Response) => {
 		TicketData.save();
 
 		return handleSuccess(res, '', '', 200, undefined);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+export const searchTickets = async (req: CustomRequest, res: Response) => {
+	const {
+		page = '1',
+		limit = '20',
+		search = '',
+	}: { page?: string; limit?: string; search?: string } = req.query;
+
+	const pageNum = parseInt(page, 10);
+	const limitNum = parseInt(limit, 10);
+	const offset = (pageNum - 1) * limitNum;
+
+	try {
+		// const query = `
+		// 	SELECT * FROM tickets
+		// 	WHERE to_tsvector('english', order_id || ' ' || email) @@ plainto_tsquery('english', $1)
+		// 	ORDER BY created_at DESC
+		// 	LIMIT $2 OFFSET $3
+		// `;
+		const query = `
+			SELECT * FROM tickets
+			WHERE to_tsvector('english', 
+				COALESCE(CAST(id AS TEXT), '') || ' ' || 
+				COALESCE(order_id, '') || ' ' || 
+				COALESCE(email, '')
+			) @@ plainto_tsquery('english', $1)
+			ORDER BY created_at DESC
+			LIMIT $2 OFFSET $3
+		`;
+
+		const values = [search, limitNum, offset];
+		const result = await dataSource.query(query, values);
+
+		// const paging: IPaginate = {
+		// 	totalItems: result.length,
+		// 	currentPage: page ? Number(page) : 1,
+		// 	totalpages: Math.ceil(result.length / limitNum),
+		// 	itemsPerPage: limitNum,
+		// };
+
+		return handleSuccess(res, result, ``, 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
