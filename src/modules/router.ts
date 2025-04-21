@@ -15,7 +15,6 @@ import { CouponController } from './coupon/coupon.controller.js';
 import { AnalyticsController } from './analytics/analytics.controller.js';
 // import { CouponController } from './coupon/coupon.controller';
 // import { BlacklistsController } from './blacklist/blacklist.controller';
-// import { TicketsController } from './tickets/tickets.controller';
 
 const router = Router();
 
@@ -31,7 +30,7 @@ router.use('/customization', CustomizationController.router);
 router.use('/blacklists', BlacklistsController.router);
 router.use('/coupons', CouponController.router);
 router.use('/analytics', AnalyticsController.router);
-// router.use('/tickets', TicketsController.router);
+router.use('/tickets', TicketsController.router);
 // router.use('/queue', QueueRouter.router);
 
 export const apiRouter = router;

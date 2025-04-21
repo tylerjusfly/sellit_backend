@@ -5,17 +5,19 @@ import { dataSource } from '../../database/dataSource.js';
 import { Tickets } from '../../database/entites/ticket.entity.js';
 import type { IPaginate } from '../../interfaces/pagination.js';
 import { Store } from '../../database/entites/store.entity.js';
+import type { CustomRequest } from '../../middlewares/verifyauth.js';
+import type { ITokenPayload } from '../../utils/token-helper.js';
 
 export type PostTickets = {
-	shop_id: number;
+	shop_id: string;
 	order_id: string;
-	piority: string;
-	message: string;
+	title: string;
+	email: string;
 };
 
 export const CreateTicket = async (req: Request, res: Response) => {
 	try {
-		const { shop_id, order_id, piority, message }: PostTickets = req.body;
+		const { shop_id, order_id, title, email }: PostTickets = req.body;
 
 		const isShop = await dataSource
 			.getRepository(Store)
@@ -23,13 +25,14 @@ export const CreateTicket = async (req: Request, res: Response) => {
 			.where('shop.id = :id', { id: shop_id })
 			.getOne();
 
-		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
+		if (!isShop) return handleBadRequest(res, 404, `Error finding Store, Please try again.`);
 
 		const ToCreate = dataSource.getRepository(Tickets).create({
 			shop_id: shop_id,
 			order_id,
-			piority,
-			message,
+			resolved: false,
+			email,
+			title,
 		});
 
 		const result = await ToCreate.save();
@@ -40,33 +43,34 @@ export const CreateTicket = async (req: Request, res: Response) => {
 	}
 };
 
-export const fetchTickets = async (req: Request, res: Response) => {
+export const fetchStoreTickets = async (req: CustomRequest, res: Response) => {
 	try {
-		const { shop_id, page, limit }: { shop_id?: number; page?: number; limit?: number } = req.query;
-
-		if (!shop_id) {
-			return handleBadRequest(res, 400, 'shop is required');
-		}
+		const { page, limit }: { page?: number; limit?: number } = req.query;
 
 		const page_limit = limit ? Number(limit) : 10;
 
 		const offset = page ? (Number(page) - 1) * page_limit : 0;
 
+		const store = req.user as ITokenPayload;
+
 		const isShop = await dataSource
 			.getRepository(Store)
 			.createQueryBuilder('shop')
-			.where('shop.id = :id', { id: shop_id })
+			.where('shop.id = :id', { id: store.id })
 			.getOne();
 
 		if (!isShop) return handleBadRequest(res, 404, 'shop not found');
 
 		const [Lists, total] = await Tickets.findAndCount({
 			where: {
-				shop_id,
+				shop_id: store.id,
 			},
 			skip: offset,
 			take: page_limit,
+			order: { updated_at: 'DESC' },
 		});
+
+		// .orderBy('q.created_at', 'DESC')
 
 		const paging: IPaginate = {
 			totalItems: total,
@@ -76,6 +80,39 @@ export const fetchTickets = async (req: Request, res: Response) => {
 		};
 
 		return handleSuccess(res, Lists, ``, 200, paging);
+	} catch (error) {
+		return handleError(res, error);
+	}
+};
+
+export const resolveTickets = async (req: CustomRequest, res: Response) => {
+	try {
+		const { uuid }: { uuid?: string } = req.query;
+
+		if (!uuid) {
+			return handleBadRequest(res, 400, 'ticket ID is required');
+		}
+
+		const TicketData = await dataSource.getRepository(Tickets).findOne({
+			where: {
+				id: uuid,
+			},
+			loadEagerRelations: false,
+		});
+
+		if (!TicketData) {
+			return handleBadRequest(res, 400, 'Ticket cannot be found, Verify ticket ID.');
+		}
+
+		if (TicketData.resolved) {
+			return handleBadRequest(res, 400, 'This ticket has already been marked as resolved.');
+		}
+
+		TicketData.resolved = true;
+
+		TicketData.save();
+
+		return handleSuccess(res, '', '', 200, undefined);
 	} catch (error) {
 		return handleError(res, error);
 	}
