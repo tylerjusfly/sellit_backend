@@ -7,6 +7,9 @@ import type { IPaginate } from '../../interfaces/pagination.js';
 import { Store } from '../../database/entites/store.entity.js';
 import type { CustomRequest } from '../../middlewares/verifyauth.js';
 import type { ITokenPayload } from '../../utils/token-helper.js';
+import { nanoid } from 'nanoid';
+import { sendNotification, sendStoreEmail } from '../notifications/notification.service.js';
+import { ENV } from '../../constants/env-variables.js';
 
 export type PostTickets = {
 	shop_id: string;
@@ -27,15 +30,33 @@ export const CreateTicket = async (req: Request, res: Response) => {
 
 		if (!isShop) return handleBadRequest(res, 404, `Error finding Store, Please try again.`);
 
+		const ticket_id = nanoid(10);
+
 		const ToCreate = dataSource.getRepository(Tickets).create({
 			shop_id: shop_id,
 			order_id,
 			resolved: false,
 			email,
 			title,
+			ticket_id: `Tkt-${ticket_id}`,
 		});
 
 		const result = await ToCreate.save();
+
+		await sendNotification(
+			isShop.id,
+			`${email} has created a ticket, TicketID: Tkt-${ticket_id} `,
+			'info',
+			'New Ticket Created'
+		);
+
+		sendStoreEmail(isShop.email, {
+			storename: isShop.storename,
+			message: `We noticed a customer with ${email} just created a ticket for your store. Please log in to view the details.`,
+			ticket_id: `Tkt-${ticket_id}`,
+			ctaLabel: 'View Ticket',
+			ctaUrl: `${ENV.FRONTEND_URL}/shop/tickets/Tkt-${ticket_id}`,
+		});
 
 		return handleSuccess(res, result, 'created', 201, undefined);
 	} catch (error) {
@@ -91,9 +112,12 @@ export const resolveTickets = async (req: CustomRequest, res: Response) => {
 			return handleBadRequest(res, 400, 'ticket ID is required');
 		}
 
+		const store = req.user as ITokenPayload;
+
 		const TicketData = await dataSource.getRepository(Tickets).findOne({
 			where: {
 				id: uuid,
+				shop_id: store.id,
 			},
 			loadEagerRelations: false,
 		});
@@ -127,17 +151,13 @@ export const searchTickets = async (req: CustomRequest, res: Response) => {
 	const limitNum = parseInt(limit, 10);
 	const offset = (pageNum - 1) * limitNum;
 
+	const store = req.user as ITokenPayload;
+
 	try {
-		// const query = `
-		// 	SELECT * FROM tickets
-		// 	WHERE to_tsvector('english', order_id || ' ' || email) @@ plainto_tsquery('english', $1)
-		// 	ORDER BY created_at DESC
-		// 	LIMIT $2 OFFSET $3
-		// `;
 		const query = `
 			SELECT * FROM tickets
 			WHERE to_tsvector('english', 
-				COALESCE(CAST(id AS TEXT), '') || ' ' || 
+				COALESCE(CAST(ticket_id AS TEXT), '') || ' ' || 
 				COALESCE(order_id, '') || ' ' || 
 				COALESCE(email, '')
 			) @@ plainto_tsquery('english', $1)

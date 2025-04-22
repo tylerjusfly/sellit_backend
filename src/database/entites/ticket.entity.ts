@@ -7,6 +7,9 @@ export class Tickets extends CustomBaseEntity {
 	title!: string;
 
 	@Column({ type: 'varchar', nullable: false })
+	ticket_id!: string;
+
+	@Column({ type: 'varchar', nullable: false })
 	order_id!: string;
 
 	@Column({ type: 'varchar', nullable: false })

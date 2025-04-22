@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { AuthController } from './auth/auth.controller.js';
-// import { ShopController } from './shop/shop.controller';
 import { ProductController } from './product/product.controller.js';
 import { CategoriesController } from './categories/categories.controller.js';
 import { paymentSettingsController } from './payment-settings/payment.controller.js';
@@ -13,6 +12,7 @@ import { TicketsController } from './tickets/tickets.controller.js';
 import { BlacklistsController } from './blacklist/blacklist.controller.js';
 import { CouponController } from './coupon/coupon.controller.js';
 import { AnalyticsController } from './analytics/analytics.controller.js';
+import { NotificationController } from './notifications/notification.controller.js';
 // import { CouponController } from './coupon/coupon.controller';
 // import { BlacklistsController } from './blacklist/blacklist.controller';
 
@@ -31,6 +31,7 @@ router.use('/blacklists', BlacklistsController.router);
 router.use('/coupons', CouponController.router);
 router.use('/analytics', AnalyticsController.router);
 router.use('/tickets', TicketsController.router);
+router.use('/notifications', NotificationController.router);
 // router.use('/queue', QueueRouter.router);
 
 export const apiRouter = router;
