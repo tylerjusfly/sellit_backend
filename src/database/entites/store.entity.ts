@@ -43,6 +43,9 @@ export class Store extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: true })
 	coinbase_key!: string | null;
 
+	@Column({ type: 'varchar', nullable: true })
+	cashapp_tag!: string | null;
+
 	@Column({ nullable: false })
 	password!: string;
 

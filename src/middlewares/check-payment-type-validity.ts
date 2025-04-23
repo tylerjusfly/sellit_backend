@@ -26,7 +26,7 @@ export const checkPaymentTypeVlidity = async (req: Request, res: Response, next:
 		return handleBadRequest(res, 404, 'Gateway stripe is not configured for store');
 	}
 
-	if (cashapp) {
+	if (cashapp && !product_data.shop_id.cashapp_tag) {
 		return handleBadRequest(res, 404, 'Gateway cashapp is not configured for shop');
 	}
 

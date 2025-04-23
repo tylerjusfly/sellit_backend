@@ -40,6 +40,9 @@ export const disconnectPayment = async (req: Request, res: Response) => {
 			case 'stripe':
 				isShop.stripe_key = null;
 				break;
+			case 'cashapp':
+				isShop.cashapp_tag = null;
+				break;
 			// Add more cases if needed
 			default:
 				// Optional: handle unknown payment methods
@@ -85,6 +88,10 @@ export const connectPayment = async (req: Request, res: Response) => {
 			case 'stripe':
 				shop_data.stripe_key = key;
 				break;
+			case 'cashapp':
+				shop_data.cashapp_tag = key;
+				break;
+
 			// Add more cases if needed
 			default:
 				// Optional: handle unknown payment methods
