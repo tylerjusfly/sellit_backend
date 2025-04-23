@@ -58,4 +58,11 @@ export class Store extends CustomBaseEntity {
 
 	@Column({ type: 'uuid', nullable: true })
 	customizationid!: string;
+
+	// SET NOTIFICATIONS
+	@Column({ type: 'boolean', default: false })
+	create_ticket!: boolean;
+
+	@Column({ type: 'boolean', default: false })
+	reply_ticket!: boolean;
 }

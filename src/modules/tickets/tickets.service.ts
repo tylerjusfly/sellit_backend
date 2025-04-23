@@ -47,16 +47,18 @@ export const CreateTicket = async (req: Request, res: Response) => {
 			isShop.id,
 			`${email} has created a ticket, TicketID: Tkt-${ticket_id} `,
 			'info',
-			'New Ticket Created'
+			`${title}`
 		);
 
-		sendStoreEmail(isShop.email, {
-			storename: isShop.storename,
-			message: `We noticed a customer with ${email} just created a ticket for your store. Please log in to view the details.`,
-			ticket_id: `Tkt-${ticket_id}`,
-			ctaLabel: 'View Ticket',
-			ctaUrl: `${ENV.FRONTEND_URL}/shop/tickets/Tkt-${ticket_id}`,
-		});
+		if (isShop.create_ticket === true) {
+			sendStoreEmail(isShop.email, {
+				storename: isShop.storename,
+				message: `We noticed a customer with ${email} just created a ticket for your store. Please log in to view the details.`,
+				ticket_id: `Tkt-${ticket_id}`,
+				ctaLabel: 'View Ticket',
+				ctaUrl: `${ENV.FRONTEND_URL}/shop/tickets/Tkt-${ticket_id}`,
+			});
+		}
 
 		return handleSuccess(res, result, 'created', 201, undefined);
 	} catch (error) {

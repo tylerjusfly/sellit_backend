@@ -10,3 +10,8 @@ export interface IShopPayload {
 	user_type: string;
 	id: number;
 }
+
+export type NotificationType = {
+	create_ticket: boolean;
+	reply_ticket: boolean;
+};
