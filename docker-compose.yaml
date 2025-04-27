@@ -35,7 +35,7 @@ services:
       DATABASE_PASSWORD: password1
       DATABASE_NAME: "shopcrm"
       FRONTEND_URL: ${FRONTEND_URL}
-      DATABASE_ENABLE_SYNC: true
+      DATABASE_ENABLE_SYNC: "true"
       DATABASE_ENABLE_LOGGING: false
       DATABASE_CONNECT_RETRY_COUNT: 4
 
