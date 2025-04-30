@@ -4,7 +4,6 @@ import {
 	deleteProduct,
 	editProduct,
 	getAllProductByShop,
-	// getAllProductByShopname,
 	getOneProduct,
 	getProductsForPublic,
 	getSpecificProduct,

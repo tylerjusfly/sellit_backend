@@ -16,7 +16,7 @@ export const fetchShopPayments = async (req: Request, res: Response) => {
 			coinbase: { name: 'Coinbase', active: isShop.coinbase_key ? true : false },
 			stripe: { name: 'Stripe', active: isShop.stripe_key ? true : false },
 			paypal: { name: 'Paypal', active: false },
-			cashapp: { name: 'CashApp', active: false },
+			cashapp: { name: 'CashApp', active: isShop.cashapp_tag ? true : false },
 		};
 
 		return handleSuccess(res, payments_method, '', 200, undefined);

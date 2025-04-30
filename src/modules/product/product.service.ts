@@ -14,6 +14,7 @@ import type { IPaginate } from '../../interfaces/pagination.js';
 import { Brackets } from 'typeorm';
 
 import { Store } from '../../database/entites/store.entity.js';
+import { ProductItems } from '../../database/entites/productitem.entity.js';
 
 export const CreateProduct = async (req: CustomRequest, res: Response) => {
 	try {
@@ -51,13 +52,17 @@ export const CreateProduct = async (req: CustomRequest, res: Response) => {
 };
 
 export const editProduct = async (req: CustomRequest, res: Response) => {
+	const queryRunner = dataSource.createQueryRunner();
+	await queryRunner.connect();
+	await queryRunner.startTransaction();
+
 	try {
 		const { id, items, ...restData }: IEditProduct = req.body;
+		const user = req.user as ITokenPayload;
 
+		// 1. Find and update the product
 		const productObj = await Product.findOne({
-			where: {
-				id,
-			},
+			where: { id },
 		});
 
 		if (!productObj) {
@@ -66,28 +71,72 @@ export const editProduct = async (req: CustomRequest, res: Response) => {
 
 		Object.assign(productObj, restData);
 
-		productObj.items = items || null;
+		productObj.lastChanged_by = user.email;
 
-		if (items && items !== '') {
-			const itemsArray = items?.split(',').map((item) => item.trim());
+		// 2. Handle stock calculation
+		if (productObj.product_type === 'serial' && items && items !== '') {
+			// Split by either comma or newline and trim each serial
+			const itemsArray = items
+				.split(/[\n]/)
+				.map((item) => item.trim())
+				.filter((item) => item.length > 0);
+
 			productObj.stock = itemsArray.length;
-		} else {
+
+			// 3. Process serials in transaction
+			// Delete existing serials for this product
+			await queryRunner.manager.delete(ProductItems, { product: id });
+
+			// Insert new serials
+			if (itemsArray.length > 0) {
+				const serials = itemsArray.map((serial) => ({
+					item: serial,
+					store_id: productObj.shop_id.id,
+					product: productObj,
+				}));
+
+				await queryRunner.manager.insert(ProductItems, serials);
+			}
+		}
+
+		if (productObj.product_type === 'file' && restData.file_url && restData.file_url !== '') {
+			productObj.stock = +restData.stock;
+
+			// Delete existing serials for this product
+			await queryRunner.manager.delete(ProductItems, { product: id });
+
+			// Insert new item
+
+			const filePayload = {
+				item: restData.file_url,
+				store_id: productObj.shop_id.id,
+				product: productObj,
+			};
+
+			await queryRunner.manager.insert(ProductItems, filePayload);
+		}
+
+		if (productObj.product_type === 'service') {
 			productObj.stock = +restData.stock;
 		}
 
-		const user = req.user as ITokenPayload;
-
-		productObj.lastChanged_by = user.email;
-
-		await productObj.save();
+		// 4. Save everything
+		await queryRunner.manager.save(productObj);
+		await queryRunner.commitTransaction();
 
 		return handleSuccess(res, productObj, 'updated product', 200, undefined);
 	} catch (error) {
+		await queryRunner.rollbackTransaction();
 		handleError(res, error);
+	} finally {
+		await queryRunner.release();
 	}
 };
 
 export const getSpecificProduct = async (req: Request, res: Response) => {
+	const queryRunner = dataSource.createQueryRunner();
+	await queryRunner.connect();
+
 	try {
 		const { id }: { id?: string } = req.query;
 
@@ -95,18 +144,40 @@ export const getSpecificProduct = async (req: Request, res: Response) => {
 			return handleBadRequest(res, 400, 'id is required');
 		}
 
-		const foundProduct = await Product.findOneOrFail({
-			where: {
-				id: id,
-			},
-		});
+		// Get product and its category in one query
+		const foundProduct = await queryRunner.manager
+			.getRepository(Product)
+			.createQueryBuilder('product')
+			.leftJoinAndSelect('product.categoryid', 'category')
+			.where('product.id = :id', { id })
+			.getOne();
 
-		return handleSuccess(res, foundProduct, 'found', 200, undefined);
+		if (!foundProduct) {
+			return handleBadRequest(res, 404, 'product does not exist');
+		}
+
+		// Get related items in separate query
+		const productItems = await queryRunner.manager
+			.getRepository(ProductItems)
+			.createQueryBuilder('item')
+			.leftJoin('item.product', 'product')
+			.where('product.id = :id', { id })
+			.select(['item.id', 'item.item']) // Only select needed fields
+			.getMany();
+
+		// Combine the results
+		foundProduct.items = productItems.map((item) => item.item).join('\n');
+		foundProduct.file_url = productItems[0]?.item || ""
+
+
+		return handleSuccess(res, foundProduct, 'Product found', 200, undefined);
 	} catch (error: any) {
 		if (error.name === 'EntityNotFoundError') {
 			return handleBadRequest(res, 404, 'product does not exist');
 		}
 		return handleError(res, error);
+	} finally {
+		await queryRunner.release();
 	}
 };
 
@@ -135,7 +206,6 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 		const query = dataSource
 			.getRepository(Product)
 			.createQueryBuilder('q')
-			// .leftJoinAndSelect('q.categoryid', 'category')
 			.select(['q.id', 'q.name', 'q.product_type', 'q.amount', 'q.stock']);
 
 		query.where('q.shop_id = :val', { val: shopid });
@@ -147,12 +217,6 @@ export const getAllProductByShop = async (req: Request, res: Response) => {
 				})
 			);
 		}
-
-		/**
-		 SELECT * FROM articles
-WHERE to_tsvector('english', body) @@ to_tsquery('running');
-
-		 */
 
 		const AllProducts = await query
 			.offset(offset)
@@ -198,93 +262,6 @@ export const deleteProduct = async (req: Request, res: Response) => {
 		return handleError(res, error);
 	}
 };
-
-// export const getAllProductByShopname = async (req: Request, res: Response) => {
-// 	try {
-// 		const { shopname, search, page, category, limit }: IStoreProduct = req.query;
-
-// 		if (!shopname) {
-// 			return handleBadRequest(res, 400, 'shop id/name is required');
-// 		}
-
-// 		const page_limit = limit ? limit : 20;
-
-// 		const offset = page ? (Number(page) - 1) * page_limit : 0;
-
-// 		const slugged = convertToSlug(shopname);
-
-// 		// Find shop
-// 		const foundShop = await Store.findOne({
-// 			where: {
-// 				slug: slugged,
-// 			},
-// 		});
-
-// 		if (!foundShop) return handleBadRequest(res, 404, 'shop not found');
-
-// 		// fetch all shop product
-// 		const query = dataSource.getRepository(Product).createQueryBuilder('q').select([
-// 			'q.id',
-// 			'q.name',
-// 			'q.unique_id',
-// 			'q.image_src',
-// 			'q.stock',
-// 			// 'q.unlisted',
-// 			'q.paypal',
-// 			'q.stripe',
-// 			'q.crypto',
-// 			'q.cashapp',
-// 			// 'q.product_type',
-// 			'q.amount',
-// 			// 'q.service_info',
-// 			'q.description',
-// 			// 'q.webhook_url',
-// 			'q.callback_url',
-// 		]);
-
-// 		query.where('q.shop_id = :val', { val: foundShop.id });
-
-// 		query.andWhere('q.unlisted = :value', { value: false });
-
-// 		if (search && search !== '') {
-// 			query.andWhere(
-// 				new Brackets((qb) => {
-// 					qb.where('LOWER(q.name) Like :name', { name: `%${search.toLowerCase()}%` });
-// 				})
-// 			);
-// 		}
-
-// 		const AllProducts = await query
-// 			.offset(offset)
-// 			.limit(page_limit)
-// 			.orderBy('q.created_at', 'DESC')
-// 			.getMany();
-
-// 		const Productcount = await query.getCount();
-
-// 		const totalPages = Math.ceil(Productcount / page_limit);
-
-// 		const paging: IPaginate = {
-// 			totalItems: Productcount,
-// 			currentPage: page ? Number(page) : 1,
-// 			totalpages: totalPages,
-// 			itemsPerPage: page_limit,
-// 		};
-
-// 		return handleSuccess(
-// 			res,
-// 			{
-// 				// shop: foundShop,
-// 				products: AllProducts,
-// 			},
-// 			`All Products`,
-// 			200,
-// 			paging
-// 		);
-// 	} catch (error) {
-// 		return handleError(res, error);
-// 	}
-// };
 
 export const getProductsForPublic = async (req: Request, res: Response) => {
 	try {
@@ -384,14 +361,17 @@ export const getOneProduct = async (req: Request, res: Response) => {
 	}
 };
 
-export const getOneP = async (req: Request, res: Response) => {
-	try {
-		// const dd = await queueMicrotask
-		// 		SELECT * FROM articles
-		// WHERE to_tsvector(body|| ""|| text) @@ to_tsquery('running');
-
-		return handleSuccess(res, {}, 'found', 200, undefined);
-	} catch (error) {
-		return handleError(res, error);
-	}
-};
+// const foundProduct = await dataSource
+// 	.getRepository(Product)
+// 	.createQueryBuilder('q') // Alias 'q'
+// 	.leftJoinAndSelect('q.categoryid', 'category')
+// 	.select([
+// 		'q.id',
+// 		'q.name',
+// 		'q.image_src',
+// 		'q.amount',
+// 		'q.stock',
+// 		'category.id', // Need to explicitly select joined columns
+// 	])
+// 	.where('q.id = :val', { val: id }) // Must use 'q' to match alias
+// 	.getOne();

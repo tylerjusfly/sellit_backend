@@ -26,9 +26,6 @@ export class Product extends CustomBaseEntity {
 	@Column({ type: 'varchar', nullable: true, default: '/imgs/products/attachment.png' })
 	image_src!: string;
 
-	@Column({ type: 'text', nullable: true })
-	items!: string | null;
-
 	@Column({ type: 'integer', default: 0 })
 	stock!: number;
 
@@ -94,4 +91,12 @@ export class Product extends CustomBaseEntity {
 
 	@Column({ type: 'varchar', nullable: true })
 	callback_url!: string;
+
+	/*
+	 * This doesn't create a database column
+	 * Just Provides TypeScript type checking
+	 */
+
+	declare items: string;
+	declare file_url: string;
 }

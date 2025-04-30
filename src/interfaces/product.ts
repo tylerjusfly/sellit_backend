@@ -10,6 +10,7 @@ export type IEditProduct = {
 	stock: number;
 	callback_url?: string;
 	product_type?: string;
+	file_url?: string;
 	description?: string;
 	service_info?: string;
 	items?: string;
