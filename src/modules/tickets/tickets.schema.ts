@@ -5,4 +5,5 @@ export const postTicketSchema = Joi.object({
 	title: Joi.string().required(),
 	email: Joi.string().required(),
 	order_id: Joi.string().required(),
+	message: Joi.string().required(),
 }).unknown();

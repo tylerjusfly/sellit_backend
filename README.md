@@ -22,11 +22,15 @@ RUN `docker-compose down -v`
 
 ## VARIABLES
 
-EMAIL_SECRET
+```
 
-EMAIL_USER
+EMAIL_SECRET` = 
 
-FRONTEND_URL
+EMAIL_USER = 
+
+FRONTEND_URL = 
+
+```
 
 ## RESOURCES
 

@@ -20,4 +20,7 @@ export class Tickets extends CustomBaseEntity {
 
 	@Column({ type: 'varchar', nullable: false })
 	shop_id!: string;
+
+	@Column({ type: 'text', nullable: false })
+	message!: string;
 }

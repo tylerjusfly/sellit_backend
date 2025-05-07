@@ -16,11 +16,12 @@ export type PostTickets = {
 	order_id: string;
 	title: string;
 	email: string;
+	message: string;
 };
 
 export const CreateTicket = async (req: Request, res: Response) => {
 	try {
-		const { shop_id, order_id, title, email }: PostTickets = req.body;
+		const { shop_id, order_id, title, email, message }: PostTickets = req.body;
 
 		const isShop = await dataSource
 			.getRepository(Store)
@@ -39,6 +40,7 @@ export const CreateTicket = async (req: Request, res: Response) => {
 			email,
 			title,
 			ticket_id: `Tkt-${ticket_id}`,
+			message: message,
 		});
 
 		const result = await ToCreate.save();
